@@ -16,16 +16,10 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<ezy.netty.version>1.0.0</ezy.netty.version>
 		<ezy.nettycodec.version>1.0.0</ezy.nettycodec.version>
 	</properties>
 	
 	<dependencies>
-		<dependency>
-			<groupId>com.tvd12</groupId>
-			<artifactId>ezyfox-server-netty</artifactId>
-			<version>${ezy.netty.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.tvd12</groupId>
 			<artifactId>ezyfox-server-nettycodec</artifactId>

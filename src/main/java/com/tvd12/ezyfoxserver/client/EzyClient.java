@@ -13,14 +13,18 @@ import com.tvd12.ezyfoxserver.client.wrapper.impl.EzyClientAppControllersImpl;
 import com.tvd12.ezyfoxserver.client.wrapper.impl.EzyClientAppResponseListenersImpl;
 import com.tvd12.ezyfoxserver.client.wrapper.impl.EzyClientControllersImpl;
 import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.util.EzyDestroyable;
 
-public class EzyClient implements EzyDestroyable {
+import lombok.Getter;
+import lombok.Setter;
 
+public class EzyClient {
+
+	@Getter @Setter
+	protected int workerPoolSize = 1;
 	protected EzyClientControllers controllers = newControllers();
 	protected EzyClientAppControllers appControllers = newAppControllers();
-	protected EzyClientAppResponseListeners appResponseListeners = newAppResponseListeners();
 	protected Set<EzyConstant> unloggableCommands = defaultUnloggableCommands();
+	protected EzyClientAppResponseListeners appResponseListeners = newAppResponseListeners();
 	
 	@SuppressWarnings({ "unchecked" })
 	public <T> T getController(EzyConstant cmd) {
@@ -54,12 +58,6 @@ public class EzyClient implements EzyDestroyable {
 	
 	public Set<EzyConstant> getUnloggableCommands() {
 		return unloggableCommands;
-	}
-	
-	@Override
-	public void destroy() {
-		controllers.destroy();
-		controllers = null;
 	}
 	
 	protected EzyClientControllers newControllers() {

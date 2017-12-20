@@ -7,9 +7,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 
 import com.tvd12.ezyfoxserver.client.EzyClient;
+import com.tvd12.ezyfoxserver.client.cmd.EzyEnableSocket;
 import com.tvd12.ezyfoxserver.client.cmd.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.cmd.EzySendRequest;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzyClientShutdownImpl;
+import com.tvd12.ezyfoxserver.client.cmd.impl.EzyEnableSocketImpl;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzyPingScheduleImpl;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzySendRequestImpl;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientUser;
@@ -34,7 +36,7 @@ public class EzySimpleClientContext
 	protected EzyClient client;
 	
 	@Getter
-	protected final EzyClientUser me;
+	protected final EzyClientUser me = new EzySimpleClientUser();
 	
 	@Setter
 	@Getter
@@ -45,10 +47,6 @@ public class EzySimpleClientContext
 	
 	protected Map<Integer, EzyClientAppContext> appContextByIds = new ConcurrentHashMap<>();
 	protected Map<String, EzyClientAppContext> appContextByNames = new ConcurrentHashMap<>();
-	
-	public EzySimpleClientContext() {
-		me = new EzySimpleClientUser();
-	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -78,15 +76,18 @@ public class EzySimpleClientContext
 	
 	@Override
 	public void sendPluginRequest(String pluginName, EzyArray data) {
+		EzyRequest pluginRequest = newPluginRequest(pluginName, data);
 		get(EzySendRequest.class)
 			.sender(getMe())
-			.request(newPluginRequest(pluginName, data))
+			.request(pluginRequest)
 			.execute();
 	}
 	
 	private EzyRequest newPluginRequest(String pluginName, EzyArray data) {
 		return EzyRequestPluginRequest.builder()
-				.pluginName(pluginName).data(data).build();
+				.pluginName(pluginName)
+				.data(data)
+				.build();
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -97,12 +98,12 @@ public class EzySimpleClientContext
 		answer.put(EzySendRequest.class, () -> new EzySendRequestImpl(this));
 		answer.put(EzyShutdown.class, () -> new EzyClientShutdownImpl(this));
 		answer.put(EzyRunWorker.class, () -> new EzyRunWorkerImpl(getWorkerExecutor()));
+		answer.put(EzyEnableSocket.class, () -> new EzyEnableSocketImpl(this));
 		return answer;
 	}
 	
 	@Override
 	public void destroy() {
-		client.destroy();
 		properties.clear();
 		workerExecutor.shutdown();
 	}

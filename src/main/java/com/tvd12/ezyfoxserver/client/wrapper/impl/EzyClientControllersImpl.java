@@ -39,12 +39,6 @@ public class EzyClientControllersImpl implements EzyClientControllers {
 		controllers.put(cmd, ctrl);
 	}
 	
-	@Override
-	public void destroy() {
-		controllers.clear();
-		controllers = null;
-	}
-	
 	public static Builder builder() {
 		return new Builder();
 	}

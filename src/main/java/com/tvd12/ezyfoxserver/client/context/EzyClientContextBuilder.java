@@ -5,26 +5,17 @@ import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.serialize.EzyRequestSerializer;
 import com.tvd12.ezyfoxserver.client.serialize.impl.EzyRequestSerializerImpl;
 import com.tvd12.ezyfoxserver.concurrent.EzyExecutors;
-import com.tvd12.ezyfoxserver.function.EzyApply;
 
 public class EzyClientContextBuilder implements EzyBuilder<EzyClientContext> {
 
-	protected final EzyClient client;
+	protected EzyClient client;
 	
-	public EzyClientContextBuilder() {
-		this.client = newClient();
-	}
-	
-	public static EzyClientContextBuilder newInstance() {
+	public static EzyClientContextBuilder clientContextBuilder() {
 		return new EzyClientContextBuilder();
 	}
 	
-	protected EzyClient newClient() {
-		return new EzyClient();
-	}
-	
-	public EzyClientContextBuilder setupClient(EzyApply<EzyClient> applier) {
-		applier.apply(client);
+	public EzyClientContextBuilder client(EzyClient client) {
+		this.client = client;
 		return this;
 	}
 	
@@ -33,7 +24,7 @@ public class EzyClientContextBuilder implements EzyBuilder<EzyClientContext> {
 		EzySimpleClientContext context = newProduct();
 		context.setClient(client);
 		context.setProperty(EzyRequestSerializer.class,	newRequestSerializer());
-		context.setWorkerExecutor(EzyExecutors.newFixedThreadPool(16, "client-worker"));
+		context.setWorkerExecutor(EzyExecutors.newFixedThreadPool(client.getWorkerPoolSize(), "client-worker"));
 		return context;
 	}
 	

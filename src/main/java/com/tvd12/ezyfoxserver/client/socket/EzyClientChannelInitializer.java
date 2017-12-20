@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.client;
+package com.tvd12.ezyfoxserver.client.socket;
 
 import com.tvd12.ezyfoxserver.builder.EzyBuilder;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
@@ -12,7 +12,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOutboundHandler;
 import io.netty.channel.ChannelPipeline;
 
-class EzyClientChannelInitializer extends ChannelInitializer<Channel> {
+public class EzyClientChannelInitializer extends ChannelInitializer<Channel> {
 
 	protected EzyClientContext context;
 	protected EzyCodecCreator codecCreator;
