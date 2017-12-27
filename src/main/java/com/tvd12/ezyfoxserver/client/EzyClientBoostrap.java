@@ -150,6 +150,7 @@ public class EzyClientBoostrap
                 .channel(NioSocketChannel.class)
                 .remoteAddress(new InetSocketAddress(host, port))
                 .handler(newChannelInitializer())
+                .option(ChannelOption.TCP_NODELAY, false)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 300 * 1000);
     }
     
