@@ -1,6 +1,6 @@
 package com.tvd12.ezyfoxserver.client.setting;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
 
 public class EzySocketSettingBuilder implements EzyBuilder<EzySocketSetting> {
 
@@ -11,7 +11,7 @@ public class EzySocketSettingBuilder implements EzyBuilder<EzySocketSetting> {
 	public EzySocketSettingBuilder() {
 		this.serverPort = 3005;
 		this.serverHost = "127.0.0.1";
-		this.codecCreator = "com.tvd12.ezyfoxserver.netty.codec.MsgPackCodecCreator";
+		this.codecCreator = "com.tvd12.ezyfox.netty.codec.MsgPackCodecCreator";
 	}
 	
 	public static EzySocketSettingBuilder socketSettingBuilder() {
@@ -35,11 +35,11 @@ public class EzySocketSettingBuilder implements EzyBuilder<EzySocketSetting> {
 	
 	@Override
 	public EzySocketSetting build() {
-		EzySimpleSocketSetting socketSetting = new EzySimpleSocketSetting();
-		socketSetting.setServerPort(serverPort);
-		socketSetting.setServerHost(serverHost);
-		socketSetting.setCodecCreator(codecCreator);
-		return socketSetting;
+		EzySimpleSocketSetting setting = new EzySimpleSocketSetting();
+		setting.setServerPort(serverPort);
+		setting.setServerHost(serverHost);
+		setting.setCodecCreator(codecCreator);
+		return setting;
 	}
 	
 }

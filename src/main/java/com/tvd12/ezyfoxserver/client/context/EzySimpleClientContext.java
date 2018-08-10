@@ -6,12 +6,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.entity.EzyEntity;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.cmd.EzyEnableSocket;
+import com.tvd12.ezyfoxserver.client.cmd.EzyEnableWebSocket;
 import com.tvd12.ezyfoxserver.client.cmd.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.cmd.EzySendRequest;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzyClientShutdownImpl;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzyEnableSocketImpl;
+import com.tvd12.ezyfoxserver.client.cmd.impl.EzyEnableWebSocketImpl;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzyPingScheduleImpl;
 import com.tvd12.ezyfoxserver.client.cmd.impl.EzySendRequestImpl;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientUser;
@@ -21,8 +25,6 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequestPluginRequest;
 import com.tvd12.ezyfoxserver.command.EzyRunWorker;
 import com.tvd12.ezyfoxserver.command.EzyShutdown;
 import com.tvd12.ezyfoxserver.command.impl.EzyRunWorkerImpl;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzyEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -99,6 +101,7 @@ public class EzySimpleClientContext
 		answer.put(EzyShutdown.class, () -> new EzyClientShutdownImpl(this));
 		answer.put(EzyRunWorker.class, () -> new EzyRunWorkerImpl(getWorkerExecutor()));
 		answer.put(EzyEnableSocket.class, () -> new EzyEnableSocketImpl(this));
+		answer.put(EzyEnableWebSocket.class, () -> new EzyEnableWebSocketImpl(this));
 		return answer;
 	}
 	

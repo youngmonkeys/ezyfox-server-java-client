@@ -1,8 +1,8 @@
 package com.tvd12.ezyfoxserver.client.serialize;
 
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.entity.EzyObject;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzyObject;
 
 public interface EzyRequestSerializer {
 	

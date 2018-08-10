@@ -2,9 +2,8 @@ package com.tvd12.ezyfoxserver.client.entity;
 
 import java.io.Serializable;
 
-import com.tvd12.ezyfoxserver.constant.EzyTransportType;
-import com.tvd12.ezyfoxserver.entity.EzyData;
-import com.tvd12.ezyfoxserver.entity.EzyEntity;
+import com.tvd12.ezyfox.entity.EzyEntity;
+import com.tvd12.ezyfoxserver.socket.EzyPacket;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,16 +15,17 @@ public class EzySimpleClientUser extends EzyEntity implements EzyClientUser, Ser
 
 	protected long id;
 	protected String name;
+	protected int zoneId;
 	protected EzyClientSession session;
 	
 	@Override
-	public void send(EzyData data, EzyTransportType type) {
-		session.send(data);
+	public void send(EzyPacket packet) {
+		session.send(packet);
 	}
 	
 	@Override
-	public void sendNow(EzyData data, EzyTransportType type) {
-		send(data, type);
+	public void sendNow(EzyPacket packet) {
+		send(packet);
 	}
 	
 	@Override

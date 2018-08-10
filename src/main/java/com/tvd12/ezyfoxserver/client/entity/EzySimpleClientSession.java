@@ -4,10 +4,9 @@ import java.net.SocketAddress;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.tvd12.ezyfoxserver.constant.EzyTransportType;
+import com.tvd12.ezyfox.entity.EzyEntity;
 import com.tvd12.ezyfoxserver.delegate.EzySessionDelegate;
-import com.tvd12.ezyfoxserver.entity.EzyData;
-import com.tvd12.ezyfoxserver.entity.EzyEntity;
+import com.tvd12.ezyfoxserver.socket.EzyPacket;
 
 import io.netty.channel.Channel;
 import lombok.Getter;
@@ -68,13 +67,13 @@ public class EzySimpleClientSession extends EzyEntity implements EzyClientSessio
 	}
 	
 	@Override
-	public void send(EzyData data, EzyTransportType type) {
-		channel.writeAndFlush(data);
+	public void send(EzyPacket packet) {
+		channel.writeAndFlush(packet.getData());
 	}
 	
 	@Override
-	public void sendNow(EzyData data, EzyTransportType type) {
-		send(data, type);
+	public void sendNow(EzyPacket packet) {
+		send(packet);
 	}
 	
 	@Override

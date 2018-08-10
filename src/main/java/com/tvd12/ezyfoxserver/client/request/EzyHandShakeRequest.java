@@ -3,13 +3,14 @@ package com.tvd12.ezyfoxserver.client.request;
 import java.io.File;
 import java.security.KeyPair;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.file.EzySimpleFileReader;
+import com.tvd12.ezyfox.file.EzySimpleFileWriter;
+import com.tvd12.ezyfox.sercurity.EzyBase64;
+import com.tvd12.ezyfox.sercurity.EzyFileAsyCrypt;
+import com.tvd12.ezyfox.sercurity.EzyFileKeysGenerator;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.file.EzySimpleFileReader;
-import com.tvd12.ezyfoxserver.file.EzySimpleFileWriter;
-import com.tvd12.ezyfoxserver.sercurity.EzyBase64;
-import com.tvd12.ezyfoxserver.sercurity.EzyFileAsyCrypt;
-import com.tvd12.ezyfoxserver.sercurity.EzyFileKeysGenerator;
+import com.tvd12.ezyfoxserver.constant.EzyCoreConstants;
 
 public class EzyHandShakeRequest extends EzyBaseRequest implements EzyRequest {
 
@@ -58,8 +59,8 @@ public class EzyHandShakeRequest extends EzyBaseRequest implements EzyRequest {
 		
 		protected KeyPair newKeyPair() {
 			return EzyFileKeysGenerator.builder()
-					.keysize(512)
-					.algorithm("RSA")
+					.keysize(EzyCoreConstants.SESSION_KEY_SIZE)
+					.algorithm(EzyCoreConstants.DATA_ENCRYPTION_ALGORITHM)
 					.fileWriter(EzySimpleFileWriter.builder().build())
 					.privateKeyFile(getPrivateKeyFile())
 					.build()

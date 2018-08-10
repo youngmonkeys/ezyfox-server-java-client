@@ -4,11 +4,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientSession;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientUser;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
 
 public class EzyReceiverDeterminer {
 	

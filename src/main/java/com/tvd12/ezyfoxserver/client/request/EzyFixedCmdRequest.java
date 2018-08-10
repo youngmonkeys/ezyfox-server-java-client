@@ -2,7 +2,7 @@ package com.tvd12.ezyfoxserver.client.request;
 
 import java.util.HashMap;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
 
 import lombok.Getter;
 import lombok.Setter;

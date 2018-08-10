@@ -3,7 +3,11 @@
  */
 package com.tvd12.ezyfoxserver.client.testing;
 
-import com.tvd12.ezyfoxserver.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.entity.EzyObject;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.cmd.EzyEnableSocket;
 import com.tvd12.ezyfoxserver.client.cmd.EzySendRequest;
@@ -23,10 +27,6 @@ import com.tvd12.ezyfoxserver.client.serialize.EzyRequestSerializer;
 import com.tvd12.ezyfoxserver.client.serialize.impl.EzyRequestSerializerImpl;
 import com.tvd12.ezyfoxserver.client.setting.EzySimpleSocketSetting;
 import com.tvd12.ezyfoxserver.context.EzyContext;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzyData;
-import com.tvd12.ezyfoxserver.entity.EzyObject;
-import com.tvd12.ezyfoxserver.factory.EzyEntityFactory;
 
 import lombok.AllArgsConstructor;
 

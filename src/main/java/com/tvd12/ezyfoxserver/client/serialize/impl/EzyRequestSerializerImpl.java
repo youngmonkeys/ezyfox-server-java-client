@@ -3,12 +3,12 @@ package com.tvd12.ezyfoxserver.client.serialize.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.tvd12.ezyfoxserver.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfox.function.EzySerializer;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.serialize.EzyRequestSerializer;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.factory.EzyEntityFactory;
-import com.tvd12.ezyfoxserver.function.EzySerializer;
 
 import lombok.Builder;
 

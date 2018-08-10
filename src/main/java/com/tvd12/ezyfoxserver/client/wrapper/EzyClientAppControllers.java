@@ -1,8 +1,8 @@
 package com.tvd12.ezyfoxserver.client.wrapper;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.util.EzyDestroyable;
 import com.tvd12.ezyfoxserver.client.controller.EzyClientAppController;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.util.EzyDestroyable;
 
 public interface EzyClientAppControllers extends EzyDestroyable {
 	

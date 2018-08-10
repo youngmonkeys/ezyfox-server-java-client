@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.controller;
 
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
 import com.tvd12.ezyfoxserver.client.context.EzyClientAppContext;
@@ -7,7 +8,6 @@ import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.context.EzySimpleClientAppContext;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientSession;
 import com.tvd12.ezyfoxserver.client.entity.EzySimpleClientUser;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
 
 public class EzyLoginController 
 		extends EzyAbstractController 
@@ -16,7 +16,7 @@ public class EzyLoginController
 	@Override
 	public void handle(EzyClientContext ctx, EzyClientSession session, EzyArray data) {
 		updateMe(ctx, data);
-		EzyArray joinedApps = data.get(2, EzyArray.class);
+		EzyArray joinedApps = data.get(3, EzyArray.class);
 		if(joinedApps.isEmpty())
 			processNotReconnect(ctx, session, data);
 		else
@@ -27,11 +27,13 @@ public class EzyLoginController
 	}
 	
 	protected void updateMe(EzyClientContext ctx, EzyArray data) {
-		long userId = data.get(0, long.class);
-		String username = data.get(1, String.class);
+		int zoneId = data.get(0, int.class);
+		long userId = data.get(1, long.class);
+		String username = data.get(2, String.class);
 		EzySimpleClientUser me = (EzySimpleClientUser) ctx.getMe();
 		me.setId(userId);
 		me.setName(username);
+		me.setZoneId(zoneId);
 		getLogger().info("login success userId = {}, username = {}", userId, username);
 	}
 	

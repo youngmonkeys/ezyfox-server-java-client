@@ -1,17 +1,19 @@
 package com.tvd12.ezyfoxserver.client.request;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.entity.EzyData;
 
 public class EzyLoginRequest extends EzyBaseRequest implements EzyRequest {
 
+	private String zoneName;
 	private String username;
 	private String password;
 	private EzyData data;
 	
 	protected EzyLoginRequest(Builder builder) {
 		this.data = builder.data;
+		this.zoneName = builder.zoneName;
 		this.username = builder.username;
 		this.password = builder.password;
 	}
@@ -24,6 +26,7 @@ public class EzyLoginRequest extends EzyBaseRequest implements EzyRequest {
 	@Override
 	public Object getData() {
 		return newArrayBuilder()
+				.append(zoneName)
 				.append(username)
 				.append(password)
 				.append(data)
@@ -35,12 +38,18 @@ public class EzyLoginRequest extends EzyBaseRequest implements EzyRequest {
 	}
 	
 	public static class Builder {
+		private EzyData data;
+		private String zoneName;
 		private String username;
 		private String password;
-		private EzyData data;
 		
 		public Builder data(EzyData data) {
 			this.data = data;
+			return this;
+		}
+		
+		public Builder zoneName(String zoneName) {
+			this.zoneName = zoneName;
 			return this;
 		}
 		

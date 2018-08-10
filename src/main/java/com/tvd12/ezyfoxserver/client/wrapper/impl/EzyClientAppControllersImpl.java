@@ -3,10 +3,10 @@ package com.tvd12.ezyfoxserver.client.wrapper.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.controller.EzyClientAppController;
 import com.tvd12.ezyfoxserver.client.wrapper.EzyClientAppControllers;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
 
 public class EzyClientAppControllersImpl implements EzyClientAppControllers {
 	

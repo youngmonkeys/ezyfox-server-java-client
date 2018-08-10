@@ -1,14 +1,14 @@
 package com.tvd12.ezyfoxserver.client.context;
 
-import com.tvd12.ezyfoxserver.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.entity.EzyEntity;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfoxserver.client.cmd.EzySendRequest;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientUser;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequestAppRequest;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzyData;
-import com.tvd12.ezyfoxserver.entity.EzyEntity;
-import com.tvd12.ezyfoxserver.factory.EzyEntityFactory;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -60,13 +60,14 @@ public class EzySimpleClientAppContext
 			.build();
 	}
 	
+	protected EzyArrayBuilder newArrayBuilder() {
+		return EzyEntityFactory.create(EzyArrayBuilder.class);
+	}
+	
 	@Override
 	public void destroy() {
 		this.parent = null;
 		this.properties.clear();
 	}
 	
-	protected EzyArrayBuilder newArrayBuilder() {
-		return EzyEntityFactory.create(EzyArrayBuilder.class);
-	}
 }

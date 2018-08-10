@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.net.SocketAddress;
 import java.util.concurrent.locks.Lock;
 
+import com.tvd12.ezyfox.util.EzyDestroyable;
+import com.tvd12.ezyfox.util.EzyProperties;
 import com.tvd12.ezyfoxserver.delegate.EzySessionDelegate;
-import com.tvd12.ezyfoxserver.entity.EzySender;
-import com.tvd12.ezyfoxserver.util.EzyDestroyable;
-import com.tvd12.ezyfoxserver.util.EzyProperties;
+import com.tvd12.ezyfoxserver.entity.EzyDeliver;
 
-public interface EzyClientSession extends EzySender, EzyProperties, EzyDestroyable, Serializable {
+public interface EzyClientSession extends EzyDeliver, EzyProperties, EzyDestroyable, Serializable {
 
 	/**
 	 * Get session id

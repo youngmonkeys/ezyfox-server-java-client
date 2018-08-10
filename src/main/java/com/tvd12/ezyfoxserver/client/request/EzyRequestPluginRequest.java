@@ -1,9 +1,9 @@
 package com.tvd12.ezyfoxserver.client.request;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
 
 public class EzyRequestPluginRequest extends EzyBaseRequest implements EzyRequest {
 

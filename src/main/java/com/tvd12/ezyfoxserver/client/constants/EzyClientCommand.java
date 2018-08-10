@@ -1,7 +1,7 @@
 package com.tvd12.ezyfoxserver.client.constants;
 
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.util.EzyEnums;
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.util.EzyEnums;
 
 import lombok.Getter;
 

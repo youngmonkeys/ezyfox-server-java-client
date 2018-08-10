@@ -1,6 +1,6 @@
 package com.tvd12.ezyfoxserver.client.constants;
 
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
+import com.tvd12.ezyfox.constant.EzyConstant;
 
 public final class EzyClientConstant {
 

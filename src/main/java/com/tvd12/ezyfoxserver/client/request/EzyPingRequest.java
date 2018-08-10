@@ -1,8 +1,8 @@
 package com.tvd12.ezyfoxserver.client.request;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.util.EzyEntityBuilders;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.util.EzyEntityBuilders;
 
 import lombok.Builder;
 

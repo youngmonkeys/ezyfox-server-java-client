@@ -3,7 +3,8 @@ package com.tvd12.ezyfoxserver.client.wrapper.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
 import com.tvd12.ezyfoxserver.client.controller.EzyAccessAppController;
 import com.tvd12.ezyfoxserver.client.controller.EzyConnectFailureController;
@@ -16,7 +17,6 @@ import com.tvd12.ezyfoxserver.client.controller.EzyLoginErrorController;
 import com.tvd12.ezyfoxserver.client.controller.EzyPongController;
 import com.tvd12.ezyfoxserver.client.controller.EzyRequestAppController;
 import com.tvd12.ezyfoxserver.client.wrapper.EzyClientControllers;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
 
 import lombok.Setter;
 

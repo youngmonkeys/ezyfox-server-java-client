@@ -3,13 +3,13 @@ package com.tvd12.ezyfoxserver.client.cmd.impl;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.cmd.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.cmd.EzySendRequest;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.request.EzyPingRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
-import com.tvd12.ezyfoxserver.concurrent.EzyExecutors;
-import com.tvd12.ezyfoxserver.util.EzyLoggable;
 
 public class EzyPingScheduleImpl 
 		extends EzyLoggable implements EzyPingSchedule {

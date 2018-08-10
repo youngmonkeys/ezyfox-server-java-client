@@ -8,7 +8,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tvd12.ezyfoxserver.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.cmd.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
@@ -20,13 +24,9 @@ import com.tvd12.ezyfoxserver.client.entity.EzyClientUser;
 import com.tvd12.ezyfoxserver.client.entity.EzySimpleClientSession;
 import com.tvd12.ezyfoxserver.client.request.EzyHandShakeRequest;
 import com.tvd12.ezyfoxserver.command.EzyRunWorker;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzyData;
 import com.tvd12.ezyfoxserver.exception.EzyResponseHandleException;
-import com.tvd12.ezyfoxserver.factory.EzyEntityFactory;
-import com.tvd12.ezyfoxserver.netty.handler.EzyBytesReceived;
-import com.tvd12.ezyfoxserver.netty.handler.EzyBytesSent;
+import com.tvd12.ezyfoxserver.handler.EzyBytesReceived;
+import com.tvd12.ezyfoxserver.handler.EzyBytesSent;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -35,14 +35,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
  * @author tavandung12
  *
  */
-public class EzyClientHandler 
+public abstract class EzyClientHandler 
 		extends SimpleChannelInboundHandler<EzyArray>
 		implements EzyBytesReceived, EzyBytesSent {
 
 	private EzyClient client;
 	private EzyClientSession session;
 	private EzyClientContext context;
-	protected Set<EzyConstant> unloggableCommands;
+	private Set<EzyConstant> unloggableCommands;
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Override
@@ -58,11 +58,14 @@ public class EzyClientHandler
 	@Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		getLogger().debug("channel active");
-    	createNewSession(ctx);
-    	updateContextWithNewSession();
-    	notifyConnectSuccess(ctx);
-    	startPingSchedule();
+    		createNewSession(ctx);
+    		updateContextWithNewSession();
     }
+	
+	protected void connectionActive(ChannelHandlerContext ctx) {
+		notifyConnectSuccess(ctx);
+		startPingSchedule();
+	}
 	
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
@@ -100,62 +103,62 @@ public class EzyClientHandler
     }
     
     protected void debugLogReceivedData(EzyClientCommand cmd, EzyData data) {
-    	if(!unloggableCommands.contains(cmd))
-    		getLogger().info("client fire command: {} with data: {}", cmd, data);
+    		if(!unloggableCommands.contains(cmd))
+    			getLogger().info("client fire command: {} with data: {}", cmd, data);
     }
     
     protected void startPingSchedule() {
-    	context.get(EzyPingSchedule.class).start();
+    		context.get(EzyPingSchedule.class).start();
     }
     
     protected void stopPingSchedule() {
-    	context.get(EzyPingSchedule.class).stop();
+    		context.get(EzyPingSchedule.class).stop();
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void notifyConnectSuccess(ChannelHandlerContext ctx) {
-    	EzyClientController ctrl =
-    			client.getController(EzyClientCommand.CONNECT_SUCCESS);
-    	ctrl.handle(context, session, newArrayBuilder().build());
+    		EzyClientController ctrl =
+    				client.getController(EzyClientCommand.CONNECT_SUCCESS);
+    		ctrl.handle(context, session, newArrayBuilder().build());
     }
     
     protected EzyHandShakeRequest newHandShakeRequest() {
-    	return EzyHandShakeRequest.builder().build();
+    		return EzyHandShakeRequest.builder().build();
     }
     
     protected void createNewSession(ChannelHandlerContext ctx) {
-    	this.session = newSession(ctx);
+    		this.session = newSession(ctx);
     }
     
     protected void updateContextWithNewSession() {
-    	this.context.getMe().setSession(session);
+    		this.context.getMe().setSession(session);
     }
     
     protected EzyClientSession newSession(ChannelHandlerContext ctx) {
-    	EzySimpleClientSession session = new EzySimpleClientSession();
-		session.setChannel(ctx.channel());
+    		EzySimpleClientSession session = new EzySimpleClientSession();
+    		session.setChannel(ctx.channel());
 		return session;
 	}
     
 	protected void handleResponse(EzyClientCommand cmd, EzyData data) {
-    	context.get(EzyRunWorker.class).run(() -> { 
-    		tryHandleResponse(cmd, data);
-    	});
+    		context.get(EzyRunWorker.class).run(() -> { 
+    			tryHandleResponse(cmd, data);
+    		});
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void tryHandleResponse(EzyClientCommand cmd, EzyData data) {
-    	try {
-    		EzyClientController ctr = client.getController(cmd);
-    		ctr.handle(context, getReceiver(cmd), (EzyArray) data);
-    	}
-    	catch(Exception e) {
-    		throw new EzyResponseHandleException(newHandleRequestErrorMessage(cmd, data), e);
-    	}
+    		try {
+    			EzyClientController ctr = client.getController(cmd);
+    			ctr.handle(context, getReceiver(cmd), (EzyArray) data);
+    		}
+    		catch(Exception e) {
+    			throw new EzyResponseHandleException(newHandleRequestErrorMessage(cmd, data), e);
+    		}
     }
     
     protected Object getReceiver(EzyClientCommand cmd) {
-    	return EzyReceiverDeterminer.builder()
+    		return EzyReceiverDeterminer.builder()
     			.userSupplier(() -> getMe())
     			.sessionSupplier(() -> session)
     			.build()
@@ -163,17 +166,17 @@ public class EzyClientHandler
     }
     
     public void setContext(EzyClientContext ctx) {
-    	this.context = ctx;
-    	this.client = context.getClient();
-    	this.unloggableCommands = client.getUnloggableCommands();
+	    	this.context = ctx;
+	    	this.client = context.getClient();
+	    	this.unloggableCommands = client.getUnloggableCommands();
     }
     
     protected EzyClient getClient() {
-    	return context.getClient();
+    		return context.getClient();
     }
     
     protected EzyClientUser getMe() {
-    	return context.getProperty(EzyClientConstant.ME);
+    		return context.getProperty(EzyClientConstant.ME);
     }
     
     @Override
@@ -186,11 +189,11 @@ public class EzyClientHandler
 	}
     
     protected EzyArrayBuilder newArrayBuilder() {
-    	return EzyEntityFactory.create(EzyArrayBuilder.class);
+    		return EzyEntityFactory.create(EzyArrayBuilder.class);
     }
     
     protected Logger getLogger() {
-    	return logger;
+    		return logger;
     }
     
 }

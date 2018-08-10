@@ -2,18 +2,19 @@ package com.tvd12.ezyfoxserver.client.cmd.impl;
 
 import java.util.Set;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.cmd.EzySendRequest;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.serialize.EzyRequestSerializer;
 import com.tvd12.ezyfoxserver.command.impl.EzyAbstractCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzySender;
+import com.tvd12.ezyfoxserver.entity.EzyDeliver;
+import com.tvd12.ezyfoxserver.socket.EzySimplePacket;
 
 public class EzySendRequestImpl extends EzyAbstractCommand implements EzySendRequest {
 
-	protected EzySender sender;
+	protected EzyDeliver sender;
 	protected EzyRequest request;
 
 	protected Set<EzyConstant> unloggableCommands;
@@ -26,7 +27,7 @@ public class EzySendRequestImpl extends EzyAbstractCommand implements EzySendReq
 	}
 	
 	@Override
-	public EzySendRequest sender(EzySender sender) {
+	public EzySendRequest sender(EzyDeliver sender) {
 		this.sender = sender;
 		return this;
 	}
@@ -40,13 +41,16 @@ public class EzySendRequestImpl extends EzyAbstractCommand implements EzySendReq
 	@Override
 	public Boolean execute() {
 		EzyArray requestParams = serializeToArray(request);
-		sender.send(requestParams);
+		EzySimplePacket packet = new EzySimplePacket();
+		packet.setData(requestParams);
+		sender.send(packet);
+		debugLogRequest(requestParams);
 		return Boolean.TRUE;
 	}
 	
 	protected void debugLogRequest(EzyArray requestParams) {
 		if(!unloggableCommands.contains(request.getCommand()))
-			getLogger().debug("send to server commad {} ");
+			getLogger().debug("send to server command: {} with params: {}", request.getCommand(), requestParams);
 	}
 	
 	protected EzyArray serializeToArray(EzyRequest request) {

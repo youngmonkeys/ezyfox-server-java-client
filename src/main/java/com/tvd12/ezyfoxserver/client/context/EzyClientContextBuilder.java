@@ -1,10 +1,10 @@
 package com.tvd12.ezyfoxserver.client.context;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.serialize.EzyRequestSerializer;
 import com.tvd12.ezyfoxserver.client.serialize.impl.EzyRequestSerializerImpl;
-import com.tvd12.ezyfoxserver.concurrent.EzyExecutors;
 
 public class EzyClientContextBuilder implements EzyBuilder<EzyClientContext> {
 

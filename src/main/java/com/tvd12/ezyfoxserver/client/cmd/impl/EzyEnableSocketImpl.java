@@ -2,16 +2,17 @@ package com.tvd12.ezyfoxserver.client.cmd.impl;
 
 import java.util.concurrent.ExecutorService;
 
+import com.tvd12.ezyfox.codec.EzyCodecCreator;
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
+import com.tvd12.ezyfox.reflect.EzyClasses;
 import com.tvd12.ezyfoxserver.client.EzyClient;
-import com.tvd12.ezyfoxserver.client.EzyClientBoostrap;
+import com.tvd12.ezyfoxserver.client.EzyClientBootstrap;
+import com.tvd12.ezyfoxserver.client.EzyClientSocketBootstrap;
 import com.tvd12.ezyfoxserver.client.cmd.EzyEnableSocket;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.setting.EzySocketSetting;
 import com.tvd12.ezyfoxserver.client.setting.EzySocketSettingBuilder;
-import com.tvd12.ezyfoxserver.codec.EzyCodecCreator;
 import com.tvd12.ezyfoxserver.command.impl.EzyAbstractCommand;
-import com.tvd12.ezyfoxserver.concurrent.EzyExecutors;
-import com.tvd12.ezyfoxserver.reflect.EzyClasses;
 
 public class EzyEnableSocketImpl 
 		extends EzyAbstractCommand 
@@ -49,7 +50,7 @@ public class EzyEnableSocketImpl
 	public void execute() throws Exception {
 		EzyCodecCreator codecCreator = newCodecCreator();
 		ExecutorService startExecutorService = newStartExecutorService();
-		EzyClientBoostrap boostrap = EzyClientBoostrap.builder()
+		EzyClientBootstrap boostrap = EzyClientSocketBootstrap.builder()
 			.clientContext(context)
 			.codecCreator(codecCreator)
 			.host(socketSetting.getServerHost())
@@ -57,7 +58,7 @@ public class EzyEnableSocketImpl
 			.startExecutorService(startExecutorService)
 			.build();
 		boostrap.start();
-		context.setProperty(EzyClientBoostrap.class, boostrap);
+		context.setProperty(EzyClientBootstrap.class, boostrap);
 	}
 	
 	private EzyCodecCreator newCodecCreator() {

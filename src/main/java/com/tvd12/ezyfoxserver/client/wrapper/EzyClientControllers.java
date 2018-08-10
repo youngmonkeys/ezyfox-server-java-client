@@ -1,6 +1,6 @@
 package com.tvd12.ezyfoxserver.client.wrapper;
 
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
+import com.tvd12.ezyfox.constant.EzyConstant;
 
 public interface EzyClientControllers {
 	

@@ -16,14 +16,32 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<ezy.nettycodec.version>1.0.0</ezy.nettycodec.version>
+		<ezy.jackson.version>1.0.0</ezy.jackson.version>
+		<ezy.msgpack.version>1.0.0</ezy.msgpack.version>
+		<ezy.server.core.version>1.0.0</ezy.server.core.version>
+		<netty.all.version>4.1.18.Final</netty.all.version>
 	</properties>
 	
 	<dependencies>
 		<dependency>
 			<groupId>com.tvd12</groupId>
-			<artifactId>ezyfox-server-nettycodec</artifactId>
-			<version>${ezy.nettycodec.version}</version>
+			<artifactId>ezyfox-server-core</artifactId>
+			<version>${ezy.server.core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tvd12</groupId>
+			<artifactId>ezyfox-jackson</artifactId>
+			<version>${ezy.jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.tvd12</groupId>
+			<artifactId>ezyfox-msgpack</artifactId>
+			<version>${ezy.msgpack.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-all</artifactId>
+			<version>${netty.all.version}</version>
 		</dependency>
 	</dependencies>
 </project>

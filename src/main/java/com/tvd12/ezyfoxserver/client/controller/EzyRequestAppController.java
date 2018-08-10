@@ -1,11 +1,11 @@
 package com.tvd12.ezyfoxserver.client.controller;
 
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.context.EzyClientAppContext;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.entity.EzyClientUser;
 import com.tvd12.ezyfoxserver.client.listener.EzyClientAppResponseListener;
-import com.tvd12.ezyfoxserver.entity.EzyArray;
-import com.tvd12.ezyfoxserver.entity.EzyData;
 
 public class EzyRequestAppController 
 		extends EzyAbstractController 

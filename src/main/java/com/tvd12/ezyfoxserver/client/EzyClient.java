@@ -3,6 +3,7 @@ package com.tvd12.ezyfoxserver.client;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
+import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
 import com.tvd12.ezyfoxserver.client.controller.EzyClientAppController;
 import com.tvd12.ezyfoxserver.client.listener.EzyClientAppResponseListener;
@@ -12,7 +13,6 @@ import com.tvd12.ezyfoxserver.client.wrapper.EzyClientControllers;
 import com.tvd12.ezyfoxserver.client.wrapper.impl.EzyClientAppControllersImpl;
 import com.tvd12.ezyfoxserver.client.wrapper.impl.EzyClientAppResponseListenersImpl;
 import com.tvd12.ezyfoxserver.client.wrapper.impl.EzyClientControllersImpl;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
 
 import lombok.Getter;
 import lombok.Setter;

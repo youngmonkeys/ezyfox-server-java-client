@@ -3,10 +3,10 @@ package com.tvd12.ezyfoxserver.client.wrapper.impl;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.listener.EzyClientAppResponseListener;
 import com.tvd12.ezyfoxserver.client.wrapper.EzyClientAppResponseListeners;
-import com.tvd12.ezyfoxserver.util.EzyLoggable;
 
 public class EzyClientAppResponseListenersImpl 
 		extends EzyLoggable implements EzyClientAppResponseListeners {

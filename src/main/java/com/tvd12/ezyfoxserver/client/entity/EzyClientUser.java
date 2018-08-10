@@ -1,10 +1,10 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
-import com.tvd12.ezyfoxserver.entity.EzySender;
-import com.tvd12.ezyfoxserver.util.EzyDestroyable;
-import com.tvd12.ezyfoxserver.util.EzyProperties;
+import com.tvd12.ezyfox.util.EzyDestroyable;
+import com.tvd12.ezyfox.util.EzyProperties;
+import com.tvd12.ezyfoxserver.entity.EzyDeliver;
 
-public interface EzyClientUser extends EzySender, EzyProperties, EzyDestroyable {
+public interface EzyClientUser extends EzyDeliver, EzyProperties, EzyDestroyable {
 
 	/**
 	 * Get user id
@@ -19,6 +19,13 @@ public interface EzyClientUser extends EzySender, EzyProperties, EzyDestroyable 
 	 * @eturn the user name
 	 */
 	String getName();
+	
+	/**
+	 * Get zone id
+	 * 
+	 * @return the zone id
+	 */
+	int getZoneId();
 	
 	/**
 	 * Get current session

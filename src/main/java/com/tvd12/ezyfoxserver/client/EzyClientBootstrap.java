@@ -3,8 +3,8 @@
  */
 package com.tvd12.ezyfoxserver.client;
 
-import static com.tvd12.ezyfoxserver.util.EzyProcessor.processWithException;
-import static com.tvd12.ezyfoxserver.util.EzyProcessor.processWithLogException;
+import static com.tvd12.ezyfox.util.EzyProcessor.processWithException;
+import static com.tvd12.ezyfox.util.EzyProcessor.processWithLogException;
 
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -12,19 +12,19 @@ import java.net.NoRouteToHostException;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 
-import com.tvd12.ezyfoxserver.builder.EzyBuilder;
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.codec.EzyCodecCreator;
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.util.EzyDestroyable;
+import com.tvd12.ezyfox.util.EzyLoggable;
+import com.tvd12.ezyfox.util.EzyShutdownable;
+import com.tvd12.ezyfox.util.EzyStartable;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
 import com.tvd12.ezyfoxserver.client.constants.EzyConnectionError;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.controller.EzyConnectFailureController;
 import com.tvd12.ezyfoxserver.client.socket.EzyClientChannelInitializer;
-import com.tvd12.ezyfoxserver.codec.EzyCodecCreator;
-import com.tvd12.ezyfoxserver.concurrent.EzyExecutors;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.util.EzyDestroyable;
-import com.tvd12.ezyfoxserver.util.EzyLoggable;
-import com.tvd12.ezyfoxserver.util.EzyShutdownable;
-import com.tvd12.ezyfoxserver.util.EzyStartable;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -40,12 +40,11 @@ import io.netty.util.concurrent.Future;
  * @author tavandung12
  *
  */
-public class EzyClientBoostrap 
+@SuppressWarnings("unchecked")
+public abstract class EzyClientBootstrap 
 		extends EzyLoggable 
 		implements EzyStartable, EzyShutdownable, EzyDestroyable {
 
-	protected int port;
-    protected String host;
     protected EzyCodecCreator codecCreator;
     protected EzyClientContext clientContext;
     
@@ -56,9 +55,7 @@ public class EzyClientBoostrap
     
     protected ExecutorService startExecutorService;
     
-    protected EzyClientBoostrap(Builder builder) {
-    		this.host = builder.host;
-    		this.port = builder.port;
+    protected EzyClientBootstrap(Builder<?> builder) {
         this.codecCreator = builder.codecCreator;
         this.clientContext = builder.clientContext;
         this.startExecutorService = builder.startExecutorService;
@@ -148,22 +145,28 @@ public class EzyClientBoostrap
     		return new Bootstrap()
                 .group(group)
                 .channel(NioSocketChannel.class)
-                .remoteAddress(new InetSocketAddress(host, port))
+                .remoteAddress(new InetSocketAddress(getHost(), getPort()))
                 .handler(newChannelInitializer())
                 .option(ChannelOption.TCP_NODELAY, false)
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 300 * 1000);
     }
+
+    protected abstract int getPort();
+    
+    protected abstract String getHost();
     
     protected EventLoopGroup newLoopGroup() {
     		return new NioEventLoopGroup(1, EzyExecutors.newThreadFactory("clienteventloopgroup"));
     }
     
     protected ChannelInitializer<Channel> newChannelInitializer() {
-    		return EzyClientChannelInitializer.builder()
+    		return newChannelInitializerBuilder()
     				.codecCreator(codecCreator)
     				.context(clientContext)
     				.build();
     }
+    
+    protected abstract EzyClientChannelInitializer.Builder<?> newChannelInitializerBuilder();
     
     protected EzyClient getClient() {
     		return clientContext.getClient();
@@ -185,46 +188,26 @@ public class EzyClientBoostrap
     			processWithLogException(startExecutorService::shutdown);
     }
     
-    public static Builder builder() {
-    		return new Builder();
-    }
-    
-    public static class Builder implements EzyBuilder<EzyClientBoostrap> {
+    public static abstract class Builder<B extends Builder<B>> 
+    			implements EzyBuilder<EzyClientBootstrap> {
     	
-    		protected int port;
-        protected String host;
         protected EzyCodecCreator codecCreator;
         protected EzyClientContext clientContext;
         protected ExecutorService startExecutorService;
         
-        public Builder port(int port) {
-	        	this.port = port;
-	        	return this;
-        }
-        
-        public Builder host(String host) {
-        		this.host = host;
-            return this;
-        }
-        
-        public Builder codecCreator(EzyCodecCreator codecCreator) {
+        public B codecCreator(EzyCodecCreator codecCreator) {
         		this.codecCreator = codecCreator;
-            return this;
+            return (B) this;
         }
         
-        public Builder clientContext(EzyClientContext clientContext) {
+        public B clientContext(EzyClientContext clientContext) {
         		this.clientContext = clientContext;
-            return this;
+            return (B) this;
         }
         
-        public Builder startExecutorService(ExecutorService startExecutorService) {
+		public B startExecutorService(ExecutorService startExecutorService) {
     			this.startExecutorService = startExecutorService;
-    			return this;
-        }
-        
-        @Override
-        public EzyClientBoostrap build() {
-        		return new EzyClientBoostrap(this);
+    			return (B) this;
         }
     }
     
