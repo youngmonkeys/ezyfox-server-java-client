@@ -13,7 +13,7 @@ public class EzySimpleWebSocketSetting implements EzyWebSocketSetting {
 	protected String codecCreator;
 	
 	public EzySimpleWebSocketSetting() {
-		this.codecCreator = "com.tvd12.ezyfox.netty.codec.JacksonCodecCreator";
+		this.codecCreator = "com.tvd12.ezyfoxserver.netty.client.codec.JacksonCodecCreator";
 	}
 	
 	

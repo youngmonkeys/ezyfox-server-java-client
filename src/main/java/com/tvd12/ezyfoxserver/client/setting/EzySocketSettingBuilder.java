@@ -11,7 +11,7 @@ public class EzySocketSettingBuilder implements EzyBuilder<EzySocketSetting> {
 	public EzySocketSettingBuilder() {
 		this.serverPort = 3005;
 		this.serverHost = "127.0.0.1";
-		this.codecCreator = "com.tvd12.ezyfox.netty.codec.MsgPackCodecCreator";
+		this.codecCreator = "com.tvd12.ezyfoxserver.netty.client.codec.MsgPackCodecCreator";
 	}
 	
 	public static EzySocketSettingBuilder socketSettingBuilder() {
