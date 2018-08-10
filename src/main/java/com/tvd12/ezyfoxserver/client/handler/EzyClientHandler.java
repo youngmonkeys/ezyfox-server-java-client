@@ -13,6 +13,7 @@ import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.cmd.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
@@ -96,7 +97,7 @@ public abstract class EzyClientHandler
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, EzyArray msg) throws Exception {
 		int cmdId = msg.get(0);
-		EzyData data = msg.get(1);
+		EzyData data = msg.size() > 1 ? msg.get(1) : EzyEntityArrays.newArray();
 		EzyClientCommand cmd = EzyClientCommand.valueOf(cmdId);
 		debugLogReceivedData(cmd, data);
 		handleResponse(cmd, data);
