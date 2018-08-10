@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.netty.client.codec;
+package com.tvd12.ezyfoxserver.client.codec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tvd12.ezyfox.codec.EzyCodecCreator;

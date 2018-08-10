@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.netty.client.io;
+package com.tvd12.ezyfoxserver.client.io;
 
 import io.netty.buffer.ByteBuf;
 

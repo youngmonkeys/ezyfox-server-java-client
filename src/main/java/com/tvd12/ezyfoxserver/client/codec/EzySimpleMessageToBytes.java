@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.netty.client.codec;
+package com.tvd12.ezyfoxserver.client.codec;
 
 import com.tvd12.ezyfox.codec.EzyMessage;
 import com.tvd12.ezyfox.codec.EzyMessageHeader;

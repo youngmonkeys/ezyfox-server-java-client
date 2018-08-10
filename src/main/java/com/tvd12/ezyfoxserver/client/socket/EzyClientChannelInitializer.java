@@ -2,9 +2,9 @@ package com.tvd12.ezyfoxserver.client.socket;
 
 import com.tvd12.ezyfox.builder.EzyBuilder;
 import com.tvd12.ezyfox.codec.EzyCodecCreator;
+import com.tvd12.ezyfoxserver.client.codec.EzyCombinedCodec;
 import com.tvd12.ezyfoxserver.client.context.EzyClientContext;
 import com.tvd12.ezyfoxserver.client.handler.EzyClientHandler;
-import com.tvd12.ezyfoxserver.netty.client.codec.EzyCombinedCodec;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInboundHandlerAdapter;

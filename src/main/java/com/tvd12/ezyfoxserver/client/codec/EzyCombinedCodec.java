@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.netty.client.codec;
+package com.tvd12.ezyfoxserver.client.codec;
 
 import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelOutboundHandler;

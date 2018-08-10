@@ -11,11 +11,4 @@ public class EzySimpleSocketSetting implements EzySocketSetting {
 	protected String serverHost;
 	protected String codecCreator;
 	
-	public EzySimpleSocketSetting() {
-		this.serverPort = 3005;
-		this.serverHost = "127.0.0.1";
-		this.codecCreator = "com.tvd12.ezyfox.netty.codec.MsgPackCodecCreator";
-	}
-	
-	
 }

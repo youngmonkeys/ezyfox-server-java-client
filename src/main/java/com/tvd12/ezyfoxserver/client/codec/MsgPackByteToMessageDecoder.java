@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.netty.client.codec;
+package com.tvd12.ezyfoxserver.client.codec;
 
 import static com.tvd12.ezyfox.codec.EzyDecodeState.PREPARE_MESSAGE;
 import static com.tvd12.ezyfox.codec.EzyDecodeState.READ_MESSAGE_CONTENT;
