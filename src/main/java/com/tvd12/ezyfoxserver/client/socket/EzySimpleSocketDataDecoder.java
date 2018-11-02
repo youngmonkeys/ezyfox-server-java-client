@@ -86,6 +86,7 @@ public class EzySimpleSocketDataDecoder
 	@Override
 	public void reset() {
 		queue.clear();
+		decoder.reset();
 		if(buffer != null)
 			buffer.clear();
 		buffer = null;

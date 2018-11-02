@@ -162,6 +162,6 @@ public class EzySocketDataHandler extends EzyLoggable implements EzyResettable {
 
     @Override
     public void reset() {
-//        decoder.reset();
+        decoder.reset();
     }
 }
