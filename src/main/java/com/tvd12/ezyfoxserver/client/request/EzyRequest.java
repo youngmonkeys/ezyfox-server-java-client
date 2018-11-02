@@ -1,11 +1,17 @@
 package com.tvd12.ezyfoxserver.client.request;
 
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
+import java.io.Serializable;
 
-public interface EzyRequest {
+import com.tvd12.ezyfox.entity.EzyData;
 
-	Object getData();
-	
-	EzyConstant getCommand();
-	
+/**
+ * Created by tavandung12 on 10/1/18.
+ */
+
+public interface EzyRequest extends Serializable {
+
+    Object getCommand();
+
+    EzyData serialize();
+
 }

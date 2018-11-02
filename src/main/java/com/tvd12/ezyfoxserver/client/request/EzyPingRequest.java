@@ -1,26 +1,23 @@
 package com.tvd12.ezyfoxserver.client.request;
 
-import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.util.EzyEntityBuilders;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 
-import lombok.Builder;
+/**
+ * Created by tavandung12 on 10/2/18.
+ */
 
-@Builder
-public class EzyPingRequest extends EzyEntityBuilders implements EzyRequest {
-
-	@Override
-	public Object getData() {
-		return newArrayBuilder().build();
-	}
+public class EzyPingRequest implements EzyRequest {
+	private static final long serialVersionUID = 2780983056457516371L;
 
 	@Override
-	public EzyConstant getCommand() {
-		return EzyClientCommand.PING;
-	}
+    public EzyData serialize() {
+        return EzyEntityFactory.EMPTY_ARRAY;
+    }
 
-	
-	
-	
-	
+    @Override
+    public Object getCommand() {
+        return EzyCommand.PING;
+    }
 }

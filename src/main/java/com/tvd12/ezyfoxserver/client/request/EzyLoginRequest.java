@@ -1,62 +1,49 @@
 package com.tvd12.ezyfoxserver.client.request;
 
-import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.entity.EzyData;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 
-public class EzyLoginRequest extends EzyBaseRequest implements EzyRequest {
+/**
+ * Created by tavandung12 on 10/1/18.
+ */
 
-	private String username;
-	private String password;
-	private EzyData data;
+public class EzyLoginRequest implements EzyRequest {
+	private static final long serialVersionUID = 6819547581926090345L;
 	
-	protected EzyLoginRequest(Builder builder) {
-		this.data = builder.data;
-		this.username = builder.username;
-		this.password = builder.password;
-	}
-	
-	@Override
-	public EzyConstant getCommand() {
-		return EzyClientCommand.LOGIN;
-	}
-	
-	@Override
-	public Object getData() {
-		return newArrayBuilder()
-				.append(username)
-				.append(password)
-				.append(data)
-				.build();
-	}
-	
-	public static Builder builder() {
-		return new Builder();
-	}
-	
-	public static class Builder {
-		private String username;
-		private String password;
-		private EzyData data;
-		
-		public Builder data(EzyData data) {
-			this.data = data;
-			return this;
-		}
-		
-		public Builder username(String username) {
-			this.username = username;
-			return this;
-		}
-		
-		public Builder password(String password) {
-			this.password = password;
-			return this;
-		}
-		
-		public EzyLoginRequest build() {
-			return new EzyLoginRequest(this);
-		}
-	}
+	private final String zoneName;
+    private final String username;
+    private final String password;
+    private final EzyData data;
 
+    public EzyLoginRequest(String zoneName,
+                           String username,
+                           String password) {
+        this(zoneName, username, password, null);
+    }
+
+    public EzyLoginRequest(String zoneName,
+                           String username,
+                           String password,
+                           EzyData data) {
+        this.zoneName = zoneName;
+        this.username = username;
+        this.password = password;
+        this.data = data;
+    }
+
+    @Override
+    public Object getCommand() {
+        return EzyCommand.LOGIN;
+    }
+
+    @Override
+    public EzyData serialize() {
+        EzyData answer = EzyEntityFactory.newArrayBuilder()
+                .append(zoneName)
+                .append(username)
+                .append(password)
+                .append(data).build();
+        return answer;
+    }
 }

@@ -1,53 +1,38 @@
 package com.tvd12.ezyfoxserver.client.request;
 
-import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.entity.EzyData;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 
-public class EzyAccessAppRequest extends EzyBaseRequest implements EzyRequest {
+/**
+ * Created by tavandung12 on 10/3/18.
+ */
+public class EzyAccessAppRequest implements EzyRequest {
+	private static final long serialVersionUID = -8154334504343982160L;
+	
+	protected final String appName;
+    protected final EzyData data;
 
-	private String appName;
-	private EzyData data;
-	
-	protected EzyAccessAppRequest(Builder builder) {
-		this.data = builder.data;
-		this.appName = builder.appName;
-	}
-	
-	@Override
-	public EzyConstant getCommand() {
-		return EzyClientCommand.APP_ACCESS;
-	}
-	
-	@Override
-	public Object getData() {
-		return newArrayBuilder()
-				.append(appName)
-				.append(data)
-				.build();
-	}
-	
-	public static Builder builder() {
-		return new Builder();
-	}
-	
-	public static class Builder {
-		private String appName;
-		private EzyData data;
-		
-		public Builder data(EzyData data) {
-			this.data = data;
-			return this;
-		}
-		
-		public Builder appName(String appName) {
-			this.appName = appName;
-			return this;
-		}
-		
-		public EzyAccessAppRequest build() {
-			return new EzyAccessAppRequest(this);
-		}
-	}
+    public EzyAccessAppRequest(String appName) {
+        this(appName, null);
+    }
 
+    public EzyAccessAppRequest(String appName, EzyData data) {
+        this.appName = appName;
+        this.data = data;
+    }
+
+    @Override
+    public EzyData serialize() {
+        EzyData answer = EzyEntityFactory.newArrayBuilder()
+                .append(appName)
+                .append(data)
+                .build();
+        return answer;
+    }
+
+    @Override
+    public Object getCommand() {
+        return EzyCommand.APP_ACCESS;
+    }
 }
