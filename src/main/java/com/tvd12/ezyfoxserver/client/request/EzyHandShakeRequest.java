@@ -1,110 +1,50 @@
 package com.tvd12.ezyfoxserver.client.request;
 
-import java.io.File;
-import java.security.KeyPair;
+import com.tvd12.ezyfox.entity.EzyData;
+import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 
-import com.tvd12.ezyfox.constant.EzyConstant;
-import com.tvd12.ezyfox.file.EzySimpleFileReader;
-import com.tvd12.ezyfox.file.EzySimpleFileWriter;
-import com.tvd12.ezyfox.sercurity.EzyBase64;
-import com.tvd12.ezyfox.sercurity.EzyFileAsyCrypt;
-import com.tvd12.ezyfox.sercurity.EzyFileKeysGenerator;
-import com.tvd12.ezyfoxserver.client.constants.EzyClientCommand;
-import com.tvd12.ezyfoxserver.constant.EzyCoreConstants;
+/**
+ * Created by tavandung12 on 10/1/18.
+ */
 
-public class EzyHandShakeRequest extends EzyBaseRequest implements EzyRequest {
+public class EzyHandshakeRequest implements EzyRequest {
+	private static final long serialVersionUID = -119780385072575857L;
+	
+	protected final String clientId;
+    protected final String clientKey;
+    protected final String clientType;
+    protected final String clientVersion;
+    protected final boolean enableEncryption;
+    protected final String token;
 
-	private KeyPair keyPair;
-	private String publicKey;
-	private String reconnectToken;
-	private String clientId = "";
-	private String clientType = "JAVA";
-	private String clientVersion = "1.0.0";
-	
-	protected EzyHandShakeRequest(Builder builder) {
-		this.reconnectToken = builder.fetchReconnectToken();
-		this.keyPair = builder.newKeyPair();
-		this.publicKey = EzyBase64.encode2utf(keyPair.getPublic().getEncoded());
-	}
-	
-	@Override
-	public EzyConstant getCommand() {
-		return EzyClientCommand.HANDSHAKE;
-	}
-	
-	@Override
-	public Object getData() {
-		return newArrayBuilder()
-				.append(clientId)
-				.append(publicKey)
-				.append(reconnectToken)
-				.append(clientType)
-				.append(clientVersion)
-				.build();
-	}
-	
-	public static Builder builder() {
-		return new Builder();
-	}
-	
-	public static class Builder {
-		
-		public EzyHandShakeRequest build() {
-			return new EzyHandShakeRequest(this);
-		}
-		
-		protected String fetchReconnectToken() {
-			return new ReconnectTokenFetcher().get();
-		}
-		
-		protected KeyPair newKeyPair() {
-			return EzyFileKeysGenerator.builder()
-					.keysize(EzyCoreConstants.SESSION_KEY_SIZE)
-					.algorithm(EzyCoreConstants.DATA_ENCRYPTION_ALGORITHM)
-					.fileWriter(EzySimpleFileWriter.builder().build())
-					.privateKeyFile(getPrivateKeyFile())
-					.build()
-					.generate();
-		}
-		
-		private File getPrivateKeyFile() {
-			return new File("output/private_key.txt");
-		}
-	}
+    public EzyHandshakeRequest(String clientId,
+                               String clientKey,
+                               String clientType,
+                               String clientVersion,
+                               boolean enableEncryption, String token) {
+        this.clientId = clientId;
+        this.clientKey = clientKey;
+        this.clientType = clientType;
+        this.clientVersion = clientVersion;
+        this.token = token;
+        this.enableEncryption = enableEncryption;
+    }
 
-}
+    @Override
+    public Object getCommand() {
+        return EzyCommand.HANDSHAKE;
+    }
 
-class ReconnectTokenFetcher {
-	
-	public String get() {
-		return "";
-//		return decryptToken();
-	}
-	
-	protected String decryptToken() {
-		try {
-			return tryDecryptToken();
-		}
-		catch(Exception e) {
-			return null;
-		}
-	}
-	
-	private String tryDecryptToken() throws Exception {
-		return EzyFileAsyCrypt.builder()
-				.algorithm("RSA")
-				.privateKeyFile(getPrivateKeyFile())
-				.fileReader(EzySimpleFileReader.builder().build())
-				.build()
-				.decrypt(getTokenFile(), String.class);
-	}
-	
-	private File getTokenFile() {
-		return new File("output/reconnect_token.txt");
-	}
-	
-	private File getPrivateKeyFile() {
-		return new File("output/private_key.txt");
-	}
-	
+    @Override
+    public EzyData serialize() {
+        EzyData data = EzyEntityFactory.newArrayBuilder()
+                .append(clientId)
+                .append(clientKey)
+                .append(clientType)
+                .append(clientVersion)
+                .append(enableEncryption)
+                .append(token).build();
+        return data;
+    }
 }
