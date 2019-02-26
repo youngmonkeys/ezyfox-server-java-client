@@ -23,7 +23,7 @@ public class EzySocketWriter extends EzyAbstractSocketEventHandler {
             if(packet.isReleased())
                 packetQueue.take();
             else
-            	packetQueue.wakeup();
+            		packetQueue.wakeup();
 		}
 		catch (InterruptedException e) {
 			getLogger().error("socket-writer thread interrupted: " + Thread.currentThread());
