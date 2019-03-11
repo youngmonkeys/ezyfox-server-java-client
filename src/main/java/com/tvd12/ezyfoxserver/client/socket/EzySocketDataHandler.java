@@ -102,8 +102,8 @@ public class EzySocketDataHandler extends EzyLoggable implements EzyResettable {
     }
 
     private void handleReceivedData(Object data) {
-        EzyResponse reponse = newSocketResponse(data);
-        EzySocketEvent event = new EzySimpleSocketEvent(EzySocketEventType.RESPONSE, reponse);
+        EzyResponse response = newSocketResponse(data);
+        EzySocketEvent event = new EzySimpleSocketEvent(EzySocketEventType.RESPONSE, response);
         boolean success = eventQueue.add(event);
         if(!success) {
             getLogger().warn("response queue is full, drop incomming response");
