@@ -2,6 +2,9 @@ package com.tvd12.ezyfoxserver.client;
 
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,5 +58,15 @@ public final class EzyClients {
         EzyClient client = getClient(defaultClientName);
         return client;
     }
+    
+    public List<EzyClient> getClientList() {
+		return new ArrayList<>(clients.values());
+	}
+	
+	public void processAllClientEvents() {
+			Collection<EzyClient> allClients = clients.values();
+			for(EzyClient client : allClients)
+				client.processEvents();
+	}
 
 }
