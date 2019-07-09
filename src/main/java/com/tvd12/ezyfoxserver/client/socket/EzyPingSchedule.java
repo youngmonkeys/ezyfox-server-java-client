@@ -56,7 +56,7 @@ public class EzyPingSchedule extends EzyLoggable {
             client.send(request);
         }
         if(lostPingCount > 1) {
-            getLogger().info("lost ping count: " + lostPingCount);
+            logger.info("lost ping count: {}", lostPingCount);
             EzyLostPingEvent event = new EzyLostPingEvent(lostPingCount);
             EzySocketEvent socketEvent = new EzySimpleSocketEvent(EzySocketEventType.EVENT, event);
             dataHandler.fireSocketEvent(socketEvent);

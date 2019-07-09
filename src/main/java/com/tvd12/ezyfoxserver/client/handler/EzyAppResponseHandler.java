@@ -23,6 +23,6 @@ public class EzyAppResponseHandler extends EzyAbstractDataHandler {
         if(dataHandler != null)
             dataHandler.handle(app, responseData);
         else
-            getLogger().warn("app: " + app.getName() + " has no handler for command: " + cmd);
+            logger.warn("app: {} has no handler for command: {}", app.getName(), cmd);
     }
 }

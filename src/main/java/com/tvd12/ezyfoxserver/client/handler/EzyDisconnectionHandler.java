@@ -13,7 +13,7 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
 
     @Override
     public final void handle(EzyDisconnectionEvent event) {
-        getLogger().info("handle disconnection, reason = " + event.getReason());
+        logger.info("handle disconnection, reason: {}", event.getReason());
         preHandle(event);
         EzyClientConfig config = client.getConfig();
         EzyReconnectConfig reconnectConfig = config.getReconnect();

@@ -26,10 +26,10 @@ public class EzySocketWriter extends EzyAbstractSocketEventHandler {
             		packetQueue.wakeup();
 		}
 		catch (InterruptedException e) {
-			getLogger().error("socket-writer thread interrupted: " + Thread.currentThread());
+			logger.error("socket-writer thread interrupted: {}", Thread.currentThread());
 		}
 		catch(Throwable throwable) {
-			getLogger().error("problems in socket-writer main loop, thread: " + Thread.currentThread(), throwable);
+			logger.error("problems in socket-writer, thread: {}", Thread.currentThread(), throwable);
 		}
 	}
 	

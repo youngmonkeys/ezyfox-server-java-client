@@ -75,7 +75,7 @@ public class EzyMainThreadQueue extends EzyLoggable {
 			try {
 				handler.handle(event);
 			} catch (Exception ex) {
-				logger.error("handle event: " + event + " error", ex);
+				logger.error("handle event: {} error", event, ex);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class EzyMainThreadQueue extends EzyLoggable {
 			try {
 				handler.handle(data);
 			} catch (Exception ex) {
-				logger.error("handle data: " + data + " error", ex);
+				logger.error("handle data: {} error", data, ex);
 			}
 		}
 	}

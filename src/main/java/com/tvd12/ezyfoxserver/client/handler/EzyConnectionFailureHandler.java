@@ -13,7 +13,7 @@ public class EzyConnectionFailureHandler extends EzyAbstractEventHandler<EzyConn
 
     @Override
     public final void handle(EzyConnectionFailureEvent event) {
-        getLogger().info("connection failure, reason = " + event.getReason());
+        logger.info("connection failure, reason: {}", event.getReason());
         EzyClientConfig config = client.getConfig();
         EzyReconnectConfig reconnectConfig = config.getReconnect();
         boolean shouldReconnect = shouldReconnect(event);

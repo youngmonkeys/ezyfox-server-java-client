@@ -45,7 +45,7 @@ public abstract class EzySocketEventLoopHandler
 			try {
 				eventLoop.destroy0();
 			} catch (Exception e) {
-				getLogger().error("destroy " + getClass().getSimpleName() + " error", e);
+				logger.error("destroy {} error",  getClass().getSimpleName(), e);
 			}
 		}
 	}
