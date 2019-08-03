@@ -23,26 +23,34 @@ public class EzyPingSchedule extends EzyLoggable {
     private final EzyPingManager pingManager;
     private EzySocketDataHandler dataHandler;
     private ScheduledFuture<?> scheduledFuture;
-    private ScheduledExecutorService scheduledExecutor;
+    private final ScheduledExecutorService scheduledExecutor;
 
     public EzyPingSchedule(EzyClient client) {
     		this.client = client;
         this.pingManager = client.getPingManager();
-        this.scheduledExecutor = EzyExecutors.newSingleThreadScheduledExecutor("ping-schedule");
-        Runtime.getRuntime().addShutdownHook(new Thread(scheduledExecutor::shutdown));
-
+        this.scheduledExecutor = newScheduledExecutor();
+    }
+    
+    protected ScheduledExecutorService newScheduledExecutor() {
+		ScheduledExecutorService answer = EzyExecutors.newSingleThreadScheduledExecutor("ping-schedule");
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> answer.shutdown()));
+		return answer;
     }
 
     public void start() {
-    		long periodMillis = pingManager.getPingPeriod();
-        scheduledFuture = scheduledExecutor.scheduleAtFixedRate(
-        		this::sendPingRequest, periodMillis, periodMillis, TimeUnit.MILLISECONDS);
+    		synchronized (this) {
+    			long periodMillis = pingManager.getPingPeriod();
+    			scheduledFuture = scheduledExecutor.scheduleAtFixedRate(
+    					() -> this.sendPingRequest(), periodMillis, periodMillis, TimeUnit.MILLISECONDS);
+		}
     }
-
+    
     public void stop() {
-        if(scheduledFuture != null)
-        		this.scheduledFuture.cancel(true);
-        this.scheduledFuture = null;
+    		synchronized (this) {
+    			if(scheduledFuture != null)
+            		this.scheduledFuture.cancel(true);
+            this.scheduledFuture = null;
+		}
     }
 
     private void sendPingRequest() {

@@ -1,4 +1,4 @@
-﻿package com.tvd12.ezyfoxserver.client.socket;
+package com.tvd12.ezyfoxserver.client.socket;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

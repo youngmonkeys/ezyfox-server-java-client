@@ -37,7 +37,7 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
         EzyHandshakeRequest request = new EzyHandshakeRequest(
                 getClientId(),
                 getClientKey(),
-                "ANDROID",
+                "JAVA",
                 "1.0.0",
                 isEnableEncryption(),
                 getStoredToken()
