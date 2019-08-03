@@ -1,9 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
-import com.tvd12.ezyfox.concurrent.EzyExecutors;
+import com.tvd12.ezyfox.concurrent.EzyThreadList;
 import com.tvd12.ezyfox.util.EzyDestroyable;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfox.util.EzyResettable;
@@ -13,8 +10,8 @@ public abstract class EzySocketEventLoop
 		extends EzyLoggable
 		implements EzyStartable, EzyDestroyable, EzyResettable {
 
-	protected ExecutorService threadPool;
 	protected volatile boolean active;
+	protected EzyThreadList threadPool;
 	
 	protected abstract String threadName();
 	protected abstract int threadPoolSize();
@@ -31,31 +28,18 @@ public abstract class EzySocketEventLoop
 	}
 	
 	private void startLoopService() {
-		Runnable task = newServiceTask();
-		int threadPoolSize = threadPoolSize();
-		for(int i = 0 ; i < threadPoolSize ; i++)
-			threadPool.execute(task);
+		threadPool.execute();
 	}
 	
 	private Runnable newServiceTask() {
-		return new Runnable() {
-			@Override
-			public void run() {
-				eventLoop();
-			}
-		};
+		return () -> eventLoop();
 	}
 	
 	protected abstract void eventLoop();
 	
 	protected void initThreadPool() {
-	    this.threadPool = EzyExecutors.newFixedThreadPool(threadPoolSize(), threadName());
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			@Override
-			public void run() {
-				threadPool.shutdown();
-			}
-		}));
+	    Runnable task = newServiceTask();
+	    threadPool = new EzyThreadList(threadPoolSize(), task, threadName());
 	}
 
 	@Override
@@ -68,16 +52,13 @@ public abstract class EzySocketEventLoop
 		try {
 			destroy0();
 		} catch (Exception e) {
-			getLogger().error("destroy socket event loop error", e);
+			logger.error("destroy socket event loop error", e);
 		}
 	}
 	
 	protected void destroy0() throws Exception {
 		setActive(false);
-		if(threadPool != null) {
-		    List<Runnable> remainTasks = threadPool.shutdownNow();
-		    getLogger().error(getClass().getSimpleName() + " stopped. Never commenced execution task: " + remainTasks.size());
-		}
+		logger.error("{} stopped", getClass().getSimpleName());
 	}
 	
 }

@@ -51,7 +51,7 @@ public class EzySocketDataEventHandler extends EzyAbstractSocketEventHandler {
             else
                 processResponse((EzyResponse)eventData);
         } catch (InterruptedException e) {
-            getLogger().error("can't take socket response", e);
+            logger.error("can't take socket response", e);
         }
     }
 
@@ -62,7 +62,7 @@ public class EzySocketDataEventHandler extends EzyAbstractSocketEventHandler {
         if(handler != null)
             mainThreadQueue.add(event, handler);
         else
-            getLogger().warn("has no handler with event: " + eventType);
+            logger.warn("has no handler with event: {}", eventType);
     }
 
     private void processResponse(EzyResponse response) {
@@ -71,7 +71,7 @@ public class EzySocketDataEventHandler extends EzyAbstractSocketEventHandler {
         EzyArray data = response.getData();
         EzyArray responseData = data.getWithDefault(1, null);
         if(!unloggableCommands.contains(cmd))
-            getLogger().debug("received command: " + cmd + " and data: " + responseData);
+            logger.debug("received command: {}, and data: {}", cmd, responseData, responseData);
         if(cmd == EzyCommand.DISCONNECT)
             handleDisconnection(responseData);
         else
@@ -88,6 +88,6 @@ public class EzySocketDataEventHandler extends EzyAbstractSocketEventHandler {
         if (handler != null)
         		mainThreadQueue.add(responseData, handler);
         else 
-            getLogger().debug("has no handler with command: " + cmd);
+            logger.debug("has no handler with command: {}", cmd);
     }
 }

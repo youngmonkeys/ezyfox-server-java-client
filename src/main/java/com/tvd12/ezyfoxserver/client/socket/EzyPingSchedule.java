@@ -1,5 +1,10 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
@@ -14,43 +19,38 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 
 public class EzyPingSchedule extends EzyLoggable {
 
-    private Thread thread;
-    private EzySocketDataHandler dataHandler;
-    private final EzyClient client;
+	private final EzyClient client;
     private final EzyPingManager pingManager;
-    private volatile boolean active = true;
+    private EzySocketDataHandler dataHandler;
+    private ScheduledFuture<?> scheduledFuture;
+    private final ScheduledExecutorService scheduledExecutor;
 
     public EzyPingSchedule(EzyClient client) {
-        this.client = client;
+    		this.client = client;
         this.pingManager = client.getPingManager();
-
+        this.scheduledExecutor = newScheduledExecutor();
+    }
+    
+    protected ScheduledExecutorService newScheduledExecutor() {
+		ScheduledExecutorService answer = EzyExecutors.newSingleThreadScheduledExecutor("ping-schedule");
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> answer.shutdown()));
+		return answer;
     }
 
     public void start() {
-        thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(active)
-                    handle();
-            }
-        });
-        active = true;
-        thread.setName("ezyfox-ping-schedule");
-        thread.start();
+    		synchronized (this) {
+    			long periodMillis = pingManager.getPingPeriod();
+    			scheduledFuture = scheduledExecutor.scheduleAtFixedRate(
+    					() -> this.sendPingRequest(), periodMillis, periodMillis, TimeUnit.MILLISECONDS);
+		}
     }
-
+    
     public void stop() {
-        this.active = false;
-    }
-
-    private void handle() {
-        try {
-            long periodMillis = pingManager.getPingPeriod();
-            Thread.sleep(periodMillis);
-            sendPingRequest();
-        } catch (InterruptedException e) {
-            getLogger().info("ping thread has interrupted", e);
-        }
+    		synchronized (this) {
+    			if(scheduledFuture != null)
+            		this.scheduledFuture.cancel(true);
+            this.scheduledFuture = null;
+		}
     }
 
     private void sendPingRequest() {
@@ -64,7 +64,7 @@ public class EzyPingSchedule extends EzyLoggable {
             client.send(request);
         }
         if(lostPingCount > 1) {
-            getLogger().info("lost ping count: " + lostPingCount);
+            logger.info("lost ping count: {}", lostPingCount);
             EzyLostPingEvent event = new EzyLostPingEvent(lostPingCount);
             EzySocketEvent socketEvent = new EzySimpleSocketEvent(EzySocketEventType.EVENT, event);
             dataHandler.fireSocketEvent(socketEvent);

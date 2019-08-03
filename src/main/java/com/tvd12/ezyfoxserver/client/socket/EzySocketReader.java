@@ -25,7 +25,7 @@ public class EzySocketReader
 			Thread.sleep(3L);
 		}
 		catch(Exception e) {
-			getLogger().error("I/O error at socket-reader: " + e.getMessage());
+			logger.error("I/O error at socket-reader: {}", e.getMessage());
 		}
 	}
 	
