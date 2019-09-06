@@ -29,7 +29,7 @@ public class EzyClientTest {
 		EzyClientConfig clientConfig = EzyClientConfig.builder().clientName("first").zoneName("example").build();
 		EzyClients clients = EzyClients.getInstance();
 		EzyClient client = clients.newDefaultClient(clientConfig);
-		EzySetup setup = client.get(EzySetup.class);
+		EzySetup setup = client.setup();
 		setup.addEventHandler(EzyEventType.CONNECTION_SUCCESS, new EzyConnectionSuccessHandler());
 		setup.addEventHandler(EzyEventType.CONNECTION_FAILURE, new EzyConnectionFailureHandler());
 		setup.addDataHandler(EzyCommand.HANDSHAKE, new ExHandshakeEventHandler());

@@ -4,13 +4,10 @@ import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
 import com.tvd12.ezyfoxserver.client.manager.EzySimpleAppManager;
 
-import lombok.Getter;
-
 /**
  * Created by tavandung12 on 10/2/18.
  */
 
-@Getter
 public class EzySimpleZone implements EzyZone {
 
     protected final int id;
@@ -26,7 +23,23 @@ public class EzySimpleZone implements EzyZone {
     }
 
     @Override
-    public void destroy() {
-        appManager.clear();
+    public int getId() {
+        return id;
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public EzyClient getClient() {
+        return client;
+    }
+
+    @Override
+    public EzyAppManager getAppManager() {
+        return appManager;
+    }
+
 }

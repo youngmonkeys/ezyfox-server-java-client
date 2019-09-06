@@ -1,11 +1,13 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
-import com.tvd12.ezyfoxserver.client.EzyClient;
-import com.tvd12.ezyfoxserver.client.constant.EzyConstant;
-import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.tvd12.ezyfoxserver.client.EzyClient;
+import com.tvd12.ezyfoxserver.client.constant.EzyConstant;
+import com.tvd12.ezyfoxserver.client.event.EzyEvent;
+import com.tvd12.ezyfoxserver.client.event.EzyEventType;
+import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 
 /**
  * Created by tavandung12 on 9/30/18.
@@ -29,6 +31,16 @@ public class EzyEventHandlers extends EzyAbstractHandlers {
     public EzyEventHandler getHandler(EzyConstant eventType) {
         EzyEventHandler handler = handlers.get(eventType);
         return handler;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public void handle(EzyEvent event) {
+        EzyEventType eventType = event.getType();
+        EzyEventHandler handler = handlers.get(eventType);
+        if(handler != null)
+            handler.handle(event);
+        else
+            logger.warn("has no handler for event type: " + eventType);
     }
 
 }

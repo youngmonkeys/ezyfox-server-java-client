@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.EzyClientAware;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
@@ -9,7 +10,7 @@ import com.tvd12.ezyfoxserver.client.socket.EzyPingScheduleAware;
  * Created by tavandung12 on 10/5/18.
  */
 
-public class EzyAbstractHandlers {
+public class EzyAbstractHandlers extends EzyLoggable {
 
     private final EzyClient client;
     private final EzyPingSchedule pingSchedule;
