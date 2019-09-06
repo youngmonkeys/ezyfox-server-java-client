@@ -7,12 +7,9 @@ import java.util.Queue;
 import com.tvd12.ezyfox.callback.EzyCallback;
 import com.tvd12.ezyfox.codec.EzyByteToObjectDecoder;
 import com.tvd12.ezyfox.codec.EzyMessage;
-import com.tvd12.ezyfox.codec.EzyMessageDataDecoder;
-import com.tvd12.ezyfox.util.EzyResettable;
 
 
-public class EzySimpleSocketDataDecoder 
-		implements EzyMessageDataDecoder, EzyResettable {
+public class EzySimpleSocketDataDecoder implements EzySocketDataDecoder {
 
 	protected ByteBuffer buffer;
 	protected volatile boolean active;
@@ -83,16 +80,4 @@ public class EzySimpleSocketDataDecoder
 		return ByteBuffer.wrap(bytes);
 	}
 
-	@Override
-	public void reset() {
-		queue.clear();
-		decoder.reset();
-		if(buffer != null)
-			buffer.clear();
-		buffer = null;
-	}
-
-	@Override
-	public void destroy() {
-	}
 }

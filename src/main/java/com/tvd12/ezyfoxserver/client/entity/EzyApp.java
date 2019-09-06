@@ -1,26 +1,21 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
-import com.tvd12.ezyfox.util.EzyDestroyable;
+import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
-import com.tvd12.ezyfoxserver.client.socket.EzySender;
-import com.tvd12.ezyfoxserver.client.util.EzyInstanceFetcher;
+import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 
 /**
  * Created by tavandung12 on 10/2/18.
  */
 
-@SuppressWarnings("rawtypes")
-public interface EzyApp extends EzySender, EzyInstanceFetcher, EzyDestroyable {
-
+public interface EzyApp {
     int getId();
-
     String getName();
-
     EzyClient getClient();
-
     EzyZone getZone();
-    
-	EzyAppDataHandler getDataHandler(Object cmd);
-
+    void send(EzyRequest request);
+    void send(String cmd);
+    void send(String cmd, EzyData data);
+	EzyAppDataHandler<?> getDataHandler(Object cmd);
 }

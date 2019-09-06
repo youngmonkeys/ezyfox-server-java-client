@@ -6,3 +6,5 @@
 target/
 output/
 /logs/
+logs/
+test-output/

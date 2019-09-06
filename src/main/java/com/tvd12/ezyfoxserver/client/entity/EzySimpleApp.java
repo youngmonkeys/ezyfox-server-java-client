@@ -1,6 +1,7 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
 import com.tvd12.ezyfox.builder.EzyArrayBuilder;
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyEntity;
 import com.tvd12.ezyfox.factory.EzyEntityFactory;
@@ -10,19 +11,15 @@ import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 
-import lombok.Getter;
-
 /**
  * Created by tavandung12 on 10/2/18.
  */
 
-@Getter
 public class EzySimpleApp extends EzyEntity implements EzyApp {
-
-	protected final int id;
+    protected final int id;
     protected final String name;
-    protected final EzyClient client;
     protected final EzyZone zone;
+    protected final EzyClient client;
     protected final EzyAppDataHandlers dataHandlers;
 
     public EzySimpleApp(EzyZone zone, int id, String name) {
@@ -33,39 +30,45 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
         this.dataHandlers = client.getHandlerManager().getAppDataHandlers(name);
     }
 
-    @Override
     public void send(EzyRequest request) {
-        Object cmd = request.getCommand();
+        String cmd = (String) request.getCommand();
         EzyData data = request.serialize();
         send(cmd, data);
     }
 
-    @Override
-    public void send(Object cmd, EzyData data) {
+    public void send(String cmd) {
+        send(cmd, EzyEntityFactory.EMPTY_OBJECT);
+    }
+
+    public void send(String cmd, EzyData data) {
         EzyArrayBuilder commandData = EzyEntityFactory.newArrayBuilder()
                 .append(cmd)
                 .append(data);
-        EzyData requestData = EzyEntityFactory.newArrayBuilder()
+        EzyArray requestData = EzyEntityFactory.newArrayBuilder()
                 .append(id)
-                .append(commandData)
+                .append(commandData.build())
                 .build();
         client.send(EzyCommand.APP_REQUEST, requestData);
     }
 
-    @Override
-    public <T> T get(Class<T> clazz) {
-        T instance = getProperty(clazz);
-        return instance;
+    public int getId() {
+        return id;
     }
 
-    @SuppressWarnings("rawtypes")
-	@Override
-    public EzyAppDataHandler getDataHandler(Object cmd) {
-        EzyAppDataHandler handler = dataHandlers.getHandler(cmd);
+    public String getName() {
+        return name;
+    }
+
+    public EzyClient getClient() {
+        return client;
+    }
+
+    public EzyZone getZone() {
+        return zone;
+    }
+
+    public EzyAppDataHandler<?> getDataHandler(Object cmd) {
+        EzyAppDataHandler<?> handler = dataHandlers.getHandler(cmd);
         return handler;
-    }
-
-    @Override
-    public void destroy() {
     }
 }
