@@ -3,6 +3,8 @@ package com.tvd12.ezyfoxserver.client.handler;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReasons;
 import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
 
 /**
@@ -13,7 +15,8 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
 
     @Override
     public final void handle(EzyDisconnectionEvent event) {
-        logger.info("handle disconnection, reason: {}", event.getReason());
+    		String reasonName = EzyDisconnectReasons.getDisconnectReasonName(event.getReason());
+        logger.info("handle disconnection, reason: {}", reasonName);
         preHandle(event);
         EzyClientConfig config = client.getConfig();
         EzyReconnectConfig reconnectConfig = config.getReconnect();
@@ -32,6 +35,9 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
     }
 
     protected boolean shouldReconnect(EzyDisconnectionEvent event) {
+        int reason = event.getReason();
+        if(reason == EzyDisconnectReason.ANOTHER_SESSION_LOGIN.getId())
+        		return false;
         return true;
     }
 

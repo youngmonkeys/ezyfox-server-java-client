@@ -28,7 +28,7 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 			}
 		};
 	}
-
+	
 	@Override
 	protected void loop() {
 		this.dataQueue = new EzySynchronizedQueue<>();
@@ -63,6 +63,12 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 	}
 
 	protected abstract long readSocketData();
+	
+	@Override
+	protected void clear() {
+		if(dataQueue != null)
+			dataQueue.clear();
+	}
 
 	public void popMessages(List<EzyArray> buffer) {
 		dataQueue.pollAll(buffer);

@@ -16,8 +16,4 @@ public class EzySimpleUser implements EzyUser {
         this.id = id;
         this.name = name;
     }
-
-    @Override
-    public void destroy() {
-    }
 }
