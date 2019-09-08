@@ -16,13 +16,9 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
 	
     @Override
     public final void handle(EzyEvent event) {
-        updateConnectionStatus();
+    		client.setStatus(EzyConnectionStatus.CONNECTED);
         sendHandshakeRequest();
         postHandle();
-    }
-
-    private void updateConnectionStatus() {
-        client.setStatus(EzyConnectionStatus.CONNECTED);
     }
 
     protected void postHandle() {

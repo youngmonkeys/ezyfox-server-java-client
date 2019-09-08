@@ -5,10 +5,10 @@ import java.util.Queue;
 
 public class EzyBlockingPacketQueue implements EzyPacketQueue {
 
-	private final int capacity;
-	private final Queue<EzyPacket> queue;
-	private volatile boolean empty = true;
-	private volatile boolean processing = false;
+	protected final int capacity;
+	protected final Queue<EzyPacket> queue;
+	protected volatile boolean empty = true;
+	protected volatile boolean processing = false;
 
 	public EzyBlockingPacketQueue() {
 		this(10000);
