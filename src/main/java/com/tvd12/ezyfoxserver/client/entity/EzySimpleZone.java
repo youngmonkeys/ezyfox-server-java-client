@@ -41,5 +41,15 @@ public class EzySimpleZone implements EzyZone {
     public EzyAppManager getAppManager() {
         return appManager;
     }
+    
+    @Override
+    public String toString() {
+    	return new StringBuilder()
+    			.append("Zone(")
+    			.append("id: ").append(id).append(", ")
+    			.append("name: ").append(name)
+    			.append(")")
+    			.toString();
+    }
 
 }

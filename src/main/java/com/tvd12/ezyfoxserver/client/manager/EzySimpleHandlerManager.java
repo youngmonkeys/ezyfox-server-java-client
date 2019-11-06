@@ -1,10 +1,13 @@
 package com.tvd12.ezyfoxserver.client.manager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
-import com.tvd12.ezyfoxserver.client.handler.EzyAccessAppHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyAppAccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppResponseHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
@@ -14,14 +17,12 @@ import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyDisconnectionHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
+import com.tvd12.ezyfoxserver.client.handler.EzyAppExitHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyPongHandler;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 
 import lombok.Getter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by tavandung12 on 10/9/18.
@@ -59,8 +60,9 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
         handlers.addHandler(EzyCommand.PONG, new EzyPongHandler());
         handlers.addHandler(EzyCommand.LOGIN, new EzyLoginSuccessHandler());
         handlers.addHandler(EzyCommand.LOGIN_ERROR, new EzyLoginSuccessHandler());
-        handlers.addHandler(EzyCommand.APP_ACCESS, new EzyAccessAppHandler());
+        handlers.addHandler(EzyCommand.APP_ACCESS, new EzyAppAccessHandler());
         handlers.addHandler(EzyCommand.APP_REQUEST, new EzyAppResponseHandler());
+        handlers.addHandler(EzyCommand.APP_EXIT, new EzyAppExitHandler());
         return handlers;
     }
 
