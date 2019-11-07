@@ -17,17 +17,16 @@ public class EzyLoginSuccessHandler extends EzyAbstractDataHandler {
 
 	@Override
     public void handle(EzyArray data) {
-        EzyArray joinedApps = data.get(4, EzyArray.class);
-        EzyData responseData = data.get(5, EzyData.class);
+        EzyData responseData = data.get(4, EzyData.class);
         EzyUser user = newUser(data);
         EzyZone zone = newZone(data);
         ((EzyMeAware)client).setMe(user);
         ((EzyZoneAware)client).setZone(zone);
-        handleLoginSuccess(joinedApps, responseData);
+        handleLoginSuccess(responseData);
         logger.debug("user: {} logged in successfully", user);
     }
     
-    protected void handleLoginSuccess(EzyArray joinedApps, EzyData responseData) {}
+    protected void handleLoginSuccess(EzyData responseData) {}
 
     protected EzyUser newUser(EzyArray data) {
         long userId = data.get(2, long.class);

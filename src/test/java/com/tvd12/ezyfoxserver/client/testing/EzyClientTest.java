@@ -10,7 +10,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
-import com.tvd12.ezyfoxserver.client.handler.EzyAccessAppHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyAppAccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
@@ -64,7 +64,7 @@ class ExLoginSuccessHandler extends EzyLoginSuccessHandler {
 	}
 }
 
-class ExAccessAppHandler extends EzyAccessAppHandler {
+class ExAccessAppHandler extends EzyAppAccessHandler {
 	protected void postHandle(EzyApp app, EzyArray data) {
 		sendMessage(app);
 	}
