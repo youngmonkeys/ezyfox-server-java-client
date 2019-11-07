@@ -18,8 +18,10 @@ public class EzyAppExitHandler extends EzyAbstractDataHandler {
         int appId = data.get(0, int.class);
         int reasonId = data.get(1, int.class);
         EzyApp app = appManager.removeApp(appId);
-        logger.info("user exit app: {}, reason: {}", app, reasonId);
-        postHandle(app, data);
+        if(app != null) {
+	        postHandle(app, data);
+	        logger.info("user exit app: {}, reason: {}", app, reasonId);
+        }
     }
 
     protected void postHandle(EzyApp app, EzyArray data) {}
