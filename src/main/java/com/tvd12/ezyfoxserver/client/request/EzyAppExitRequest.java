@@ -7,32 +7,25 @@ import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 /**
  * Created by tavandung12 on 10/3/18.
  */
-public class EzyAccessAppRequest implements EzyRequest {
+public class EzyAppExitRequest implements EzyRequest {
 	private static final long serialVersionUID = -8154334504343982160L;
 	
-	protected final String appName;
-    protected final EzyData data;
+	protected final int appId;
 
-    public EzyAccessAppRequest(String appName) {
-        this(appName, null);
-    }
-
-    public EzyAccessAppRequest(String appName, EzyData data) {
-        this.appName = appName;
-        this.data = data;
+    public EzyAppExitRequest(int appId) {
+    	this.appId = appId;
     }
 
     @Override
     public EzyData serialize() {
         EzyData answer = EzyEntityFactory.newArrayBuilder()
-                .append(appName)
-                .append(data)
+                .append(appId)
                 .build();
         return answer;
     }
 
     @Override
     public Object getCommand() {
-        return EzyCommand.APP_ACCESS;
+        return EzyCommand.APP_EXIT;
     }
 }
