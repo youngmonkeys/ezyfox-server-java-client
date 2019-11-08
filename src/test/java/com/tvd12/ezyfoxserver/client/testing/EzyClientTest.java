@@ -16,7 +16,7 @@ import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
-import com.tvd12.ezyfoxserver.client.request.EzyAccessAppRequest;
+import com.tvd12.ezyfoxserver.client.request.EzyAppAccessRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyLoginRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.setup.EzyAppSetup;
@@ -60,7 +60,7 @@ class ExHandshakeEventHandler extends EzyHandshakeHandler {
 
 class ExLoginSuccessHandler extends EzyLoginSuccessHandler {
 	protected void handleLoginSuccess(EzyArray joinedApps, EzyData responseData) {
-		client.send(new EzyAccessAppRequest("hello-world"));
+		client.send(new EzyAppAccessRequest("hello-world"));
 	}
 }
 
