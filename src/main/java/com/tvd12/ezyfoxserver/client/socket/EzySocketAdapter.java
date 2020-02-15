@@ -41,7 +41,7 @@ public abstract class EzySocketAdapter extends EzyLoggable {
 
     public void stop() {
         synchronized (adapterLock) {
-        		clear();
+        	clear();
             active = false;
         }
     }

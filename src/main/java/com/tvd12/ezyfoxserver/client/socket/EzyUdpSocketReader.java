@@ -1,32 +1,27 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 import java.util.List;
 
-import com.tvd12.ezyfox.callback.EzyCallback;
 import com.tvd12.ezyfox.codec.EzyMessage;
+import com.tvd12.ezyfox.codec.EzyMessageReaders;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.concurrent.EzySynchronizedQueue;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
 import com.tvd12.ezyfoxserver.client.util.EzyQueue;
 
-public abstract class EzySocketReader extends EzySocketAdapter {
+public class EzyUdpSocketReader extends EzySocketAdapter {
 
 	protected ByteBuffer buffer;
+	protected final int readBufferSize;
 	protected EzyQueue<EzyArray> dataQueue;
 	protected EzySocketDataDecoder decoder;
-	protected final int readBufferSize;
-	protected final EzyCallback<EzyMessage> decodeBytesCallback;
-
-	public EzySocketReader() {
+	protected DatagramChannel datagramChannel;
+	
+	public EzyUdpSocketReader() {
 		super();
 		this.readBufferSize = EzySocketConstants.MAX_READ_BUFFER_SIZE;
-		this.decodeBytesCallback = new EzyCallback<EzyMessage>() {
-			@Override
-			public void call(EzyMessage message) {
-				onMesssageReceived(message);
-			}
-		};
 	}
 	
 	@Override
@@ -49,7 +44,7 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 				buffer.flip();
 				byte[] binary = new byte[buffer.limit()];
 				buffer.get(binary);
-				decoder.decode(binary, decodeBytesCallback);
+				handleReceivedBytes(binary);
 			}
 			catch (InterruptedException e) {
 				logger.warn("socket reader interrupted", e);
@@ -61,7 +56,18 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 		}
 	}
 
-	protected abstract int readSocketData();
+	protected int readSocketData() throws Exception {
+		datagramChannel.receive(buffer);
+		int readBytes = buffer.position();
+		return readBytes;
+	}
+	
+	protected void handleReceivedBytes(byte[] bytes) {
+		EzyMessage message = EzyMessageReaders.bytesToMessage(bytes);
+		if(message == null)
+			return;
+		onMesssageReceived(message);
+	}
 	
 	@Override
 	protected void clear() {
@@ -82,13 +88,18 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 			logger.warn("decode error at socket-reader", e);
 		}
 	}
-
+	
 	public void setDecoder(EzySocketDataDecoder decoder) {
 		this.decoder = decoder;
 	}
-
+	
+	public void setDatagramChannel(DatagramChannel datagramChannel) {
+		this.datagramChannel = datagramChannel;
+	}
+	
 	@Override
 	protected String getThreadName() {
-		return "ezyfox-socket-reader";
+		return "udp-socket-reader";
 	}
+	
 }

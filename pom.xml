@@ -16,8 +16,8 @@
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<ezy.jackson.version>1.0.0</ezy.jackson.version>
-		<ezy.msgpack.version>1.0.0</ezy.msgpack.version>
+		<ezy.jackson.version>1.1.2</ezy.jackson.version>
+		<ezy.msgpack.version>1.1.2</ezy.msgpack.version>
 	</properties>
 	
 	<dependencies>

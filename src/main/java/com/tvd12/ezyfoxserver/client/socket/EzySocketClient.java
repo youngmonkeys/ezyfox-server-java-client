@@ -33,12 +33,16 @@ import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
  * Created by tavandung12 on 9/30/18.
  */
 
-public abstract class EzySocketClient extends EzyLoggable implements EzySocketDelegate {
+public abstract class EzySocketClient 
+			extends EzyLoggable 
+			implements EzyISocketClient, EzySocketDelegate {
     protected String host;
     protected int port;
     protected int reconnectCount;
     protected long connectTime;
     protected int disconnectReason;
+    protected long sessionId;
+    protected String sessionToken;
     protected EzyReconnectConfig reconnectConfig;
     protected EzyHandlerManager handlerManager;
     protected Set<Object> unloggableCommands;
@@ -207,6 +211,7 @@ public abstract class EzySocketClient extends EzyLoggable implements EzySocketDe
         onDisconnected(disconnectReason = reason);
     }
 
+    @Override
     public void sendMessage(EzyArray message) {
         EzyPackage pack = new EzySimplePackage(message);
         try {
@@ -274,11 +279,15 @@ public abstract class EzySocketClient extends EzyLoggable implements EzySocketDe
 
     protected void processReceivedMessages0() {
         pingManager.setLostPingCount(0);
-        socketReader.popMessages(localMessageQueue);
+        popReadMessages();
         for (int i = 0; i < localMessageQueue.size(); ++i) {
             processReceivedMessage(localMessageQueue.get(i));
         }
         localMessageQueue.clear();
+    }
+    
+    protected void popReadMessages() {
+    	socketReader.popMessages(localMessageQueue);
     }
 
     protected void processReceivedMessage(EzyArray message) {
@@ -308,6 +317,14 @@ public abstract class EzySocketClient extends EzyLoggable implements EzySocketDe
     public int getPort() {
         return this.port;
     }
+    
+    public void setSessionId(long sessionId) {
+		this.sessionId = sessionId;
+	}
+    
+    public void setSessionToken(String sessionToken) {
+		this.sessionToken = sessionToken;
+	}
 
     public void setPingManager(EzyPingManager pingManager) {
         this.pingManager = pingManager;

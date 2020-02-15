@@ -44,6 +44,8 @@ public class EzyTcpClient
 
     protected EzyUser me;
     protected EzyZone zone;
+    protected long sessionId;
+    protected String sessionToken;
     protected final String name;
     protected final EzySetup settingUp;
     protected final EzyClientConfig config;
@@ -79,13 +81,17 @@ public class EzyTcpClient
     }
 
     protected EzySocketClient newSocketClient() {
-        EzyTcpSocketClient client = new EzyTcpSocketClient();
+        EzyTcpSocketClient client = newTcpSocketClient();
         client.setPingSchedule(pingSchedule);
         client.setPingManager(pingManager);
         client.setHandlerManager(handlerManager);
         client.setReconnectConfig(config.getReconnect());
         client.setUnloggableCommands(unloggableCommands);
         return client;
+    }
+    
+    protected EzyTcpSocketClient newTcpSocketClient() {
+    	return new EzyTcpSocketClient();
     }
 
     public EzySetup setup() {
@@ -178,6 +184,18 @@ public class EzyTcpClient
     public void setStatus(EzyConnectionStatus status) {
         this.status = status;
     }
+    
+    @Override
+	public void setSessionId(long sessionId) {
+    	this.sessionId = sessionId;
+    	this.socketClient.setSessionId(sessionId);
+	}
+    
+    @Override
+	public void setSessionToken(String token) {
+    	this.sessionToken = token;
+    	this.socketClient.setSessionToken(sessionToken);
+	}
 
     public EzyApp getAppById(int appId) {
         if (zone != null) {
@@ -200,8 +218,23 @@ public class EzyTcpClient
         return handlerManager;
     }
 
-    private void printSentData(EzyCommand cmd, EzyArray data) {
+    protected void printSentData(EzyCommand cmd, EzyArray data) {
         if (!unloggableCommands.contains(cmd))
         		logger.debug("send command: " + cmd + " and data: " + data);
     }
+    
+    @Override
+    public void udpConnect(String host, int port) {
+    	throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
+    }
+    
+    @Override
+    public void udpSend(EzyRequest request) {
+    	throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
+    }
+    
+    @Override
+	public void udpSend(EzyCommand cmd, EzyArray data) {
+    	throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
+	}
 }

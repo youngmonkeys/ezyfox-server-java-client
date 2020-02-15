@@ -25,12 +25,17 @@ public interface EzyClient {
     void send(EzyCommand cmd, EzyArray data);
     void disconnect(int reason);
     void processEvents();
+    void udpConnect(String host, int port);
+    void udpSend(EzyRequest request);
+    void udpSend(EzyCommand cmd, EzyArray data);
     String getName();
     EzyClientConfig getConfig();
     EzyUser getMe();
     EzyZone getZone();
     EzyConnectionStatus getStatus();
     void setStatus(EzyConnectionStatus status);
+    void setSessionId(long sessionId);
+    void setSessionToken(String token);
     EzyApp getAppById(int appId);
     EzyPingManager getPingManager();
     EzyPingSchedule getPingSchedule();

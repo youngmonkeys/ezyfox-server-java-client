@@ -11,13 +11,13 @@ public class EzyTcpSocketReader extends EzySocketReader {
     }
 
     @Override
-    protected long readSocketData() {
+    protected int readSocketData() {
         try {
-            long bytesToRead = socket.read(buffer);
+            int bytesToRead = socket.read(buffer);
             return bytesToRead;
         }
         catch (Exception e) {
-        		logger.warn("I/O error at socket-reader", e);
+        	logger.warn("I/O error at socket-reader", e);
             return -1;
         }
     }

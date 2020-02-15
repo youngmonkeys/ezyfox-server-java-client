@@ -6,6 +6,7 @@ import com.tvd12.ezyfox.entity.EzyObject;
 import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.EzyClients;
+import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
@@ -28,7 +29,8 @@ public class EzyClientTest {
 	public static void main(String[] args) throws Exception {
 		EzyClientConfig clientConfig = EzyClientConfig.builder().clientName("first").zoneName("example").build();
 		EzyClients clients = EzyClients.getInstance();
-		EzyClient client = clients.newDefaultClient(clientConfig);
+		EzyClient client = new EzyUTClient(clientConfig);
+		clients.addClient(client);
 		EzySetup setup = client.setup();
 		setup.addEventHandler(EzyEventType.CONNECTION_SUCCESS, new EzyConnectionSuccessHandler());
 		setup.addEventHandler(EzyEventType.CONNECTION_FAILURE, new EzyConnectionFailureHandler());
@@ -39,7 +41,8 @@ public class EzyClientTest {
 		EzyAppSetup appSetup = setup.setupApp("hello-world");
 		appSetup.addDataHandler("broadcastMessage", new MessageResponseHandler());
 
-		client.connect("ws.tvd12.com", 3005);
+//		client.connect("ws.tvd12.com", 3005);
+		client.connect("127.0.0.1", 3005);
 
 		// while (true) {
 		// Thread.sleep(3);
@@ -59,8 +62,10 @@ class ExHandshakeEventHandler extends EzyHandshakeHandler {
 }
 
 class ExLoginSuccessHandler extends EzyLoginSuccessHandler {
-	protected void handleLoginSuccess(EzyArray joinedApps, EzyData responseData) {
+	@Override
+	protected void handleLoginSuccess(EzyData responseData) {
 		client.send(new EzyAppAccessRequest("hello-world"));
+		client.udpConnect("127.0.0.1", 2611);
 	}
 }
 
