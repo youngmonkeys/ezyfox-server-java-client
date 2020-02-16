@@ -20,6 +20,11 @@ public class EzyUTClient extends EzyTcpClient {
 	}
 	
 	@Override
+	public void udpConnect(int port) {
+		((EzyUTSocketClient)socketClient).udpConnect(port);
+	}
+	
+	@Override
 	public void udpConnect(String host, int port) {
 		((EzyUTSocketClient)socketClient).udpConnect(host, port);
 	}

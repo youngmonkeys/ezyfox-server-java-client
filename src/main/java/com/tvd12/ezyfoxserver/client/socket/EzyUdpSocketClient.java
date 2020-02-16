@@ -29,8 +29,12 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	
 	@Override
 	public void connectTo(String host, int port) {
+		connectTo(new InetSocketAddress(host, port));
+	}
+	
+	public void connectTo(InetSocketAddress address) {
 		try {
-			serverAddress = new InetSocketAddress(host, port);
+			serverAddress = address;
 			sendHandshakeRequest();
 		}
 		catch (Exception e) {
@@ -73,6 +77,10 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	
 	public void setSessionToken(String sessionToken) {
 		this.sessionToken = sessionToken;
+	}
+	
+	public InetSocketAddress getServerAddress() {
+		return serverAddress;
 	}
 	
 	public DatagramChannel getDatagramChannel() {

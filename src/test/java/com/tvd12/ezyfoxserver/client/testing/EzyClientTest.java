@@ -11,6 +11,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
+import com.tvd12.ezyfoxserver.client.handler.EzyAbstractDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppAccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
@@ -37,6 +38,7 @@ public class EzyClientTest {
 		setup.addDataHandler(EzyCommand.HANDSHAKE, new ExHandshakeEventHandler());
 		setup.addDataHandler(EzyCommand.LOGIN, new ExLoginSuccessHandler());
 		setup.addDataHandler(EzyCommand.APP_ACCESS, new ExAccessAppHandler());
+		setup.addDataHandler(EzyCommand.UDP_HANDSHAKE, new UdpHandshakeHandler());
 
 		EzyAppSetup appSetup = setup.setupApp("hello-world");
 		appSetup.addDataHandler("broadcastMessage", new MessageResponseHandler());
@@ -65,12 +67,12 @@ class ExLoginSuccessHandler extends EzyLoginSuccessHandler {
 	@Override
 	protected void handleLoginSuccess(EzyData responseData) {
 		client.send(new EzyAppAccessRequest("hello-world"));
-		client.udpConnect("127.0.0.1", 2611);
 	}
 }
 
 class ExAccessAppHandler extends EzyAppAccessHandler {
 	protected void postHandle(EzyApp app, EzyArray data) {
+		client.udpConnect(2611);
 		sendMessage(app);
 	}
 
@@ -87,4 +89,16 @@ class MessageResponseHandler implements EzyAppDataHandler<EzyData> {
 	public void handle(EzyApp app, EzyData data) {
 		System.out.println("received message: " + data);
 	}
+}
+
+class UdpHandshakeHandler extends EzyAbstractDataHandler {
+
+	@Override
+	public void handle(EzyArray data) {
+		EzyApp app = client.getZone().getApp();
+		app.udpSend("udpGreet", EzyEntityFactory.newObjectBuilder()
+				.append("who", "Dzung")
+				.build());
+	}
+	
 }

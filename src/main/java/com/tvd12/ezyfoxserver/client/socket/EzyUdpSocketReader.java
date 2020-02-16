@@ -83,6 +83,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 		try {
 			Object data = decoder.decode(message);
 			dataQueue.add((EzyArray) data);
+			System.out.println("udp received: " + data);
 		}
 		catch (Exception e) {
 			logger.warn("decode error at socket-reader", e);

@@ -25,6 +25,7 @@ public interface EzyClient {
     void send(EzyCommand cmd, EzyArray data);
     void disconnect(int reason);
     void processEvents();
+    void udpConnect(int port);
     void udpConnect(String host, int port);
     void udpSend(EzyRequest request);
     void udpSend(EzyCommand cmd, EzyArray data);

@@ -43,6 +43,11 @@ public class EzySimpleZone implements EzyZone {
     }
     
     @Override
+	public EzyApp getApp() {
+    	return appManager.getApp();
+	}
+    
+    @Override
     public String toString() {
     	return new StringBuilder()
     			.append("Zone(")

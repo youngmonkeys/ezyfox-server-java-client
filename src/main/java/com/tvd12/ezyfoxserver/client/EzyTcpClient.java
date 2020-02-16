@@ -224,6 +224,11 @@ public class EzyTcpClient
     }
     
     @Override
+    public void udpConnect(int port) {
+    	throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
+    }
+    
+    @Override
     public void udpConnect(String host, int port) {
     	throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
     }

@@ -17,5 +17,8 @@ public interface EzyApp {
     void send(EzyRequest request);
     void send(String cmd);
     void send(String cmd, EzyData data);
+    void udpSend(EzyRequest request);
+    void udpSend(String cmd);
+    void udpSend(String cmd, EzyData data);
 	EzyAppDataHandler<?> getDataHandler(Object cmd);
 }

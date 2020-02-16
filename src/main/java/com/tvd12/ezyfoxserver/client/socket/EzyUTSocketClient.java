@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import java.net.InetSocketAddress;
+
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionType;
 
@@ -13,10 +15,17 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
 		this.udpClient = new EzyUdpSocketClient(responseApi);
 	}
 	
+	public void udpConnect(int port) {
+		udpConnect(host, port);
+	}
+	
 	public void udpConnect(String host, int port) {
+		InetSocketAddress serverAddress = new InetSocketAddress(host, port);
+		EzyUTSocketWriter sw = ((EzyUTSocketWriter)socketWriter);
+		sw.setServerAddress(serverAddress);
 		this.udpClient.setSessionId(sessionId);
 		this.udpClient.setSessionToken(sessionToken);
-		this.udpClient.connectTo(host, port);
+		this.udpClient.connectTo(serverAddress);
 	}
 	
 	public void udpSendMessage(EzyArray message) {
@@ -36,6 +45,11 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
 	}
 	
 	@Override
+	protected EzySocketWriter newSocketWriter() {
+		return new EzyUTSocketWriter();
+	}
+	
+	@Override
 	protected void updateAdapters() {
 		super.updateAdapters();
 		Object decoder = codecFactory.newDecoder(EzyConnectionType.SOCKET);
@@ -45,6 +59,7 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
 	
 	@Override
 	protected void startAdapters() {
+		((EzyUTSocketWriter)socketWriter).setDatagramChannel(udpClient.getDatagramChannel());
 		super.startAdapters();
 		this.udpSocketReader.setDatagramChannel(udpClient.getDatagramChannel());
 		this.udpSocketReader.start();

@@ -46,7 +46,11 @@ public class EzyTcpSocketClient extends EzySocketClient {
     @Override
     protected void createAdapters() {
         socketReader = new EzyTcpSocketReader();
-        socketWriter = new EzyTcpSocketWriter();
+        socketWriter = newSocketWriter();
+    }
+    
+    protected EzySocketWriter newSocketWriter() {
+    	return new EzyTcpSocketWriter();
     }
 
     @Override
