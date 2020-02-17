@@ -18,7 +18,7 @@ public class EzyTcpSocketWriter extends EzySocketWriter {
             return writtenBytes;
         }
         catch (Exception e) {
-        		logger.warn("I/O error at socket-writer", e);
+        	logger.warn("I/O error at socket-writer", e);
             return -1;
         }
     }

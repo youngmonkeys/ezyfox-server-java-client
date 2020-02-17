@@ -60,7 +60,9 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
 		return bytesWritten;
 	}
 
-	protected abstract int writeToSocket(ByteBuffer buffer);
+	protected int writeToSocket(ByteBuffer buffer) {
+		return 0;
+	}
 
 	protected ByteBuffer getWriteBuffer(ByteBuffer fixed, int bytesToWrite) {
 		return bytesToWrite > fixed.capacity() ? ByteBuffer.allocate(bytesToWrite) : fixed;

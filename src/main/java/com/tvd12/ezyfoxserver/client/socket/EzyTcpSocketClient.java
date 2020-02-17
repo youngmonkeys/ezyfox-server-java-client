@@ -46,11 +46,7 @@ public class EzyTcpSocketClient extends EzySocketClient {
     @Override
     protected void createAdapters() {
         socketReader = new EzyTcpSocketReader();
-        socketWriter = newSocketWriter();
-    }
-    
-    protected EzySocketWriter newSocketWriter() {
-    	return new EzyTcpSocketWriter();
+        socketWriter = new EzyTcpSocketWriter();
     }
 
     @Override
@@ -73,7 +69,7 @@ public class EzyTcpSocketClient extends EzySocketClient {
                 this.socket.close();
         }
         catch (Exception e) {
-        		logger.warn("close socket error");
+        	logger.warn("close socket error", e);
         }
     }
 }

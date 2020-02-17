@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
@@ -50,6 +51,10 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 				logger.warn("socket reader interrupted", e);
 				return;
 			}
+			catch (IOException e) {
+				logger.warn("I/O error at socket-reader", e);
+				return;
+			}
 			catch (Exception e) {
 				logger.warn("I/O error at socket-reader", e);
 			}
@@ -83,7 +88,6 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 		try {
 			Object data = decoder.decode(message);
 			dataQueue.add((EzyArray) data);
-			System.out.println("udp received: " + data);
 		}
 		catch (Exception e) {
 			logger.warn("decode error at socket-reader", e);
