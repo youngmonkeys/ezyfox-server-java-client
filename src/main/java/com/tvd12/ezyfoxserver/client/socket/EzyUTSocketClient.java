@@ -34,7 +34,7 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
 	@Override
 	public void onDisconnected(int reason) {
 		super.onDisconnected(reason);
-		this.udpClient.disconnect();
+		this.udpClient.disconnect(reason);
 	}
 	
 }

@@ -6,6 +6,10 @@ public interface EzyISocketClient {
 
 	void connectTo(String host, int port);
 	
+	boolean reconnect();
+	
+	void disconnect(int reason);
+	
 	void sendMessage(EzyArray message);
 	
 }

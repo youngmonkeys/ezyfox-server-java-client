@@ -32,4 +32,9 @@ public class EzyUdpSocketWriter extends EzySocketWriter {
 		}
 	}
 	
+	@Override
+	protected String getThreadName() {
+		return "udp-socket-writer";
+	}
+	
 }

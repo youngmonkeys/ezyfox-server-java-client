@@ -1,5 +1,8 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketConnectable;
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketReconnectable;
+
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -9,13 +12,14 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.codec.EzyCodecFactory;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionType;
+import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
+import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
 
 public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient {
 
 	protected long sessionId;
 	protected String sessionToken;
-	protected volatile boolean active;
 	protected InetSocketAddress serverAddress;
 	protected DatagramChannel datagramChannel;
 	protected EzyUdpSocketReader socketReader;
@@ -23,11 +27,13 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	protected final EzyPacketQueue packetQueue;
 	protected final EzyResponseApi responseApi;
 	protected final EzyCodecFactory codecFactory;
+	protected final EzyValueStack<EzySocketStatus> socketStatuses;
 	
 	public EzyUdpSocketClient(EzyCodecFactory codecFactory) {
 		this.codecFactory = codecFactory;
 		this.packetQueue = new EzyBlockingPacketQueue();
 		this.responseApi = newResponseApi();
+		this.socketStatuses = new EzyValueStack<>(EzySocketStatus.NOT_CONNECT);
 	}
 	
 	private EzyResponseApi newResponseApi() {
@@ -39,29 +45,61 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	
 	@Override
 	public void connectTo(String host, int port) {
+		EzySocketStatus status = socketStatuses.last();
+        if (!isSocketConnectable(status)) {
+        	logger.warn("socket is connecting...");
+            return;
+        }
+		serverAddress = new InetSocketAddress(host, port);
+		connect0();
+		
+	}
+	
+	@Override
+	public boolean reconnect() {
+		EzySocketStatus status = socketStatuses.last();
+        if (!isSocketReconnectable(status)) {
+            return false;
+        }
+		connect0();
+		return true;
+	}
+	
+	protected void connect0() {
 		try {
 			clearAdapters();
 	        createAdapters();
 	        updateAdapters();
 	        closeSocket();
-			serverAddress = new InetSocketAddress(host, port);
-			datagramChannel = DatagramChannel.open();
+	        packetQueue.clear();
+	        socketStatuses.clear();
+	        datagramChannel = DatagramChannel.open();
 			datagramChannel.bind(null);
 			datagramChannel.connect(serverAddress);
 			startAdapters();
-			active = true;
+			socketStatuses.push(EzySocketStatus.CONNECTING);
 			sendHandshakeRequest();
+			Thread newThread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					reconnect();
+				}
+			});
+			newThread.setName("udp-reconnect");
+			newThread.start();
 		}
 		catch (Exception e) {
 			throw new IllegalStateException("udp can't connect to: " + serverAddress,  e);
 		}
 	}
 	
-	public void disconnect() {
+	@Override
+	public void disconnect(int reason) {
 		packetQueue.clear();
         packetQueue.wakeup();
         closeSocket();
 		clearAdapters();
+		socketStatuses.push(EzySocketStatus.DISCONNECTED);
 	}
 
 	@Override
@@ -76,7 +114,8 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     }
 	
 	public void popReadMessages(List<EzyArray> buffer) {
-		if(active)
+		EzySocketStatus status = socketStatuses.last();
+		if(status == EzySocketStatus.CONNECTING || status == EzySocketStatus.CONNECTED)
 			this.socketReader.popMessages(buffer);
 	}
 	

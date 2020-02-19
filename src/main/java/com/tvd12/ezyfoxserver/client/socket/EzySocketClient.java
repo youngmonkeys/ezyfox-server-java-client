@@ -83,7 +83,7 @@ public abstract class EzySocketClient
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-        		logger.warn("socket is connecting...");
+        	logger.warn("socket is connecting...");
             return;
         }
         this.socketStatuses.push(EzySocketStatus.CONNECTING);
@@ -93,6 +93,7 @@ public abstract class EzySocketClient
         this.connect0(0);
     }
 
+    @Override
     public boolean reconnect() {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketReconnectable(status)) {
@@ -205,6 +206,7 @@ public abstract class EzySocketClient
         socketStatuses.push(EzySocketStatus.DISCONNECTED);
     }
 
+    @Override
     public void disconnect(int reason) {
         if (socketStatuses.last() != EzySocketStatus.CONNECTED)
             return;
