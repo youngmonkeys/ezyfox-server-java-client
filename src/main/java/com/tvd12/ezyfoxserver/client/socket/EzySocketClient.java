@@ -80,6 +80,7 @@ public abstract class EzySocketClient
         return api;
     }
 
+    @Override
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {

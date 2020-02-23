@@ -1,6 +1,7 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
 import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 
 public class EzyUTSocketClient extends EzyTcpSocketClient {
 
@@ -23,6 +24,10 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
 	
 	public void udpSendMessage(EzyArray message) {
 		this.udpClient.sendMessage(message);
+	}
+	
+	public void udpSetStatus(EzySocketStatus status) {
+		this.udpClient.setStatus(status);
 	}
 	
 	@Override

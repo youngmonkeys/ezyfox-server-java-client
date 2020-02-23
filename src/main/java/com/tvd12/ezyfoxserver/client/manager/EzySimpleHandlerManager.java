@@ -20,6 +20,7 @@ import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppExitHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyPongHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyUdpHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 
 import lombok.Getter;
@@ -63,6 +64,7 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
         handlers.addHandler(EzyCommand.APP_ACCESS, new EzyAppAccessHandler());
         handlers.addHandler(EzyCommand.APP_REQUEST, new EzyAppResponseHandler());
         handlers.addHandler(EzyCommand.APP_EXIT, new EzyAppExitHandler());
+        handlers.addHandler(EzyCommand.UDP_HANDSHAKE, new EzyUdpHandshakeHandler());
         return handlers;
     }
 

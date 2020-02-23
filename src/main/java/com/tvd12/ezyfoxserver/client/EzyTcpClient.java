@@ -30,6 +30,7 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequestSerializer;
 import com.tvd12.ezyfoxserver.client.request.EzySimpleRequestSerializer;
 import com.tvd12.ezyfoxserver.client.setup.EzySetup;
 import com.tvd12.ezyfoxserver.client.setup.EzySimpleSetup;
+import com.tvd12.ezyfoxserver.client.socket.EzyISocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
@@ -196,6 +197,11 @@ public class EzyTcpClient
     	this.sessionToken = token;
     	this.socketClient.setSessionToken(sessionToken);
 	}
+    
+    @Override
+    public EzyISocketClient getSocket() {
+    	return socketClient;
+    }
 
     public EzyApp getAppById(int appId) {
         if (zone != null) {

@@ -11,13 +11,13 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
-import com.tvd12.ezyfoxserver.client.handler.EzyAbstractDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppAccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyUdpHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.request.EzyAppAccessRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyLoginRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
@@ -91,10 +91,10 @@ class MessageResponseHandler implements EzyAppDataHandler<EzyData> {
 	}
 }
 
-class UdpHandshakeHandler extends EzyAbstractDataHandler {
+class UdpHandshakeHandler extends EzyUdpHandshakeHandler {
 
 	@Override
-	public void handle(EzyArray data) {
+	protected void onAuthenticated(EzyArray data) {
 		EzyApp app = client.getZone().getApp();
 		app.udpSend("udpGreet", EzyEntityFactory.newObjectBuilder()
 				.append("who", "Dzung")

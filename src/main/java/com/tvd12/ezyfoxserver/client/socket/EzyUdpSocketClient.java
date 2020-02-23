@@ -1,7 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
 import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketConnectable;
-import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketReconnectable;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -47,7 +46,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	public void connectTo(String host, int port) {
 		EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-        	logger.warn("socket is connecting...");
+        	logger.warn("udp socket is connecting...");
             return;
         }
 		serverAddress = new InetSocketAddress(host, port);
@@ -58,11 +57,16 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	@Override
 	public boolean reconnect() {
 		EzySocketStatus status = socketStatuses.last();
-        if (!isSocketReconnectable(status)) {
+        if (status != EzySocketStatus.CONNECT_FAILED) {
             return false;
         }
+        logger.warn("udp socket is re-connecting...");
 		connect0();
 		return true;
+	}
+	
+	public void setStatus(EzySocketStatus status) {
+		socketStatuses.push(status);
 	}
 	
 	protected void connect0() {
@@ -82,7 +86,16 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 			Thread newThread = new Thread(new Runnable() {
 				@Override
 				public void run() {
-					reconnect();
+					try {
+						Thread.sleep(3000);
+						EzySocketStatus status = socketStatuses.last();
+						if(status == EzySocketStatus.CONNECTING)
+							socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
+						reconnect();
+					}
+					catch (InterruptedException e) {
+						logger.error("udp reconnect interrupted", e);
+					}
 				}
 			});
 			newThread.setName("udp-reconnect");
@@ -109,7 +122,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
             responseApi.response(pack);
         }
         catch (Exception e) {
-            logger.warn("send message: " + message + " error", e);
+            logger.warn("udp send message: " + message + " error", e);
         }
     }
 	
