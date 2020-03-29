@@ -192,6 +192,8 @@ public abstract class EzySocketClient
         if (adapter != null)
             adapter.stop();
     }
+    
+    protected void clearComponents(int disconnectReason) {}
 
     protected abstract void resetSocket();
 
@@ -204,9 +206,10 @@ public abstract class EzySocketClient
         socketEventQueue.clear();
         closeSocket();
         clearAdapters();
+        clearComponents(reason);
         socketStatuses.push(EzySocketStatus.DISCONNECTED);
     }
-
+    
     @Override
     public void disconnect(int reason) {
         if (socketStatuses.last() != EzySocketStatus.CONNECTED)

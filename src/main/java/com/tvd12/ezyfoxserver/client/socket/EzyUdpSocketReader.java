@@ -57,6 +57,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 			}
 			catch (Exception e) {
 				logger.warn("I/O error at socket-reader", e);
+				return;
 			}
 		}
 	}

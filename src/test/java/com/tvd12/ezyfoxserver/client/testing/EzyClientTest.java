@@ -1,5 +1,9 @@
 package com.tvd12.ezyfoxserver.client.testing;
 
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyObject;
@@ -96,9 +100,18 @@ class UdpHandshakeHandler extends EzyUdpHandshakeHandler {
 	@Override
 	protected void onAuthenticated(EzyArray data) {
 		EzyApp app = client.getZone().getApp();
-		app.udpSend("udpGreet", EzyEntityFactory.newObjectBuilder()
-				.append("who", "Dzung")
-				.build());
+		ScheduledExecutorService executorService = EzyExecutors.newScheduledThreadPool(1, "hellococo");
+		executorService.scheduleAtFixedRate(() -> {
+			app.udpSend("udpGreet", EzyEntityFactory.newObjectBuilder()
+					.append("who", "Dzung")
+					.build());
+			app.udpSend("udpGreet", EzyEntityFactory.newObjectBuilder()
+					.append("who", "Dzung")
+					.build());
+			app.udpSend("udpGreet", EzyEntityFactory.newObjectBuilder()
+					.append("who", "Dzung")
+					.build());
+		}, 1, 1, TimeUnit.SECONDS); 
 	}
 	
 }

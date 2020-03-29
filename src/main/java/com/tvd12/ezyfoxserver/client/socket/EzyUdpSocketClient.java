@@ -60,7 +60,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         if (status != EzySocketStatus.CONNECT_FAILED) {
             return false;
         }
-        logger.warn("udp socket is re-connecting...");
+        logger.info("udp socket is re-connecting...");
 		connect0();
 		return true;
 	}
