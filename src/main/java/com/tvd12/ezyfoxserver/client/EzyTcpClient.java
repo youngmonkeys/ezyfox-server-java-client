@@ -17,12 +17,14 @@ import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.entity.EzyMeAware;
+import com.tvd12.ezyfoxserver.client.entity.EzyPlugin;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
 import com.tvd12.ezyfoxserver.client.entity.EzyZoneAware;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
+import com.tvd12.ezyfoxserver.client.manager.EzyPluginManager;
 import com.tvd12.ezyfoxserver.client.manager.EzySimpleHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzySimplePingManager;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
@@ -202,7 +204,18 @@ public class EzyTcpClient
     public EzyISocketClient getSocket() {
     	return socketClient;
     }
+    
+    @Override
+	public EzyApp getApp() {
+    	if(zone != null) {
+    		EzyAppManager appManager = zone.getAppManager();
+            EzyApp app = appManager.getApp();
+            return app;
+    	}
+    	return null;
+	}
 
+    @Override
     public EzyApp getAppById(int appId) {
         if (zone != null) {
             EzyAppManager appManager = zone.getAppManager();
@@ -211,15 +224,28 @@ public class EzyTcpClient
         }
         return null;
     }
+    
+    @Override
+    public EzyPlugin getPluginById(int pluginId) {
+        if (zone != null) {
+            EzyPluginManager pluginManager = zone.getPluginManager();
+            EzyPlugin plugin = pluginManager.getPluginById(pluginId);
+            return plugin;
+        }
+        return null;
+    }
 
+    @Override
     public EzyPingManager getPingManager() {
         return pingManager;
     }
 
+    @Override
     public EzyPingSchedule getPingSchedule() {
         return pingSchedule;
     }
 
+    @Override
     public EzyHandlerManager getHandlerManager() {
         return handlerManager;
     }

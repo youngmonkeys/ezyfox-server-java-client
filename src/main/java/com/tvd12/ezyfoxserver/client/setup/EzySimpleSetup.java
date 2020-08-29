@@ -1,13 +1,14 @@
 package com.tvd12.ezyfoxserver.client.setup;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyPluginDataHandlers;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by tavandung12 on 9/30/18.
@@ -18,10 +19,12 @@ public class EzySimpleSetup implements EzySetup {
 
     private final EzyHandlerManager handlerManager;
     private final Map<String, EzyAppSetup> appSetups;
+    private final Map<String, EzyPluginSetup> pluginSetups;
 
     public EzySimpleSetup(EzyHandlerManager handlerManager) {
         this.handlerManager = handlerManager;
         this.appSetups = new HashMap<>();
+        this.pluginSetups = new HashMap<>();
     }
 
     @Override
@@ -45,5 +48,16 @@ public class EzySimpleSetup implements EzySetup {
             appSetups.put(appName, appSetup);
         }
         return appSetup;
+    }
+    
+    @Override
+    public EzyPluginSetup setupPlugin(String pluginName) {
+        EzyPluginSetup pluginSetup = pluginSetups.get(pluginName);
+        if(pluginSetup == null) {
+            EzyPluginDataHandlers dataHandlers = handlerManager.getPluginDataHandlers(pluginName);
+            pluginSetup = new EzySimplePluginSetup(dataHandlers, this);
+            pluginSetups.put(pluginName, pluginSetup);
+        }
+        return pluginSetup;
     }
 }

@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class EzyQueue<E>
-{
+public class EzyQueue<E> {
+	
     protected final int capacity;
     protected final Queue<E> queue;
 

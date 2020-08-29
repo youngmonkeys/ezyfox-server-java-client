@@ -2,10 +2,7 @@ package com.tvd12.ezyfoxserver.client.entity;
 
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
-
-/**
- * Created by tavandung12 on 10/2/18.
- */
+import com.tvd12.ezyfoxserver.client.manager.EzyPluginManager;
 
 public interface EzyZone {
 
@@ -17,6 +14,10 @@ public interface EzyZone {
 
     EzyAppManager getAppManager();
     
+    EzyPluginManager getPluginManager();
+    
     EzyApp getApp();
+    
+    EzyPlugin getPlugin();
 
 }

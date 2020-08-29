@@ -5,6 +5,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
+import com.tvd12.ezyfoxserver.client.entity.EzyPlugin;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
@@ -60,11 +61,19 @@ public interface EzyClient {
     
     EzyISocketClient getSocket();
     
+    EzyApp getApp();
+    
     EzyApp getAppById(int appId);
+    
+    EzyPlugin getPluginById(int pluginId);
     
     EzyPingManager getPingManager();
     
     EzyPingSchedule getPingSchedule();
     
     EzyHandlerManager getHandlerManager();
+    
+    default boolean isConnected() {
+    	return getStatus() == EzyConnectionStatus.CONNECTED;
+    }
 }

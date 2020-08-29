@@ -2,11 +2,9 @@ package com.tvd12.ezyfoxserver.client.entity;
 
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
+import com.tvd12.ezyfoxserver.client.manager.EzyPluginManager;
 import com.tvd12.ezyfoxserver.client.manager.EzySimpleAppManager;
-
-/**
- * Created by tavandung12 on 10/2/18.
- */
+import com.tvd12.ezyfoxserver.client.manager.EzySimplePluginManager;
 
 public class EzySimpleZone implements EzyZone {
 
@@ -14,12 +12,14 @@ public class EzySimpleZone implements EzyZone {
     protected final String name;
     protected final EzyClient client;
     protected final EzyAppManager appManager;
+    protected final EzyPluginManager pluginManager;
 
     public EzySimpleZone(EzyClient client, int id, String name) {
         this.id = id;
         this.name = name;
         this.client = client;
         this.appManager = new EzySimpleAppManager(name);
+        this.pluginManager = new EzySimplePluginManager(name);
     }
 
     @Override
@@ -43,9 +43,19 @@ public class EzySimpleZone implements EzyZone {
     }
     
     @Override
+    public EzyPluginManager getPluginManager() {
+    	return pluginManager;
+    }
+    
+    @Override
 	public EzyApp getApp() {
     	return appManager.getApp();
 	}
+    
+    @Override
+    public EzyPlugin getPlugin() {
+    	return pluginManager.getPlugin();
+    }
     
     @Override
     public String toString() {

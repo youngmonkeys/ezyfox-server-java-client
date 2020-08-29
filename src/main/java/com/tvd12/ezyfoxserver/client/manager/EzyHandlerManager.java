@@ -6,10 +6,7 @@ import com.tvd12.ezyfoxserver.client.handler.EzyDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
-
-/**
- * Created by tavandung12 on 10/9/18.
- */
+import com.tvd12.ezyfoxserver.client.handler.EzyPluginDataHandlers;
 
 @SuppressWarnings("rawtypes")
 public interface EzyHandlerManager {
@@ -27,4 +24,6 @@ public interface EzyHandlerManager {
     void addEventHandler(EzyConstant eventType, EzyEventHandler eventHandler);
 
     EzyAppDataHandlers getAppDataHandlers(String appName);
+    
+    EzyPluginDataHandlers getPluginDataHandlers(String pluginName);
 }

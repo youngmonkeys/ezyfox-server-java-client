@@ -16,5 +16,7 @@ public interface EzySetup {
 	EzySetup addEventHandler(EzyEventType eventType, EzyEventHandler eventHandler);
 
     EzyAppSetup setupApp(String appName);
+    
+    EzyPluginSetup setupPlugin(String pluginName);
 
 }

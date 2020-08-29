@@ -1,16 +1,15 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
-import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.EzyClient;
-import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyPluginDataHandler;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 
 /**
  * Created by tavandung12 on 10/2/18.
  */
 
-public interface EzyApp {
+public interface EzyPlugin {
 	
     int getId();
     
@@ -24,8 +23,6 @@ public interface EzyApp {
     
     void send(String cmd);
     
-    void send(EzyArray request);
-    
     void send(String cmd, EzyData data);
     
     void udpSend(EzyRequest request);
@@ -34,5 +31,5 @@ public interface EzyApp {
     
     void udpSend(String cmd, EzyData data);
     
-	EzyAppDataHandler<?> getDataHandler(Object cmd);
+	EzyPluginDataHandler<?> getDataHandler(Object cmd);
 }
