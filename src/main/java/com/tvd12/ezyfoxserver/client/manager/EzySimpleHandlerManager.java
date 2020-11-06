@@ -18,6 +18,7 @@ import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyDisconnectionHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
+import com.tvd12.ezyfoxserver.client.handler.EzyLoginErrorHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyPluginDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyPongHandler;
@@ -63,7 +64,7 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
         EzyDataHandlers handlers = new EzyDataHandlers(client, pingSchedule);
         handlers.addHandler(EzyCommand.PONG, new EzyPongHandler());
         handlers.addHandler(EzyCommand.LOGIN, new EzyLoginSuccessHandler());
-        handlers.addHandler(EzyCommand.LOGIN_ERROR, new EzyLoginSuccessHandler());
+        handlers.addHandler(EzyCommand.LOGIN_ERROR, new EzyLoginErrorHandler());
         handlers.addHandler(EzyCommand.APP_ACCESS, new EzyAppAccessHandler());
         handlers.addHandler(EzyCommand.APP_REQUEST, new EzyAppResponseHandler());
         handlers.addHandler(EzyCommand.APP_EXIT, new EzyAppExitHandler());
