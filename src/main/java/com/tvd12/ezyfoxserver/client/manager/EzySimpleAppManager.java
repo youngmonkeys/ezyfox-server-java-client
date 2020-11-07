@@ -49,9 +49,7 @@ public class EzySimpleAppManager implements EzyAppManager {
 	@Override
 	public EzyApp getApp() {
 		synchronized (this) {
-			if (appList.isEmpty())
-				throw new IllegalStateException("has no app in zone: " + zoneName);
-			return appList.get(0);
+			return appList.isEmpty() ? null : appList.get(0);
 		}
 	}
 

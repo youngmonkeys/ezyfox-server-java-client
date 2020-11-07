@@ -104,7 +104,7 @@ public class EzyTcpClient
     public void connect(String host, int port) {
         try {
             if (!isClientConnectable(status)) {
-            		logger.warn("client has already connected to: " + host + ":" + port);
+            	logger.warn("client has already connected to: " + host + ":" + port);
                 return;
             }
             preconnect();
@@ -252,7 +252,7 @@ public class EzyTcpClient
 
     protected void printSentData(EzyCommand cmd, EzyArray data) {
         if (!unloggableCommands.contains(cmd))
-        		logger.debug("send command: " + cmd + " and data: " + data);
+        	logger.debug("send command: " + cmd + " and data: " + data);
     }
     
     @Override

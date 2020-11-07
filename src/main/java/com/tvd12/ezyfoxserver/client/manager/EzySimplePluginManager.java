@@ -45,9 +45,7 @@ public class EzySimplePluginManager implements EzyPluginManager {
 	@Override
 	public EzyPlugin getPlugin() {
 		synchronized (this) {
-			if (pluginList.isEmpty())
-				throw new IllegalStateException("has no plugin in zone: " + zoneName);
-			return pluginList.get(0);
+			return pluginList.isEmpty() ? null : pluginList.get(0);
 		}
 	}
 
