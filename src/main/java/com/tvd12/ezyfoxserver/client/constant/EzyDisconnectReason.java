@@ -2,6 +2,7 @@ package com.tvd12.ezyfoxserver.client.constant;
 
 public enum EzyDisconnectReason implements EzyConstant {
 
+	CLOSE(-1),
 	UNKNOWN(0),
 	IDLE(1),
 	NOT_LOGGED_IN(2),

@@ -63,9 +63,15 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 	}
 
 	protected int readSocketData() throws Exception {
-		datagramChannel.receive(buffer);
-		int readBytes = buffer.position();
-		return readBytes;
+		try {
+			datagramChannel.receive(buffer);
+			int readBytes = buffer.position();
+			return readBytes;
+		}
+		catch (Exception e) {
+			handleSocketReaderException(e);
+            return -1;
+		}
 	}
 	
 	protected void handleReceivedBytes(byte[] bytes) {

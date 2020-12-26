@@ -1,8 +1,9 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
 import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.util.EzyCloseable;
 
-public interface EzyISocketClient {
+public interface EzyISocketClient extends EzyCloseable {
 
 	void connectTo(String host, int port);
 	
@@ -11,5 +12,7 @@ public interface EzyISocketClient {
 	void disconnect(int reason);
 	
 	void sendMessage(EzyArray message);
+	
+	void close();
 	
 }

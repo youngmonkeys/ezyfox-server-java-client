@@ -68,6 +68,10 @@ public class EzyPingSchedule extends EzyLoggable {
             this.scheduledFuture = null;
         }
     }
+    
+    public void shutdown() {
+    	this.scheduledExecutor.shutdown();
+    }
 
     private void sendPingRequest() {
         int lostPingCount = pingManager.increaseLostPingCount();

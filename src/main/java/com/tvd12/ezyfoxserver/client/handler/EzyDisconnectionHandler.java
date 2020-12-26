@@ -21,7 +21,9 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
         EzyClientConfig config = client.getConfig();
         EzyReconnectConfig reconnectConfig = config.getReconnect();
         boolean shouldReconnect = shouldReconnect(event);
-        boolean mustReconnect = reconnectConfig.isEnable() && shouldReconnect;
+        boolean mustReconnect = reconnectConfig.isEnable() &&
+        		event.getReason() != EzyDisconnectReason.CLOSE.getId() &&
+        		shouldReconnect;
         boolean reconnecting = false;
         client.setStatus(EzyConnectionStatus.DISCONNECTED);
         if(mustReconnect)

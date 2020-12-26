@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import java.nio.channels.AsynchronousCloseException;
+
 import com.tvd12.ezyfox.util.EzyLoggable;
 
 public abstract class EzySocketAdapter extends EzyLoggable {
@@ -73,5 +75,14 @@ public abstract class EzySocketAdapter extends EzyLoggable {
         synchronized (adapterLock) {
             return stopped;
         }
+    }
+    
+    protected void handleSocketReaderException(Exception e) {
+    	if(e instanceof AsynchronousCloseException) {
+    		logger.debug("Socket closed by another thread", e);
+    	}
+    	else {
+    		logger.warn("I/O error at socket-reader", e);
+    	}
     }
 }

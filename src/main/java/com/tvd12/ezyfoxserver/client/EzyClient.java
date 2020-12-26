@@ -1,6 +1,7 @@
 package com.tvd12.ezyfoxserver.client;
 
 import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.util.EzyCloseable;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
@@ -19,7 +20,7 @@ import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
  * Created by tavandung12 on 9/20/18.
  */
 
-public interface EzyClient {
+public interface EzyClient extends EzyCloseable {
 	
     EzySetup setup();
     
@@ -42,6 +43,8 @@ public interface EzyClient {
     void udpSend(EzyRequest request);
     
     void udpSend(EzyCommand cmd, EzyArray data);
+    
+    void close();
     
     String getName();
     

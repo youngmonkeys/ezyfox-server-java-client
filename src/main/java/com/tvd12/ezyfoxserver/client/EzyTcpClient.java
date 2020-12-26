@@ -274,4 +274,8 @@ public class EzyTcpClient
 	public void udpSend(EzyCommand cmd, EzyArray data) {
     	throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
 	}
+    
+    public void close() {
+    	socketClient.close();
+    }
 }

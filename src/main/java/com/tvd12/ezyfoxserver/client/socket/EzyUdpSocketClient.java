@@ -11,6 +11,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.codec.EzyCodecFactory;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionType;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
@@ -113,6 +114,11 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         closeSocket();
 		clearAdapters();
 		socketStatuses.push(EzySocketStatus.DISCONNECTED);
+	}
+	
+	@Override
+	public void close() {
+		disconnect(EzyDisconnectReason.CLOSE.getId());
 	}
 
 	@Override

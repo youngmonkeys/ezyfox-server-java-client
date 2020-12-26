@@ -216,6 +216,12 @@ public abstract class EzySocketClient
             return;
         onDisconnected(disconnectReason = reason);
     }
+    
+    @Override
+    public void close() {
+    	disconnect(EzyDisconnectReason.CLOSE.getId());
+    	pingSchedule.shutdown();
+    }
 
     @Override
     public void sendMessage(EzyArray message) {
