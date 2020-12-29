@@ -55,7 +55,7 @@ public class EzySimpleAppManager implements EzyAppManager {
 
 	@Override
 	public List<EzyApp> getAppList() {
-		List<EzyApp> list = new ArrayList<>();
+		List<EzyApp> list = new ArrayList<>(appList.size());
 		synchronized (this) {
 			list.addAll(appList);
 		}
