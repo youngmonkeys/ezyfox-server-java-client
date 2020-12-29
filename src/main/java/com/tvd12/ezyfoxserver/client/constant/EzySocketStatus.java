@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client.constant;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+
 public enum EzySocketStatus implements EzyConstant {
 
     NOT_CONNECT(1),

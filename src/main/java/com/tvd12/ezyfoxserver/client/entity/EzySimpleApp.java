@@ -48,9 +48,7 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
     public void send(String cmd, EzyData data) {
     	EzyArray commandData = EzyEntityFactory.newArray();
     	commandData.add(cmd, data);
-        EzyArray requestData = EzyEntityFactory.newArray();
-        requestData.add(id, commandData);
-        client.send(EzyCommand.APP_REQUEST, requestData);
+    	send(commandData);
     }
     
     @Override

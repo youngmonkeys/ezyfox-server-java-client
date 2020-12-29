@@ -13,7 +13,6 @@ import com.tvd12.ezyfoxserver.client.event.EzyEvent;
 import com.tvd12.ezyfoxserver.client.event.EzyLostPingEvent;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.request.EzyPingRequest;
-import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 
 /**
  * Created by tavandung12 on 10/2/18.
@@ -22,7 +21,6 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 public class EzyPingSchedule extends EzyLoggable {
 
     protected final EzyClient client;
-    protected final EzyRequest request;
     protected final EzyPingManager pingManager;
     protected ScheduledFuture<?> scheduledFuture;
     protected EzySocketEventQueue socketEventQueue;
@@ -30,7 +28,6 @@ public class EzyPingSchedule extends EzyLoggable {
 
     public EzyPingSchedule(EzyClient client) {
         this.client = client;
-        this.request = new EzyPingRequest();
         this.pingManager = client.getPingManager();
         this.scheduledExecutor = newScheduledExecutor();
 
@@ -81,8 +78,7 @@ public class EzyPingSchedule extends EzyLoggable {
             socketEventQueue.addEvent(event);
         }
         else {
-            EzyRequest request = new EzyPingRequest();
-            client.send(request);
+            client.send(EzyPingRequest.getInstance());
         }
         if(lostPingCount > 1) {
             logger.info("lost ping count: " + lostPingCount);

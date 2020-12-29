@@ -1,6 +1,6 @@
 package com.tvd12.ezyfoxserver.client.event;
 
-import com.tvd12.ezyfoxserver.client.constant.EzyConstant;
+import com.tvd12.ezyfox.constant.EzyConstant;
 
 /**
  * Created by tavandung12 on 9/30/18.

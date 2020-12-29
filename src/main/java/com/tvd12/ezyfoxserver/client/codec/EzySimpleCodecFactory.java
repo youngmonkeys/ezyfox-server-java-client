@@ -2,7 +2,7 @@ package com.tvd12.ezyfoxserver.client.codec;
 
 import com.tvd12.ezyfox.codec.EzyCodecCreator;
 import com.tvd12.ezyfox.codec.MsgPackCodecCreator;
-import com.tvd12.ezyfoxserver.client.constant.EzyConstant;
+import com.tvd12.ezyfox.constant.EzyConstant;
 
 public class EzySimpleCodecFactory implements EzyCodecFactory {
 

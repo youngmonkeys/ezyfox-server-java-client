@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client.constant;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
+
 /**
  * Created by tavandung12 on 10/3/18.
  */

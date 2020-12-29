@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.tvd12.ezyfox.collect.Sets;
+import com.tvd12.ezyfox.constant.EzyConstant;
 
 public enum EzyCommand implements EzyConstant {
 

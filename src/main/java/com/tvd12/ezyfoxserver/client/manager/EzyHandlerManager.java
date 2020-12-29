@@ -1,6 +1,6 @@
 package com.tvd12.ezyfoxserver.client.manager;
 
-import com.tvd12.ezyfoxserver.client.constant.EzyConstant;
+import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
