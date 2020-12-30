@@ -15,7 +15,7 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
 
     @Override
     public final void handle(EzyDisconnectionEvent event) {
-    		String reasonName = EzyDisconnectReasons.getDisconnectReasonName(event.getReason());
+		String reasonName = EzyDisconnectReasons.getDisconnectReasonName(event.getReason());
         logger.info("handle disconnection, reason: {}", reasonName);
         preHandle(event);
         EzyClientConfig config = client.getConfig();
@@ -33,16 +33,14 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
         }
     }
 
-    protected void preHandle(EzyDisconnectionEvent event) {
-    }
+    protected void preHandle(EzyDisconnectionEvent event) {}
 
     protected boolean shouldReconnect(EzyDisconnectionEvent event) {
         int reason = event.getReason();
         if(reason == EzyDisconnectReason.ANOTHER_SESSION_LOGIN.getId())
-        		return false;
+    		return false;
         return true;
     }
 
-    protected void control(EzyDisconnectionEvent event) {
-    }
+    protected void control(EzyDisconnectionEvent event) {}
 }

@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
+import com.tvd12.ezyfox.util.EzyEquals;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPluginManager;
@@ -55,6 +56,18 @@ public class EzySimpleZone implements EzyZone {
     @Override
     public EzyPlugin getPlugin() {
     	return pluginManager.getPlugin();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	return new EzyEquals<EzySimpleZone>()
+    			.function(t -> t.id)
+    			.isEquals(this, obj);
+    }
+    
+    @Override
+    public int hashCode() {
+    	return id;
     }
     
     @Override
