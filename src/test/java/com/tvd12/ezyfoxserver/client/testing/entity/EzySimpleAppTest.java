@@ -214,6 +214,7 @@ public class EzySimpleAppTest {
 		assert actualClient == client;
 		assert actualZone == zone;
 		assert actualDataHandler == dataHandler;
+		assert app.hashCode() == appId;
 		System.out.println(app);
 	}
 	

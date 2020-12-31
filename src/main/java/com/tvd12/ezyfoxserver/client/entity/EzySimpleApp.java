@@ -4,6 +4,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyEntity;
 import com.tvd12.ezyfox.factory.EzyEntityFactory;
+import com.tvd12.ezyfox.util.EzyEquals;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
@@ -96,6 +97,18 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
     public EzyAppDataHandler<?> getDataHandler(Object cmd) {
         EzyAppDataHandler<?> handler = dataHandlers.getHandler(cmd);
         return handler;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+    	return new EzyEquals<EzySimpleApp>()
+    			.function(t -> t.id)
+    			.isEquals(this, obj);
+    }
+    
+    @Override
+    public int hashCode() {
+    	return id;
     }
     
     @Override

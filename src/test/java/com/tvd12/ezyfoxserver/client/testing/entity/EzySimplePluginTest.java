@@ -214,6 +214,8 @@ public class EzySimplePluginTest {
 		assert actualClient == client;
 		assert actualZone == zone;
 		assert actualDataHandler == dataHandler;
+		assert plugin.hashCode() == pluginId;
+		assert plugin.equals(new EzySimplePlugin(zone, pluginId, pluginName));
 		System.out.println(plugin);
 	}
 	

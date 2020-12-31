@@ -27,7 +27,7 @@ public class EzyAppAccessHandler extends EzyAbstractDataHandler {
     protected EzyApp newApp(EzyZone zone, EzyArray data) {
         int appId = data.get(0, int.class);
         String appName = data.get(1, String.class);
-        EzySimpleApp app = new EzySimpleApp(zone, appId, appName);
+        EzyApp app = new EzySimpleApp(zone, appId, appName);
         return app;
     }
 

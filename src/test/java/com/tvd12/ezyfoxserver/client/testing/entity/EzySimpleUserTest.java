@@ -22,6 +22,7 @@ public class EzySimpleUserTest {
 		// then
 		assert actualUserId == userId;
 		assert actualUsername.equals(username);
+		assert user.hashCode() == Long.hashCode(userId);
 		System.out.println(user);
 	}
 	

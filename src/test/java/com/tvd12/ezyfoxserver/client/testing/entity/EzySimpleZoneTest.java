@@ -41,6 +41,7 @@ public class EzySimpleZoneTest {
 		assert acutalPluginManager != null;
 		assert actualApp == null;
 		assert actualPlugin == null;
+		assert zone.hashCode() == zoneId;
 		System.out.println(zone);
 	}
 	
