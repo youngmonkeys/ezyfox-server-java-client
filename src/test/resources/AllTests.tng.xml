@@ -13,6 +13,7 @@
 			<package name="com.tvd12.ezyfoxserver.client.testing.manager"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.request"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.setup"></package>
+			<package name="com.tvd12.ezyfoxserver.client.testing.socket"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.util"></package>
 		</packages>
 	</test>

@@ -88,7 +88,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 				@Override
 				public void run() {
 					try {
-						Thread.sleep(3000);
+						Thread.sleep(sleepTimeBeforeReconnect());
 						EzySocketStatus status = socketStatuses.last();
 						if(status == EzySocketStatus.CONNECTING)
 							socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
@@ -105,6 +105,10 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 		catch (Exception e) {
 			throw new IllegalStateException("udp can't connect to: " + serverAddress,  e);
 		}
+	}
+	
+	protected int sleepTimeBeforeReconnect() {
+		return 3000;
 	}
 	
 	@Override

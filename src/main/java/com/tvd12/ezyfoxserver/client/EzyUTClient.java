@@ -33,16 +33,14 @@ public class EzyUTClient extends EzyTcpClient {
 	public void udpSend(EzyRequest request) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
-        send((EzyCommand) cmd, (EzyArray) data);
+        udpSend((EzyCommand) cmd, (EzyArray) data);
     }
 
 	@Override
     public void udpSend(EzyCommand cmd, EzyArray data) {
         EzyArray array = requestSerializer.serialize(cmd, data);
-        if (socketClient != null) {
-        	((EzyUTSocketClient)socketClient).udpSendMessage(array);
-            printSentData(cmd, data);
-        }
+        ((EzyUTSocketClient)socketClient).udpSendMessage(array);
+        printSentData(cmd, data);
     }
 	
 }

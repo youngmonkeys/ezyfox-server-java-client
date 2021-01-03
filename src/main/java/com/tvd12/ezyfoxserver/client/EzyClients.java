@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
+import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 
 /**
  * Created by tavandung12 on 10/2/18.
@@ -23,28 +24,45 @@ public final class EzyClients {
     public static EzyClients getInstance() {
         return INSTANCE;
     }
-
+    
     public EzyClient newClient(EzyClientConfig config) {
+    	return newClient(EzyTransportType.TCP, config);
+    }
+
+    public EzyClient newClient(
+    		EzyTransportType transportType, 
+    		EzyClientConfig config) {
         synchronized (clients) {
-            return newClient0(config);
+            return newClient0(transportType, config);
         }
     }
 
-    protected EzyClient newClient0(EzyClientConfig config) {
+    protected EzyClient newClient0(
+    		EzyTransportType transportType,
+    		EzyClientConfig config) {
         String clientName = config.getClientName();
         EzyClient client = clients.get(clientName);
         if(client == null) {
-            client = new EzyTcpClient(config);
+        	if(transportType == EzyTransportType.TCP)
+        		client = new EzyTcpClient(config);
+        	else
+        		client = new EzyUTClient(config);
             addClient0(client);
             if (defaultClientName == null)
                 defaultClientName = client.getName();
         }
         return client;
     }
-
+    
     public EzyClient newDefaultClient(EzyClientConfig config) {
+    	return newDefaultClient(EzyTransportType.TCP, config);
+    }
+
+    public EzyClient newDefaultClient(
+    		EzyTransportType transportType,
+    		EzyClientConfig config) {
         synchronized (clients) {
-            EzyClient client = newClient0(config);
+            EzyClient client = newClient0(transportType, config);
             defaultClientName = client.getName();
             return client;
         }
