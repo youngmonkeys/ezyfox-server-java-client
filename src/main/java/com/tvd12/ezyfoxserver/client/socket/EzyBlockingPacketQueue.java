@@ -82,13 +82,11 @@ public class EzyBlockingPacketQueue implements EzyPacketQueue {
 			int size = queue.size();
 			if(size >= capacity)
 				return false;
-			boolean success = queue.offer(packet);
-			if(success) {
-				empty = false;
-				if(!processing)
-					notifyAll();
-			}
-			return success;
+			queue.offer(packet);
+			empty = false;
+			if(!processing)
+				notifyAll();
+			return true;
 		}
 	}
 

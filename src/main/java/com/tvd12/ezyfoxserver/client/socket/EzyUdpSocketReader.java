@@ -48,7 +48,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 				handleReceivedBytes(binary);
 			}
 			catch (InterruptedException e) {
-				logger.warn("socket reader interrupted", e);
+				logger.debug("socket reader interrupted", e);
 				return;
 			}
 			catch (IOException e) {

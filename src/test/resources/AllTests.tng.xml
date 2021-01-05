@@ -7,6 +7,7 @@
 			<package name="com.tvd12.ezyfoxserver.client.testing.codec"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.concurrent"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.config"></package>
+			<package name="com.tvd12.ezyfoxserver.client.testing.constant"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.entity"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.event"></package>
 			<package name="com.tvd12.ezyfoxserver.client.testing.handler"></package>

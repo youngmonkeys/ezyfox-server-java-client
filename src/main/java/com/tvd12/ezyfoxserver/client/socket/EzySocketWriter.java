@@ -33,7 +33,7 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
 					packetQueue.again();
 			}
 			catch (InterruptedException e) {
-				logger.warn("socket-writer thread interrupted", e);
+				logger.debug("socket-writer thread interrupted", e);
 				return;
 			}
 			catch(Exception e) {

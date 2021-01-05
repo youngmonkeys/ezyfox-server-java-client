@@ -139,8 +139,9 @@ public abstract class EzySocketClient
         long dt = currentTime - connectTime;
         long realSleepTime = sleepTime;
         if (sleepTime <= 0) {
-            if (dt < 2000) //delay 2000ms
-                realSleepTime = 2000 - dt;
+        	int minSleepTimeBeforeReconnect = minSleepTimeBeforeReconnect();
+            if (dt < minSleepTimeBeforeReconnect)
+                realSleepTime = minSleepTimeBeforeReconnect - dt;
         }
         if (realSleepTime >= 0)
             sleepBeforeConnect(realSleepTime);
@@ -157,6 +158,10 @@ public abstract class EzySocketClient
             this.resetSocket();
             this.socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
         }
+    }
+    
+    protected int minSleepTimeBeforeReconnect() {
+    	return 2000;
     }
 
     protected void sleepBeforeConnect(long sleepTime) {

@@ -1,6 +1,9 @@
 package com.tvd12.ezyfoxserver.client.constant;
 
+import java.util.Map;
+
 import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.util.EzyEnums;
 
 public enum EzyDisconnectReason implements EzyConstant {
 
@@ -19,6 +22,9 @@ public enum EzyDisconnectReason implements EzyConstant {
 
 	private final int id;
 	
+	private final static Map<Integer, EzyDisconnectReason> MAP = 
+			EzyEnums.enumMapInt(EzyDisconnectReason.class);
+	
 	private EzyDisconnectReason(int id) {
 		this.id = id;
 	}
@@ -34,10 +40,7 @@ public enum EzyDisconnectReason implements EzyConstant {
 	}
 	
 	public static EzyDisconnectReason valueOf(int id) {
-		for(EzyDisconnectReason reason : values())
-			if(reason.getId() == id)
-				return reason;
-		return null;
+		return MAP.get(Integer.valueOf(id));
 	}
 	
 }

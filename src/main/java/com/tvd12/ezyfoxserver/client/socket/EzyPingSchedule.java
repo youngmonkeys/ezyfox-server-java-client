@@ -51,7 +51,12 @@ public class EzyPingSchedule extends EzyLoggable {
                     new Runnable() {
                         @Override
                         public void run() {
-                            sendPingRequest();
+                        	try {
+                        		sendPingRequest();
+                        	}
+                        	catch (Exception e) {
+                        		logger.info("send ping request failed", e);
+							}
                         }
                     },
                     periodMillis, periodMillis, TimeUnit.MILLISECONDS);

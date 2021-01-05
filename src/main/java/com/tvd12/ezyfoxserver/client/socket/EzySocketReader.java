@@ -52,7 +52,7 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 				decoder.decode(binary, decodeBytesCallback);
 			}
 			catch (InterruptedException e) {
-				logger.warn("socket reader interrupted", e);
+				logger.debug("socket reader interrupted", e);
 				return;
 			}
 			catch (Exception e) {

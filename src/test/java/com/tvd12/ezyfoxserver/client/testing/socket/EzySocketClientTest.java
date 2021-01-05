@@ -17,6 +17,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
@@ -24,6 +25,7 @@ import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
+import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketReader;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketWriter;
@@ -218,6 +220,23 @@ public class EzySocketClientTest {
 		// when
 		// then
 		sut.processEventMessages();
+	}
+	
+	@Test
+	public void disconnectWhenConnected() {
+		// given
+		EzySocketClient sut = spy(EzySocketClient.class);
+		
+		EzyPingSchedule pingSchedule = mock(EzyPingSchedule.class);
+		sut.setPingSchedule(pingSchedule);
+		
+		EzyValueStack<EzySocketStatus> socketStatuses = 
+				FieldUtil.getFieldValue(sut, "socketStatuses");
+		socketStatuses.push(EzySocketStatus.CONNECTED);
+		
+		// when
+		// then
+		sut.disconnect(EzyDisconnectReason.CLOSE.getId());
 	}
 	
 }
