@@ -269,11 +269,15 @@ public abstract class EzySocketClient
 
     protected void processEvents() {
         socketEventQueue.popAll(localEventQueue);
-        for (int i = 0; i < localEventQueue.size(); ++i) {
-            EzyEvent evt = localEventQueue.get(i);
-            eventHandlers.handle(evt);
+        try {
+	        for (int i = 0; i < localEventQueue.size(); ++i) {
+	            EzyEvent evt = localEventQueue.get(i);
+	            eventHandlers.handle(evt);
+	        }
         }
-        localEventQueue.clear();
+        finally {
+        	localEventQueue.clear();
+		}
     }
 
     protected void processReceivedMessages() {
@@ -297,10 +301,14 @@ public abstract class EzySocketClient
     protected void processReceivedMessages0() {
         pingManager.setLostPingCount(0);
         popReadMessages();
-        for (int i = 0; i < localMessageQueue.size(); ++i) {
-            processReceivedMessage(localMessageQueue.get(i));
+        try {
+	        for (int i = 0; i < localMessageQueue.size(); ++i) {
+	            processReceivedMessage(localMessageQueue.get(i));
+	        }
         }
-        localMessageQueue.clear();
+        finally {
+        	localMessageQueue.clear();
+		}
     }
     
     protected void popReadMessages() {
