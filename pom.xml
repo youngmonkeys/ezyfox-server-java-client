@@ -11,20 +11,19 @@
 
 	<artifactId>ezyfox-server-java-client</artifactId>
 	
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 	<name>ezyfox-server-java-client</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
-		<ezy.jackson.version>1.1.2</ezy.jackson.version>
-		<ezy.msgpack.version>1.1.2</ezy.msgpack.version>
+		<ezy.version>1.1.4</ezy.version>
 	</properties>
 	
 	<dependencies>
 		<dependency>
 			<groupId>com.tvd12</groupId>
 			<artifactId>ezyfox-msgpack</artifactId>
-			<version>${ezy.msgpack.version}</version>
+			<version>${ezy.version}</version>
 		</dependency>
 	</dependencies>
 </project>
