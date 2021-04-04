@@ -240,9 +240,9 @@ public abstract class EzySocketClient
     }
 
     public void processEventMessages() {
+    	processReceivedMessages();
         processStatuses();
         processEvents();
-        processReceivedMessages();
     }
 
     protected void processStatuses() {

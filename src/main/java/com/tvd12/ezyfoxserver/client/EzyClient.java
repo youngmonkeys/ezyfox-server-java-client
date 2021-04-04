@@ -5,6 +5,7 @@ import com.tvd12.ezyfox.util.EzyCloseable;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
@@ -72,6 +73,10 @@ public interface EzyClient extends EzyCloseable {
     EzyPingSchedule getPingSchedule();
     
     EzyHandlerManager getHandlerManager();
+    
+    default void disconnect() {
+    	disconnect(EzyDisconnectReason.CLOSE.getId());
+    }
     
     default boolean isConnected() {
     	return getStatus() == EzyConnectionStatus.CONNECTED;
