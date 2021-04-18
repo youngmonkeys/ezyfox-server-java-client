@@ -58,7 +58,8 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
 	@Override
 	public boolean reconnect() {
 		EzySocketStatus status = socketStatuses.last();
-        if (status != EzySocketStatus.CONNECT_FAILED) {
+		if (status != EzySocketStatus.CONNECT_FAILED && 
+        		status != EzySocketStatus.NOT_CONNECT) {
             return false;
         }
         logger.info("udp socket is re-connecting...");
