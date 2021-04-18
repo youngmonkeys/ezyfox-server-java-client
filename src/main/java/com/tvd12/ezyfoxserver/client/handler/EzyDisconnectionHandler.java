@@ -32,9 +32,11 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
         if(!reconnecting) {
             control(event);
         }
+        postHandle(event);
     }
 
     protected void preHandle(EzyDisconnectionEvent event) {}
+    protected void postHandle(EzyDisconnectionEvent event) {}
 
     protected boolean shouldReconnect(EzyDisconnectionEvent event) {
         int reason = event.getReason();

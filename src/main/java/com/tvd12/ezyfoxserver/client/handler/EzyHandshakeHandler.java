@@ -28,8 +28,7 @@ public abstract class EzyHandshakeHandler
     	this.client.setSessionToken(data.get(1, String.class));
     }
 
-    protected void postHandle(EzyArray data) {
-    }
+    protected void postHandle(EzyArray data) {}
 
     protected void handleLogin(EzyArray data) {
         EzyRequest loginRequest = getLoginRequest();
