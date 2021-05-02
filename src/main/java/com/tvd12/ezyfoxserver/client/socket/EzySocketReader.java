@@ -12,15 +12,17 @@ import com.tvd12.ezyfoxserver.client.util.EzyQueue;
 
 public abstract class EzySocketReader extends EzySocketAdapter {
 
-	protected ByteBuffer buffer;
-	protected EzyQueue<EzyArray> dataQueue;
-	protected EzySocketDataDecoder decoder;
+	protected final ByteBuffer buffer;
+	protected final EzyQueue<EzyArray> dataQueue;
 	protected final int readBufferSize;
+	protected EzySocketDataDecoder decoder;
 	protected final EzyCallback<EzyMessage> decodeBytesCallback;
 
 	public EzySocketReader() {
 		super();
 		this.readBufferSize = EzySocketConstants.MAX_READ_BUFFER_SIZE;
+		this.dataQueue = new EzySynchronizedQueue<>();
+		this.buffer = ByteBuffer.allocateDirect(readBufferSize);
 		this.decodeBytesCallback = new EzyCallback<EzyMessage>() {
 			@Override
 			public void call(EzyMessage message) {
@@ -31,8 +33,6 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 	
 	@Override
 	protected void loop() {
-		this.dataQueue = new EzySynchronizedQueue<>();
-		this.buffer = ByteBuffer.allocateDirect(readBufferSize);
 		super.loop();
 	}
 

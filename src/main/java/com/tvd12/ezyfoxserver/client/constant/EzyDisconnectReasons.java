@@ -21,6 +21,7 @@ public final class EzyDisconnectReasons {
     private static Map<Integer, String> newReasonNames()
     {
         Map<Integer, String> map = new HashMap<>();
+        map.put(EzyDisconnectReason.CLOSE.getId(), "CLOSE");
         map.put(EzyDisconnectReason.UNKNOWN.getId(), "UNKNOWN");
         map.put(EzyDisconnectReason.IDLE.getId(), "IDLE");
         map.put(EzyDisconnectReason.NOT_LOGGED_IN.getId(), "NOT_LOGGED_IN");
@@ -31,6 +32,7 @@ public final class EzyDisconnectReasons {
         map.put(EzyDisconnectReason.MAX_REQUEST_SIZE.getId(),"MAX_REQUEST_SIZE");
         map.put(EzyDisconnectReason.SERVER_ERROR.getId(),"SERVER_ERROR");
         map.put(EzyDisconnectReason.SERVER_NOT_RESPONDING.getId(),"SERVER_NOT_RESPONDING");
+        map.put(EzyDisconnectReason.UNAUTHORIZED.getId(),"UNAUTHORIZED");
         return map;
     }
 }
