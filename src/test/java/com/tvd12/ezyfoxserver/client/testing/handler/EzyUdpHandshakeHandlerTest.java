@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.EzyClient;
+import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.constant.EzyStatusCodes;
 import com.tvd12.ezyfoxserver.client.handler.EzyUdpHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
@@ -24,7 +25,7 @@ public class EzyUdpHandshakeHandlerTest {
 		EzyArray data = EzyEntityArrays.newArray(
 				responseCode
 		);
-		EzyClient client = mock(EzyClient.class);
+		EzyClient client = mock(EzyUTClient.class);
 		when(client.getSocket()).thenReturn(socketClient);
 		EzyUdpHandshakeHandler sut = new EzyUdpHandshakeHandler();
 		sut.setClient(client);
@@ -45,7 +46,7 @@ public class EzyUdpHandshakeHandlerTest {
 		EzyArray data = EzyEntityArrays.newArray(
 				responseCode
 		);
-		EzyClient client = mock(EzyClient.class);
+		EzyClient client = mock(EzyUTClient.class);
 		when(client.getSocket()).thenReturn(socketClient);
 		EzyUdpHandshakeHandler sut = new EzyUdpHandshakeHandler();
 		sut.setClient(client);

@@ -55,6 +55,7 @@ public class EzyTcpClient
     protected final EzyRequestSerializer requestSerializer;
 
     protected EzyConnectionStatus status;
+    protected EzyConnectionStatus udpStatus;
     protected final Set<Object> unloggableCommands;
 
     protected final EzySocketClient socketClient;
@@ -95,10 +96,12 @@ public class EzyTcpClient
     	return new EzyTcpSocketClient();
     }
 
+    @Override
     public EzySetup setup() {
         return settingUp;
     }
 
+    @Override
     public void connect(String host, int port) {
         try {
             if (!isClientConnectable(status)) {
@@ -132,56 +135,78 @@ public class EzyTcpClient
         this.zone = null;
     }
 
+    @Override
     public void disconnect(int reason) {
         socketClient.disconnect(reason);
     }
 
+    @Override
     public void send(EzyRequest request) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
         send((EzyCommand) cmd, (EzyArray) data);
     }
 
+    @Override
     public void send(EzyCommand cmd, EzyArray data) {
         EzyArray array = requestSerializer.serialize(cmd, data);
         socketClient.sendMessage(array);
         printSentData(cmd, data);
     }
 
+    @Override
     public void processEvents() {
         socketClient.processEventMessages();
     }
 
+    @Override
     public String getName() {
         return name;
     }
 
+    @Override
     public EzyClientConfig getConfig() {
         return config;
     }
 
+    @Override
     public EzyZone getZone() {
         return zone;
     }
 
+    @Override
     public void setZone(EzyZone zone) {
         this.zone = zone;
     }
 
+    @Override
     public EzyUser getMe() {
         return me;
     }
 
+    @Override
     public void setMe(EzyUser me) {
         this.me = me;
     }
 
+    @Override
     public EzyConnectionStatus getStatus() {
         return status;
     }
 
+    @Override
     public void setStatus(EzyConnectionStatus status) {
         this.status = status;
+    }
+    
+    @Override
+    public void setUdpStatus(EzyConnectionStatus status) {
+        this.udpStatus = status;
+    }
+    
+    @Override
+    public EzyConnectionStatus getUdpStatus() {
+    	return udpStatus;
     }
     
     @Override
