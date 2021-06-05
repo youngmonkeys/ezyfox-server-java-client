@@ -18,7 +18,7 @@ public class EzySimplePackage implements EzyPackage {
     }
     
     public EzySimplePackage(EzyArray data, EzyConstant transportType) {
-    	this(data, false, null, transportType);
+    	this(data, false, transportType);
     }
     
     public EzySimplePackage(

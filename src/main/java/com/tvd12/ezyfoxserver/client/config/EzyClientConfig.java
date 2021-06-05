@@ -42,6 +42,7 @@ public class EzyClientConfig implements EzySocketClientConfig {
         return reconnect;
     }
 
+    @Override
     public boolean isEnableSSL() {
     	return enableSSL;
     }
