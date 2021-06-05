@@ -23,8 +23,8 @@ public class EzySimpleSocketDataDecoder implements EzySocketDataDecoder {
 	}
 	
 	@Override
-	public Object decode(EzyMessage message) throws Exception {
-		Object answer = decoder.decode(message);
+	public Object decode(EzyMessage message, byte[] encryptionKey) throws Exception {
+		Object answer = decoder.decode(message, encryptionKey);
 		return answer;
 	}
 	

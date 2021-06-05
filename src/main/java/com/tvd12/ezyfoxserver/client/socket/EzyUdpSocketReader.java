@@ -88,7 +88,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 
 	private void onMesssageReceived(EzyMessage message) {
 		try {
-			Object data = decoder.decode(message);
+			Object data = decoder.decode(message, null);
 			dataQueue.add((EzyArray) data);
 		}
 		catch (Exception e) {

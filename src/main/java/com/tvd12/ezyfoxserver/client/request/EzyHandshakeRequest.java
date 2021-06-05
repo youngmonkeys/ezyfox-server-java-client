@@ -12,14 +12,14 @@ public class EzyHandshakeRequest implements EzyRequest {
 	private static final long serialVersionUID = -119780385072575857L;
 	
 	protected final String clientId;
-    protected final String clientKey;
+    protected final byte[] clientKey;
     protected final String clientType;
     protected final String clientVersion;
     protected final boolean enableEncryption;
     protected final String token;
 
     public EzyHandshakeRequest(String clientId,
-                               String clientKey,
+                               byte[] clientKey,
                                String clientType,
                                String clientVersion,
                                boolean enableEncryption, String token) {

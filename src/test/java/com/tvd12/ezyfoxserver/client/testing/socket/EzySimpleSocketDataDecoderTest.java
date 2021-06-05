@@ -30,7 +30,7 @@ public class EzySimpleSocketDataDecoderTest {
 		when(decoder.decode(message)).thenReturn(bytes);
 		
 		// when
-		Object actual = sut.decode(message);
+		Object actual = sut.decode(message, null);
 		
 		// then
 		assert actual == bytes;

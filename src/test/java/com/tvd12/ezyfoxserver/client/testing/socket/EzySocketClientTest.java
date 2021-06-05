@@ -16,6 +16,7 @@ import org.testng.annotations.Test;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
@@ -70,7 +71,8 @@ public class EzySocketClientTest {
 				.build();
 		EzySocketReader mockSocketReader = mock(EzySocketReader.class);
 		EzySocketWriter mockSocketWriter = mock(EzySocketWriter.class);
-		EzySocketClient sut = new EzySocketClient() {
+		EzySocketClientConfig config = mock(EzySocketClientConfig.class);
+		EzySocketClient sut = new EzySocketClient(config) {
 			
 			@Override
 			protected void startAdapters() {}

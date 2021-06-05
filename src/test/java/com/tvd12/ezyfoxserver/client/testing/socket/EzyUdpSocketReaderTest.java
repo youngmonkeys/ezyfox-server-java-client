@@ -16,7 +16,7 @@ public class EzyUdpSocketReaderTest {
 		// given
 		EzySocketDataDecoder decoder = mock(EzySocketDataDecoder.class);
 		EzyArray data = EzyEntityArrays.newArray("test");
-		when(decoder.decode(any(EzyMessage.class))).thenReturn(data);
+		when(decoder.decode(any(EzyMessage.class), any(byte[].class))).thenReturn(data);
 		
 		EzyUdpSocketReader sut = new EzyUdpSocketReader() {
 			@Override

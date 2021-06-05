@@ -4,4 +4,6 @@ public interface EzySocketDataEncoder {
 
 	byte[] encode(Object data) throws Exception;
 	
+	byte[] encode(Object data, byte[] encryptionKey) throws Exception;
+	
 }

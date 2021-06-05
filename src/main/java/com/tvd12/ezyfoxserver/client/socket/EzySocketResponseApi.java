@@ -17,4 +17,9 @@ public class EzySocketResponseApi extends EzyAbstractResponseApi {
 		return answer;
 	}
 	
+	@Override
+	protected Object encodeData(EzyArray data, byte[] encryptionKey) throws Exception {
+		return encoder.encode(data, encryptionKey);
+	}
+	
 }

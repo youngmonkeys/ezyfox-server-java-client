@@ -1,10 +1,12 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
+import com.tvd12.ezyfox.sercurity.EzyKeysGenerator;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.event.EzyEvent;
 import com.tvd12.ezyfoxserver.client.request.EzyHandshakeRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 
+import java.security.KeyPair;
 import java.util.UUID;
 
 /**
@@ -21,8 +23,7 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
         postHandle();
     }
 
-    protected void postHandle() {
-    }
+    protected void postHandle() {}
 
     protected void sendHandshakeRequest() {
         EzyRequest request = newHandshakeRequest();
@@ -32,10 +33,10 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
     protected final EzyRequest newHandshakeRequest() {
         EzyHandshakeRequest request = new EzyHandshakeRequest(
                 getClientId(),
-                getClientKey(),
+                generateClientKey(),
                 "JAVA",
-                "1.0.3",
-                isEnableEncryption(),
+                "1.1.1",
+                client.isEnableSSL(),
                 getStoredToken()
         );
         return request;
@@ -46,13 +47,18 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
         return id;
     }
 
-    protected String getClientKey() {
-        String key = "";
-        return key;
-    }
-
-    protected boolean isEnableEncryption() {
-        return false;
+    protected byte[] generateClientKey() {
+    	if(!client.isEnableSSL()) {
+    		return null;
+    	}
+    	KeyPair keyPair = EzyKeysGenerator.builder()
+    		.build()
+    		.generate();
+        byte[] publicKey = keyPair.getPublic().getEncoded();
+        byte[] privatekey = keyPair.getPrivate().getEncoded();
+        client.setPublicKey(publicKey);
+        client.setPrivateKey(privatekey);
+        return publicKey;
     }
 
     protected  String getStoredToken() {

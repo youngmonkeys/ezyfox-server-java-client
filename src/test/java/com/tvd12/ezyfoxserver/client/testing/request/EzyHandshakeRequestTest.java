@@ -13,7 +13,7 @@ public class EzyHandshakeRequestTest {
 	public void serializeTest() {
 		// given
 		String clientId = "testClientId";
-		String clientKey = "testClientKey";
+		byte[] clientKey = new byte[0];
 		String clientType = "testClientType";
 		String clientVersion = "testClientVersion";
 		boolean enableEncryption = true;
