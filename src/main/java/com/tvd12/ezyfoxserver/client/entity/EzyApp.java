@@ -26,7 +26,11 @@ public interface EzyApp {
     
     void send(EzyArray request);
     
+    void send(EzyArray request, boolean encrypted);
+    
     void send(String cmd, EzyData data);
+    
+    void send(String cmd, EzyData data, boolean encrypted);
     
     void udpSend(EzyRequest request);
     

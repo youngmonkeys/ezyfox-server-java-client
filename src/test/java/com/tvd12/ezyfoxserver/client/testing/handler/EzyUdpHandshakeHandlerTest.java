@@ -11,6 +11,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.EzyUTClient;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyStatusCodes;
 import com.tvd12.ezyfoxserver.client.handler.EzyUdpHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
@@ -21,7 +22,8 @@ public class EzyUdpHandshakeHandlerTest {
 	public void handleStatusOK() {
 		// given
 		int responseCode = EzyStatusCodes.OK;
-		EzyUTSocketClient socketClient = new EzyUTSocketClient();
+		EzySocketClientConfig config = mock(EzySocketClientConfig.class);
+		EzyUTSocketClient socketClient = new EzyUTSocketClient(config);
 		EzyArray data = EzyEntityArrays.newArray(
 				responseCode
 		);
@@ -42,7 +44,8 @@ public class EzyUdpHandshakeHandlerTest {
 	public void handleStatusNotOK() {
 		// given
 		int responseCode = -1;
-		EzyUTSocketClient socketClient = new EzyUTSocketClient();
+		EzySocketClientConfig config = mock(EzySocketClientConfig.class);
+		EzyUTSocketClient socketClient = new EzyUTSocketClient(config);
 		EzyArray data = EzyEntityArrays.newArray(
 				responseCode
 		);

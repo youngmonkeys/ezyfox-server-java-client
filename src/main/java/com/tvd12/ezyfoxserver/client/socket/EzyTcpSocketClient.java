@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionFailedReason;
 
 import java.net.ConnectException;
@@ -14,7 +15,11 @@ import java.nio.channels.SocketChannel;
 
 public class EzyTcpSocketClient extends EzySocketClient {
 
-    protected SocketChannel socket;
+    public EzyTcpSocketClient(EzySocketClientConfig config) {
+		super(config);
+	}
+
+	protected SocketChannel socket;
 
     @Override
     protected boolean connectNow() {

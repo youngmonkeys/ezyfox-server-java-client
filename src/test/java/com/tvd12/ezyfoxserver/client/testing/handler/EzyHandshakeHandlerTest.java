@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.EzyClient;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.handler.EzyHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
@@ -24,7 +25,8 @@ public class EzyHandshakeHandlerTest {
 		// given
 		String sessionToken = "testSessionToken";
 		long sessionId = new Random().nextLong();
-		EzyUTSocketClient socketClient = new EzyUTSocketClient();
+		EzySocketClientConfig config = mock(EzySocketClientConfig.class);
+		EzyUTSocketClient socketClient = new EzyUTSocketClient(config);
 		EzyArray data = EzyEntityArrays.newArray(
 				"",
 				sessionToken,

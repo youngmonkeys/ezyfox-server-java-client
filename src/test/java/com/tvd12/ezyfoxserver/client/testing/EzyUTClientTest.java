@@ -7,6 +7,7 @@ import com.tvd12.ezyfox.factory.EzyEntityFactory;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
@@ -38,7 +39,7 @@ public class EzyUTClientTest {
 				.build();
 		EzyUTSocketClient mockSocketClient = mock(EzyUTSocketClient.class);
 		EzyUTClient sut = new EzyUTClient(config) {
-			protected EzyTcpSocketClient newTcpSocketClient() {
+			protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
 				return mockSocketClient;
 			}
 		};
@@ -58,7 +59,7 @@ public class EzyUTClientTest {
 				.build();
 		EzyUTSocketClient mockSocketClient = mock(EzyUTSocketClient.class);
 		EzyUTClient sut = new EzyUTClient(config) {
-			protected EzyTcpSocketClient newTcpSocketClient() {
+			protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
 				return mockSocketClient;
 			}
 		};
@@ -77,7 +78,7 @@ public class EzyUTClientTest {
 				.build();
 		EzyUTSocketClient mockSocketClient = mock(EzyUTSocketClient.class);
 		EzyUTClient sut = new EzyUTClient(config) {
-			protected EzyTcpSocketClient newTcpSocketClient() {
+			protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
 				return mockSocketClient;
 			}
 		};

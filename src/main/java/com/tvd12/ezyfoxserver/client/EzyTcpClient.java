@@ -13,6 +13,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyEntity;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
@@ -46,6 +47,9 @@ public class EzyTcpClient
     protected EzyUser me;
     protected EzyZone zone;
     protected long sessionId;
+    protected byte[] publicKey;
+    protected byte[] privateKey;
+    protected byte[] sessionKey;
     protected String sessionToken;
     protected final String name;
     protected final EzySetup settingUp;
@@ -83,7 +87,7 @@ public class EzyTcpClient
     }
 
     protected EzySocketClient newSocketClient() {
-        EzyTcpSocketClient client = newTcpSocketClient();
+        EzyTcpSocketClient client = newTcpSocketClient(config);
         client.setPingSchedule(pingSchedule);
         client.setPingManager(pingManager);
         client.setHandlerManager(handlerManager);
@@ -92,8 +96,8 @@ public class EzyTcpClient
         return client;
     }
     
-    protected EzyTcpSocketClient newTcpSocketClient() {
-    	return new EzyTcpSocketClient();
+    protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
+    	return new EzyTcpSocketClient(config);
     }
 
     @Override
@@ -133,6 +137,9 @@ public class EzyTcpClient
     protected void preconnect() {
         this.me = null;
         this.zone = null;
+        this.publicKey = null;
+        this.privateKey = null;
+        this.sessionKey = null;
     }
 
     @Override
@@ -142,17 +149,41 @@ public class EzyTcpClient
 
     @Override
     public void send(EzyRequest request) {
+        send(request, false);
+    }
+    
+    @Override
+    public void send(EzyRequest request, boolean encrypted) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
-        send((EzyCommand) cmd, (EzyArray) data);
+        send((EzyCommand) cmd, (EzyArray) data, encrypted);
     }
 
     @Override
     public void send(EzyCommand cmd, EzyArray data) {
-        EzyArray array = requestSerializer.serialize(cmd, data);
-        socketClient.sendMessage(array);
-        printSentData(cmd, data);
+    	send(cmd, data, false);
     }
+    
+    @Override
+	public void send(EzyCommand cmd, EzyArray data, boolean encrypted) {
+    	boolean shouldEncrypted = encrypted;
+    	if(encrypted && sessionKey == null) {
+    		if(config.isEnableDebug()) {
+    			shouldEncrypted = false;
+    		}
+    		else {
+    			throw new IllegalArgumentException(
+    				"can not send command: " + cmd + " " +
+    				"you must enable SSL or enable debug mode by configuration " +
+    				"when you create the client"
+    			);
+    		}
+    		
+    	}
+    	EzyArray array = requestSerializer.serialize(cmd, data);
+        socketClient.sendMessage(array, shouldEncrypted);
+        printSentData(cmd, data);
+	}
 
     @Override
     public void processEvents() {
@@ -168,6 +199,16 @@ public class EzyTcpClient
     public EzyClientConfig getConfig() {
         return config;
     }
+    
+    @Override
+	public boolean isEnableSSL() {
+    	return config.isEnableSSL();
+	}
+    
+    @Override
+	public boolean isEnableDebug() {
+		return config.isEnableDebug();
+	}
 
     @Override
     public EzyZone getZone() {
@@ -216,10 +257,51 @@ public class EzyTcpClient
 	}
     
     @Override
+	public long getSessionId() {
+		return sessionId;
+	}
+    
+    @Override
 	public void setSessionToken(String token) {
     	this.sessionToken = token;
     	this.socketClient.setSessionToken(sessionToken);
 	}
+    
+    @Override
+	public String getSessionToken() {
+		return sessionToken;
+	}
+    
+    @Override
+	public void setSessionKey(byte[] sessionKey) {
+		this.sessionKey = sessionKey;
+		this.socketClient.setSessionKey(sessionKey);
+	}
+    
+    @Override
+    public byte[] getSessionKey() {
+    	return sessionKey;
+    }
+    
+    @Override
+    public void setPublicKey(byte[] publicKey) {
+    	this.publicKey = publicKey;
+    }
+    
+    @Override
+    public byte[] getPublicKey() {
+    	return publicKey;
+    }
+    
+    @Override
+    public void setPrivateKey(byte[] privateKey) {
+    	this.privateKey = privateKey;
+    }
+    
+    @Override
+    public byte[] getPrivateKey() {
+    	return privateKey;
+    }
     
     @Override
     public EzyISocketClient getSocket() {

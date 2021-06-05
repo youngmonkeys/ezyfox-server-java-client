@@ -3,6 +3,7 @@ package com.tvd12.ezyfoxserver.client;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
@@ -15,8 +16,8 @@ public class EzyUTClient extends EzyTcpClient {
 	}
 	
 	@Override
-	protected EzyTcpSocketClient newTcpSocketClient() {
-		return new EzyUTSocketClient();
+	protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
+		return new EzyUTSocketClient(config);
 	}
 	
 	@Override

@@ -30,7 +30,11 @@ public interface EzyClient extends EzyCloseable {
     
     void send(EzyRequest request);
     
+    void send(EzyRequest request, boolean encrypted);
+    
     void send(EzyCommand cmd, EzyArray data);
+    
+    void send(EzyCommand cmd, EzyArray data, boolean encrypted);
     
     void disconnect(int reason);
     
@@ -50,6 +54,10 @@ public interface EzyClient extends EzyCloseable {
     
     EzyClientConfig getConfig();
     
+    boolean isEnableSSL();
+    
+    boolean isEnableDebug();
+    
     EzyUser getMe();
     
     EzyZone getZone();
@@ -64,7 +72,23 @@ public interface EzyClient extends EzyCloseable {
     
     void setSessionId(long sessionId);
     
+    long getSessionId();
+    
     void setSessionToken(String token);
+    
+    String getSessionToken();
+    
+    void setSessionKey(byte[] sessionKey);
+    
+    byte[] getSessionKey();
+    
+    void setPrivateKey(byte[] privateKey);
+    
+    byte[] getPrivateKey();
+    
+    void setPublicKey(byte[] publicKey);
+    
+    byte[] getPublicKey();
     
     EzyISocketClient getSocket();
     
