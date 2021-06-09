@@ -16,6 +16,7 @@ import com.tvd12.ezyfox.callback.EzyCallback;
 import com.tvd12.ezyfox.codec.EzyByteToObjectDecoder;
 import com.tvd12.ezyfox.codec.EzyMessage;
 import com.tvd12.ezyfoxserver.client.socket.EzySimpleSocketDataDecoder;
+import com.tvd12.test.assertion.Asserts;
 
 public class EzySimpleSocketDataDecoderTest {
 
@@ -27,13 +28,13 @@ public class EzySimpleSocketDataDecoderTest {
 		
 		EzyMessage message = mock(EzyMessage.class);
 		byte[] bytes = new byte[] {1, 2, 3};
-		when(decoder.decode(message)).thenReturn(bytes);
+		when(decoder.decode(message, null)).thenReturn(bytes);
 		
 		// when
 		Object actual = sut.decode(message, null);
 		
 		// then
-		assert actual == bytes;
+		Asserts.assertEquals(bytes, actual);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

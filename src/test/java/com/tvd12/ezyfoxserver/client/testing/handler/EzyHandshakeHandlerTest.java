@@ -49,7 +49,7 @@ public class EzyHandshakeHandlerTest {
 		sut.handle(data);
 		
 		// then
-		verify(client, times(1)).send(loginRequest);
+		verify(client, times(1)).send(loginRequest, false);
 	}
 	
 }

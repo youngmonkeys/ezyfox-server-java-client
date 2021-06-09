@@ -63,6 +63,10 @@ public abstract class EzySocketClient
     protected final List<EzyArray> localMessageQueue;
     protected final List<EzySocketStatus> localSocketStatuses;
     protected final EzyValueStack<EzySocketStatus> socketStatuses;
+    
+    public EzySocketClient() {
+    	this(EzySocketClientConfig.DEFAULT);
+    }
 
     public EzySocketClient(EzySocketClientConfig config) {
         this.codecFactory = new EzySimpleCodecFactory(config.isEnableSSL());

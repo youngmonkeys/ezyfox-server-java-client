@@ -60,7 +60,7 @@ public class EzySimpleAppTest {
         commandData.add(cmd, requestData);
         EzyArray finalRequestData = EzyEntityFactory.newArray();
         finalRequestData.add(appId, commandData);
-		verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData);
+		verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData, false);
 	}
 	
 	@Test
@@ -96,7 +96,7 @@ public class EzySimpleAppTest {
         commandData.add(cmd, requestData);
         EzyArray finalRequestData = EzyEntityFactory.newArray();
         finalRequestData.add(appId, commandData);
-		verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData);
+		verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData, false);
 	}
 	
 	@Test

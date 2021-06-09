@@ -35,7 +35,10 @@ public abstract class EzyHandshakeHandler
     }
     
 	protected byte[] decrypteSessionKey(byte[] sessionKey) {
-		if(sessionKey == null && !client.isEnableDebug()) {
+		if(sessionKey == null) {
+			if(client.isEnableDebug()) {
+				return null;
+			}
 			client.close();
 			throw new IllegalStateException(
 					"maybe server was not enable SSL, you must enable SSL on server " + 
