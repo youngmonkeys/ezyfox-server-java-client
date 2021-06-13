@@ -30,11 +30,11 @@ public abstract class EzyHandshakeHandler
     	this.client.setSessionToken(data.get(1, String.class));
     	this.client.setSessionId(data.get(2, long.class));
     	if(client.isEnableSSL()) {
-    		this.client.setSessionKey(decrypteSessionKey(data.get(3, byte[].class, null)));
+    		this.client.setSessionKey(decryptSessionKey(data.get(3, byte[].class, null)));
     	}
     }
     
-	protected byte[] decrypteSessionKey(byte[] sessionKey) {
+	protected byte[] decryptSessionKey(byte[] sessionKey) {
 		if(sessionKey == null) {
 			if(client.isEnableDebug()) {
 				return null;
