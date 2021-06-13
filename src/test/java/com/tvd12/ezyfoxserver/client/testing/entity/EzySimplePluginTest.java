@@ -60,7 +60,7 @@ public class EzySimplePluginTest {
         commandData.add(cmd, requestData);
         EzyArray finalRequestData = EzyEntityFactory.newArray();
         finalRequestData.add(pluginId, commandData);
-		verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData);
+		verify(client, times(1)).send(EzyCommand.PLUGIN_REQUEST, finalRequestData, false);
 	}
 	
 	@Test
@@ -96,7 +96,7 @@ public class EzySimplePluginTest {
         commandData.add(cmd, requestData);
         EzyArray finalRequestData = EzyEntityFactory.newArray();
         finalRequestData.add(pluginId, commandData);
-		verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData);
+		verify(client, times(1)).send(EzyCommand.PLUGIN_REQUEST, finalRequestData, false);
 	}
 	
 	@Test
@@ -135,7 +135,7 @@ public class EzySimplePluginTest {
         commandData.add(cmd, requestData);
         EzyArray finalRequestData = EzyEntityFactory.newArray();
         finalRequestData.add(pluginId, commandData);
-		verify(client, times(1)).udpSend(EzyCommand.APP_REQUEST, finalRequestData);
+		verify(client, times(1)).udpSend(EzyCommand.PLUGIN_REQUEST, finalRequestData);
 	}
 	
 	@Test
@@ -171,7 +171,7 @@ public class EzySimplePluginTest {
         commandData.add(cmd, requestData);
         EzyArray finalRequestData = EzyEntityFactory.newArray();
         finalRequestData.add(pluginId, commandData);
-		verify(client, times(1)).udpSend(EzyCommand.APP_REQUEST, finalRequestData);
+		verify(client, times(1)).udpSend(EzyCommand.PLUGIN_REQUEST, finalRequestData);
 	}
 	
 	@Test

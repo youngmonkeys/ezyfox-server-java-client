@@ -25,6 +25,8 @@ public interface EzyPlugin {
     
     void send(String cmd, EzyData data);
     
+    void send(String cmd, EzyData data, boolean encrypted);
+    
     void udpSend(EzyRequest request);
     
     void udpSend(String cmd);

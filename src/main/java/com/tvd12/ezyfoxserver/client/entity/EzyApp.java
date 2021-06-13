@@ -1,6 +1,5 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
-import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
@@ -23,10 +22,6 @@ public interface EzyApp {
     void send(EzyRequest request);
     
     void send(String cmd);
-    
-    void send(EzyArray request);
-    
-    void send(EzyArray request, boolean encrypted);
     
     void send(String cmd, EzyData data);
     

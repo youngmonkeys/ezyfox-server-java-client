@@ -35,7 +35,7 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
                 getClientId(),
                 generateClientKey(),
                 "JAVA",
-                "1.1.1",
+                "1.1.2",
                 client.isEnableSSL(),
                 getStoredToken()
         );
@@ -55,9 +55,9 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
     		.build()
     		.generate();
         byte[] publicKey = keyPair.getPublic().getEncoded();
-        byte[] privatekey = keyPair.getPrivate().getEncoded();
+        byte[] privateKey = keyPair.getPrivate().getEncoded();
         client.setPublicKey(publicKey);
-        client.setPrivateKey(privatekey);
+        client.setPrivateKey(privateKey);
         return publicKey;
     }
 

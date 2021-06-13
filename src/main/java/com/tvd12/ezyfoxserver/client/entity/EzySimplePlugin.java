@@ -1,6 +1,5 @@
 package com.tvd12.ezyfoxserver.client.entity;
 
-import com.tvd12.ezyfox.builder.EzyArrayBuilder;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyEntity;
@@ -33,7 +32,7 @@ public class EzySimplePlugin extends EzyEntity implements EzyPlugin {
         EzyData data = request.serialize();
         send(cmd, data);
     }
-
+    
     @Override
     public void send(String cmd) {
         send(cmd, EzyEntityFactory.EMPTY_OBJECT);
@@ -41,14 +40,20 @@ public class EzySimplePlugin extends EzyEntity implements EzyPlugin {
 
     @Override
     public void send(String cmd, EzyData data) {
-        EzyArrayBuilder commandData = EzyEntityFactory.newArrayBuilder()
-                .append(cmd)
-                .append(data);
-        EzyArray requestData = EzyEntityFactory.newArrayBuilder()
-                .append(id)
-                .append(commandData.build())
-                .build();
-        client.send(EzyCommand.APP_REQUEST, requestData);
+    	send(cmd, data, false);
+    }
+    
+    @Override
+    public void send(String cmd, EzyData data, boolean encrypted) {
+    	EzyArray commandData = EzyEntityFactory.newArray();
+    	commandData.add(cmd, data);
+    	send(commandData, encrypted);
+    }
+    
+    private void send(EzyArray request, boolean encrypted) {
+    	EzyArray requestData = EzyEntityFactory.newArray();
+        requestData.add(id, request);
+    	client.send(EzyCommand.PLUGIN_REQUEST, requestData, encrypted);
     }
     
     @Override
@@ -65,14 +70,11 @@ public class EzySimplePlugin extends EzyEntity implements EzyPlugin {
 
     @Override
     public void udpSend(String cmd, EzyData data) {
-        EzyArrayBuilder commandData = EzyEntityFactory.newArrayBuilder()
-                .append(cmd)
-                .append(data);
-        EzyArray requestData = EzyEntityFactory.newArrayBuilder()
-                .append(id)
-                .append(commandData.build())
-                .build();
-        client.udpSend(EzyCommand.APP_REQUEST, requestData);
+        EzyArray commandData = EzyEntityFactory.newArray();
+        commandData.add(cmd, data);
+        EzyArray requestData = EzyEntityFactory.newArray();
+        requestData.add(id, commandData);
+        client.udpSend(EzyCommand.PLUGIN_REQUEST, requestData);
     }
 
     @Override

@@ -34,18 +34,6 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
     }
     
     @Override
-    public void send(EzyArray request) {
-    	send(request, false);
-    }
-    
-    @Override
-    public void send(EzyArray request, boolean encrypted) {
-    	EzyArray requestData = EzyEntityFactory.newArray();
-        requestData.add(id, request);
-    	client.send(EzyCommand.APP_REQUEST, requestData, encrypted);
-    }
-
-    @Override
     public void send(String cmd) {
         send(cmd, EzyEntityFactory.EMPTY_OBJECT);
     }
@@ -60,6 +48,12 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
     	EzyArray commandData = EzyEntityFactory.newArray();
     	commandData.add(cmd, data);
     	send(commandData, encrypted);
+    }
+    
+    private void send(EzyArray request, boolean encrypted) {
+    	EzyArray requestData = EzyEntityFactory.newArray();
+        requestData.add(id, request);
+    	client.send(EzyCommand.APP_REQUEST, requestData, encrypted);
     }
     
     @Override
