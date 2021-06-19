@@ -35,7 +35,7 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
                 getClientId(),
                 generateClientKey(),
                 "JAVA",
-                "1.1.2",
+                "1.1.3",
                 client.isEnableSSL(),
                 getStoredToken()
         );
