@@ -30,13 +30,21 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
         client.setUdpStatus(EzyConnectionStatus.DISCONNECTED);
         if(mustReconnect)
             reconnecting = client.reconnect();
-        if(!reconnecting) {
-            control(event);
+        if(reconnecting) {
+           onReconnecting(event);
+        }
+        else {
+        	onDisconnected(event);
         }
         postHandle(event);
     }
 
     protected void preHandle(EzyDisconnectionEvent event) {}
+    
+    protected void onReconnecting(EzyDisconnectionEvent event) {}
+    
+    protected void onDisconnected(EzyDisconnectionEvent event) {}
+    
     protected void postHandle(EzyDisconnectionEvent event) {}
 
     protected boolean shouldReconnect(EzyDisconnectionEvent event) {
@@ -45,6 +53,4 @@ public class EzyDisconnectionHandler extends EzyAbstractEventHandler<EzyDisconne
     		return false;
         return true;
     }
-
-    protected void control(EzyDisconnectionEvent event) {}
 }
