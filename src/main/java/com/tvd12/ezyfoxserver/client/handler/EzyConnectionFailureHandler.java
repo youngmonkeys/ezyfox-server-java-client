@@ -22,15 +22,22 @@ public class EzyConnectionFailureHandler extends EzyAbstractEventHandler<EzyConn
         client.setStatus(EzyConnectionStatus.FAILURE);
         if(mustReconnect)
             reconnecting = client.reconnect();
-        if(!reconnecting) {
-            control(event);
+        if(reconnecting) {
+        	onReconnecting(event);
         }
+        else {
+        	onConnectionFailed(event);
+        }
+        postHandle(event);
     }
 
     protected boolean shouldReconnect(EzyConnectionFailureEvent event) {
         return true;
     }
 
-    protected void control(EzyConnectionFailureEvent event) {
-    }
+    protected void onReconnecting(EzyConnectionFailureEvent event) {}
+    
+    protected void onConnectionFailed(EzyConnectionFailureEvent event) {}
+    
+    protected void postHandle(EzyConnectionFailureEvent event) {}
 }
