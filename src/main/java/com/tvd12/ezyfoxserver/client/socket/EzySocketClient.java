@@ -310,9 +310,11 @@ public abstract class EzySocketClient
     }
 
     protected void processReceivedMessages0() {
-        pingManager.setLostPingCount(0);
         popReadMessages();
         try {
+        	if (localMessageQueue.size() > 0) {
+        		pingManager.setLostPingCount(0);
+        	}
 	        for (int i = 0; i < localMessageQueue.size(); ++i) {
 	            processReceivedMessage(localMessageQueue.get(i));
 	        }

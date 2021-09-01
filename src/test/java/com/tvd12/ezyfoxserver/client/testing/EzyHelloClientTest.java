@@ -14,11 +14,13 @@ import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
+import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppAccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
+import com.tvd12.ezyfoxserver.client.handler.EzyDisconnectionHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyUdpHandshakeHandler;
@@ -33,8 +35,11 @@ public class EzyHelloClientTest {
 
 	public static void main(String[] args) throws Exception {
 		EzyClientConfig clientConfig = EzyClientConfig.builder()
-				.clientName("first")
+				.clientName("example")
 				.zoneName("example")
+				.pingConfigBuilder()
+					.pingPeriod(1000)
+					.done()
 				.build();
 		EzyClients clients = EzyClients.getInstance();
 		EzyClient client = new EzyUTClient(clientConfig);
@@ -42,32 +47,40 @@ public class EzyHelloClientTest {
 		EzySetup setup = client.setup();
 		setup.addEventHandler(EzyEventType.CONNECTION_SUCCESS, new EzyConnectionSuccessHandler());
 		setup.addEventHandler(EzyEventType.CONNECTION_FAILURE, new EzyConnectionFailureHandler());
+		setup.addEventHandler(EzyEventType.DISCONNECTION, new EzyDisconnectionHandler());
 		setup.addDataHandler(EzyCommand.HANDSHAKE, new HelloHandshakeEventHandler());
 		setup.addDataHandler(EzyCommand.LOGIN, new HelloLoginSuccessHandler());
 		setup.addDataHandler(EzyCommand.APP_ACCESS, new HelloAccessAppHandler());
 		setup.addDataHandler(EzyCommand.UDP_HANDSHAKE, new HelloUdpHandshakeHandler());
 
-		EzyAppSetup appSetup = setup.setupApp("hello");
+		EzyAppSetup appSetup = setup.setupApp("hello-world");
 		appSetup.addDataHandler("hello", new HelloMessageResponseHandler());
 
-		client.connect("127.0.0.1", 3005);
+		client.connect("tvd12.com", 3005);
 
 		EzyMainEventsLoop mainEventsLoop = new EzyMainEventsLoop();
 		mainEventsLoop.start();
 	}
 }
 
+class DisconnectionHandler extends EzyDisconnectionHandler {
+	@Override
+	protected void postHandle(EzyDisconnectionEvent event) {
+		System.out.print("disconnected");
+	}
+}
+
 class HelloHandshakeEventHandler extends EzyHandshakeHandler {
 	@Override
 	protected EzyRequest getLoginRequest() {
-		return new EzyLoginRequest("hello", "dungtv", "123456");
+		return new EzyLoginRequest("example", "dungtv", "123456");
 	}
 }
 
 class HelloLoginSuccessHandler extends EzyLoginSuccessHandler {
 	@Override
 	protected void handleLoginSuccess(EzyData responseData) {
-		client.send(new EzyAppAccessRequest("hello"));
+		client.send(new EzyAppAccessRequest("hello-world"));
 	}
 }
 

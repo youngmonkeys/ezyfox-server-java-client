@@ -31,7 +31,6 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequestSerializer;
 import com.tvd12.ezyfoxserver.client.request.EzySimpleRequestSerializer;
 import com.tvd12.ezyfoxserver.client.setup.EzySetup;
 import com.tvd12.ezyfoxserver.client.setup.EzySimpleSetup;
-import com.tvd12.ezyfoxserver.client.socket.EzyISocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
@@ -304,7 +303,7 @@ public class EzyTcpClient
     }
     
     @Override
-    public EzyISocketClient getSocket() {
+    public EzySocketClient getSocket() {
     	return socketClient;
     }
     

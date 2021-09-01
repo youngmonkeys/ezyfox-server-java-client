@@ -13,8 +13,8 @@ import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.setup.EzySetup;
-import com.tvd12.ezyfoxserver.client.socket.EzyISocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
+import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 
 /**
  * Created by tavandung12 on 9/20/18.
@@ -90,7 +90,7 @@ public interface EzyClient extends EzyCloseable {
     
     byte[] getPublicKey();
     
-    EzyISocketClient getSocket();
+    EzySocketClient getSocket();
     
     EzyApp getApp();
     
