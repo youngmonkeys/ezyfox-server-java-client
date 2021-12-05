@@ -76,6 +76,9 @@ public final class EzyClients {
 
     protected void addClient0(EzyClient client) {
         this.clients.put(client.getName(), client);
+        if (defaultClientName == null) {
+            defaultClientName = client.getName();
+        }
     }
 
     public EzyClient getClient(String name) {
@@ -106,5 +109,16 @@ public final class EzyClients {
             cachedClients.addAll(clients.values());
         }
     }
+    
+    public void removeClient(String name) {
+        synchronized (clients) {
+            clients.remove(name);
+        }
+    }
 
+    public void clear() {
+        synchronized (clients) {
+            this.clients.clear();
+        }
+    }
 }

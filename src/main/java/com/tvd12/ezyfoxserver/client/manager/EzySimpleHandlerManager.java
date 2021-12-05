@@ -40,16 +40,16 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
     private final EzyEventHandlers eventHandlers;
     @Getter
     private final EzyDataHandlers dataHandlers;
-    private final Map<String, EzyAppDataHandlers> appDataHandlerss;
-    private final Map<String, EzyPluginDataHandlers> pluginDataHandlerss;
+    private final Map<String, EzyAppDataHandlers> appDataHandlersByName;
+    private final Map<String, EzyPluginDataHandlers> pluginDataHandlersByName;
 
     public EzySimpleHandlerManager(EzyClient client) {
         this.client = client;
         this.pingSchedule = client.getPingSchedule();
         this.eventHandlers = newEventHandlers();
         this.dataHandlers = newDataHandlers();
-        this.appDataHandlerss = new HashMap<>();
-        this.pluginDataHandlerss = new HashMap<>();
+        this.appDataHandlersByName = new HashMap<>();
+        this.pluginDataHandlersByName = new HashMap<>();
     }
 
     private EzyEventHandlers newEventHandlers() {
@@ -84,20 +84,20 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
 
     @Override
     public EzyAppDataHandlers getAppDataHandlers(String appName) {
-        EzyAppDataHandlers answer = appDataHandlerss.get(appName);
+        EzyAppDataHandlers answer = appDataHandlersByName.get(appName);
         if(answer == null) {
             answer = new EzyAppDataHandlers();
-            appDataHandlerss.put(appName, answer);
+            appDataHandlersByName.put(appName, answer);
         }
         return answer;
     }
     
     @Override
     public EzyPluginDataHandlers getPluginDataHandlers(String pluginName) {
-    	EzyPluginDataHandlers answer = pluginDataHandlerss.get(pluginName);
+    	EzyPluginDataHandlers answer = pluginDataHandlersByName.get(pluginName);
         if(answer == null) {
             answer = new EzyPluginDataHandlers();
-            pluginDataHandlerss.put(pluginName, answer);
+            pluginDataHandlersByName.put(pluginName, answer);
         }
         return answer;
     }

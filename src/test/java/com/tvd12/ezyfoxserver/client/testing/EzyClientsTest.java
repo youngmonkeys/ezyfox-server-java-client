@@ -3,6 +3,7 @@ package com.tvd12.ezyfoxserver.client.testing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.tvd12.ezyfoxserver.client.EzyClient;
@@ -13,6 +14,11 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 
 public class EzyClientsTest {
+    
+    @BeforeMethod
+    public void before() {
+        EzyClients.getInstance().clear();
+    }
 	
 	@Test
 	public void getDefaultClientReturnNull() {
