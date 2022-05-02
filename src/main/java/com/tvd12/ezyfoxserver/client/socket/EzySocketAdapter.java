@@ -1,13 +1,13 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
-import java.nio.channels.AsynchronousCloseException;
-
 import com.tvd12.ezyfox.util.EzyLoggable;
 
+import java.nio.channels.AsynchronousCloseException;
+
 public abstract class EzySocketAdapter extends EzyLoggable {
+    protected final Object adapterLock;
     protected volatile boolean active;
     protected volatile boolean stopped;
-    protected final Object adapterLock;
 
     public EzySocketAdapter() {
         this.active = false;
@@ -17,8 +17,9 @@ public abstract class EzySocketAdapter extends EzyLoggable {
 
     public void start() {
         synchronized (adapterLock) {
-            if (active)
+            if (active) {
                 return;
+            }
             active = true;
             stopped = false;
             Thread newThread = new Thread(new Runnable() {
@@ -43,26 +44,12 @@ public abstract class EzySocketAdapter extends EzyLoggable {
 
     public void stop() {
         synchronized (adapterLock) {
-        	clear();
+            clear();
             active = false;
         }
     }
-    
+
     protected void clear() {
-    }
-
-    protected void setActive(boolean active)
-    {
-        synchronized (adapterLock) {
-            this.active = active;
-        }
-    }
-
-    protected void setStopped(boolean stopped)
-    {
-        synchronized (adapterLock) {
-            this.stopped = stopped;
-        }
     }
 
     public boolean isActive() {
@@ -71,18 +58,29 @@ public abstract class EzySocketAdapter extends EzyLoggable {
         }
     }
 
+    protected void setActive(boolean active) {
+        synchronized (adapterLock) {
+            this.active = active;
+        }
+    }
+
     public boolean isStopped() {
         synchronized (adapterLock) {
             return stopped;
         }
     }
-    
+
+    protected void setStopped(boolean stopped) {
+        synchronized (adapterLock) {
+            this.stopped = stopped;
+        }
+    }
+
     protected void handleSocketReaderException(Exception e) {
-    	if(e instanceof AsynchronousCloseException) {
-    		logger.debug("Socket closed by another thread", e);
-    	}
-    	else {
-    		logger.warn("I/O error at socket-reader", e);
-    	}
+        if (e instanceof AsynchronousCloseException) {
+            logger.debug("Socket closed by another thread", e);
+        } else {
+            logger.warn("I/O error at socket-reader", e);
+        }
     }
 }

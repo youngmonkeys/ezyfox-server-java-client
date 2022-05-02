@@ -2,10 +2,6 @@ package com.tvd12.ezyfoxserver.client.event;
 
 import com.tvd12.ezyfox.constant.EzyConstant;
 
-/**
- * Created by tavandung12 on 9/30/18.
- */
-
 public enum EzyEventType implements EzyConstant {
 
     CONNECTION_SUCCESS(1),
@@ -16,7 +12,7 @@ public enum EzyEventType implements EzyConstant {
 
     private final int id;
 
-    private EzyEventType(int id) {
+    EzyEventType(int id) {
         this.id = id;
     }
 

@@ -11,37 +11,36 @@ import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
 
 public class EzyUTClient extends EzyTcpClient {
 
-	public EzyUTClient(EzyClientConfig config) {
-		super(config);
-	}
-	
-	@Override
-	protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
-		return new EzyUTSocketClient(config);
-	}
-	
-	@Override
-	public void udpConnect(int port) {
-		((EzyUTSocketClient)socketClient).udpConnect(port);
-	}
-	
-	@Override
-	public void udpConnect(String host, int port) {
-		((EzyUTSocketClient)socketClient).udpConnect(host, port);
-	}
-	
-	@Override
-	public void udpSend(EzyRequest request) {
+    public EzyUTClient(EzyClientConfig config) {
+        super(config);
+    }
+
+    @Override
+    protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
+        return new EzyUTSocketClient(config);
+    }
+
+    @Override
+    public void udpConnect(int port) {
+        ((EzyUTSocketClient) socketClient).udpConnect(port);
+    }
+
+    @Override
+    public void udpConnect(String host, int port) {
+        ((EzyUTSocketClient) socketClient).udpConnect(host, port);
+    }
+
+    @Override
+    public void udpSend(EzyRequest request) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
         udpSend((EzyCommand) cmd, (EzyArray) data);
     }
 
-	@Override
+    @Override
     public void udpSend(EzyCommand cmd, EzyArray data) {
         EzyArray array = requestSerializer.serialize(cmd, data);
-        ((EzyUTSocketClient)socketClient).udpSendMessage(array);
+        ((EzyUTSocketClient) socketClient).udpSendMessage(array);
         printSentData(cmd, data);
     }
-	
 }

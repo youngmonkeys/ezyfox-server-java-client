@@ -5,18 +5,17 @@ import com.tvd12.ezyfox.util.EzyCloseable;
 
 public interface EzyISocketClient extends EzyCloseable {
 
-	void connectTo(String host, int port);
-	
-	boolean reconnect();
-	
-	void disconnect(int reason);
-	
-	void sendMessage(EzyArray message);
-	
-	void close();
-	
-	default void sendMessage(EzyArray message, boolean encrypted) {
-		sendMessage(message);
-	}
-	
+    void connectTo(String host, int port);
+
+    boolean reconnect();
+
+    void disconnect(int reason);
+
+    void sendMessage(EzyArray message);
+
+    default void sendMessage(EzyArray message, boolean encrypted) {
+        sendMessage(message);
+    }
+
+    void close();
 }

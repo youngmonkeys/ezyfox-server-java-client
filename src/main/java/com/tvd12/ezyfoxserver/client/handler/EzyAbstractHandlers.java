@@ -6,10 +6,6 @@ import com.tvd12.ezyfoxserver.client.EzyClientAware;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingScheduleAware;
 
-/**
- * Created by tavandung12 on 10/5/18.
- */
-
 public class EzyAbstractHandlers extends EzyLoggable {
 
     private final EzyClient client;
@@ -21,10 +17,11 @@ public class EzyAbstractHandlers extends EzyLoggable {
     }
 
     protected void configHandler(Object handler) {
-        if(handler instanceof EzyClientAware)
-            ((EzyClientAware)handler).setClient(client);
-        if(handler instanceof EzyPingScheduleAware)
-            ((EzyPingScheduleAware)handler).setPingSchedule(pingSchedule);
+        if (handler instanceof EzyClientAware) {
+            ((EzyClientAware) handler).setClient(client);
+        }
+        if (handler instanceof EzyPingScheduleAware) {
+            ((EzyPingScheduleAware) handler).setPingSchedule(pingSchedule);
+        }
     }
-
 }

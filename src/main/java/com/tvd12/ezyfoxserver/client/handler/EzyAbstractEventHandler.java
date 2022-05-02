@@ -5,13 +5,9 @@ import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.EzyClientAware;
 import com.tvd12.ezyfoxserver.client.event.EzyEvent;
 
-/**
- * Created by tavandung12 on 10/1/18.
- */
-
 public abstract class EzyAbstractEventHandler<E extends EzyEvent>
-		extends EzyLoggable
-        implements EzyEventHandler<E>, EzyClientAware {
+    extends EzyLoggable
+    implements EzyEventHandler<E>, EzyClientAware {
 
     protected EzyClient client;
 

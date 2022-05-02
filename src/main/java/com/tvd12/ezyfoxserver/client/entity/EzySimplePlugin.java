@@ -32,7 +32,7 @@ public class EzySimplePlugin extends EzyEntity implements EzyPlugin {
         EzyData data = request.serialize();
         send(cmd, data);
     }
-    
+
     @Override
     public void send(String cmd) {
         send(cmd, EzyEntityFactory.EMPTY_OBJECT);
@@ -40,22 +40,22 @@ public class EzySimplePlugin extends EzyEntity implements EzyPlugin {
 
     @Override
     public void send(String cmd, EzyData data) {
-    	send(cmd, data, false);
+        send(cmd, data, false);
     }
-    
+
     @Override
     public void send(String cmd, EzyData data, boolean encrypted) {
-    	EzyArray commandData = EzyEntityFactory.newArray();
-    	commandData.add(cmd, data);
-    	send(commandData, encrypted);
+        EzyArray commandData = EzyEntityFactory.newArray();
+        commandData.add(cmd, data);
+        send(commandData, encrypted);
     }
-    
+
     private void send(EzyArray request, boolean encrypted) {
-    	EzyArray requestData = EzyEntityFactory.newArray();
+        EzyArray requestData = EzyEntityFactory.newArray();
         requestData.add(id, request);
-    	client.send(EzyCommand.PLUGIN_REQUEST, requestData, encrypted);
+        client.send(EzyCommand.PLUGIN_REQUEST, requestData, encrypted);
     }
-    
+
     @Override
     public void udpSend(EzyRequest request) {
         String cmd = (String) request.getCommand();
@@ -99,29 +99,26 @@ public class EzySimplePlugin extends EzyEntity implements EzyPlugin {
 
     @Override
     public EzyPluginDataHandler<?> getDataHandler(Object cmd) {
-        EzyPluginDataHandler<?> handler = dataHandlers.getHandler(cmd);
-        return handler;
+        return (EzyPluginDataHandler<?>) dataHandlers.getHandler(cmd);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-    	return new EzyEquals<EzySimplePlugin>()
-    			.function(t -> t.id)
-    			.isEquals(this, obj);
+        return new EzyEquals<EzySimplePlugin>()
+            .function(t -> t.id)
+            .isEquals(this, obj);
     }
-    
+
     @Override
     public int hashCode() {
-    	return id;
+        return id;
     }
-    
+
     @Override
     public String toString() {
-    	return new StringBuilder()
-    			.append("Plugin(")
-    			.append("id: ").append(id).append(", ")
-    			.append("name: ").append(name)
-    			.append(")")
-    			.toString();
+        return "Plugin(" +
+            "id: " + id + ", " +
+            "name: " + name +
+            ")";
     }
 }

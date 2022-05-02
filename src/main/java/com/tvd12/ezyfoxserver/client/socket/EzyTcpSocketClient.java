@@ -9,17 +9,13 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 
-/**
- * Created by tavandung12 on 9/20/18.
- */
-
 public class EzyTcpSocketClient extends EzySocketClient {
 
-    public EzyTcpSocketClient(EzySocketClientConfig config) {
-		super(config);
-	}
+    protected SocketChannel socket;
 
-	protected SocketChannel socket;
+    public EzyTcpSocketClient(EzySocketClientConfig config) {
+        super(config);
+    }
 
     @Override
     protected boolean connectNow() {
@@ -29,19 +25,17 @@ public class EzyTcpSocketClient extends EzySocketClient {
             socket.connect(socketAddress);
             socket.configureBlocking(true);
             return true;
-        }
-        catch (Exception e) {
-            if(e instanceof ConnectException) {
-                ConnectException c = (ConnectException)e;
-                if("Network is unreachable".equalsIgnoreCase(c.getMessage()))
+        } catch (Exception e) {
+            if (e instanceof ConnectException) {
+                ConnectException c = (ConnectException) e;
+                if ("Network is unreachable".equalsIgnoreCase(c.getMessage())) {
                     connectionFailedReason = EzyConnectionFailedReason.NETWORK_UNREACHABLE;
-                else
+                } else {
                     connectionFailedReason = EzyConnectionFailedReason.CONNECTION_REFUSED;
-            }
-            else if(e instanceof  UnknownHostException) {
+                }
+            } else if (e instanceof UnknownHostException) {
                 connectionFailedReason = EzyConnectionFailedReason.UNKNOWN_HOST;
-            }
-            else {
+            } else {
                 connectionFailedReason = EzyConnectionFailedReason.UNKNOWN;
             }
             return false;
@@ -56,9 +50,9 @@ public class EzyTcpSocketClient extends EzySocketClient {
 
     @Override
     protected void startAdapters() {
-        ((EzyTcpSocketReader)socketReader).setSocket(socket);
+        ((EzyTcpSocketReader) socketReader).setSocket(socket);
         socketReader.start();
-        ((EzyTcpSocketWriter)socketWriter).setSocket(socket);
+        ((EzyTcpSocketWriter) socketWriter).setSocket(socket);
         socketWriter.start();
     }
 
@@ -70,11 +64,11 @@ public class EzyTcpSocketClient extends EzySocketClient {
     @Override
     protected void closeSocket() {
         try {
-            if (socket != null)
+            if (socket != null) {
                 this.socket.close();
-        }
-        catch (Exception e) {
-        	logger.warn("close socket error", e);
+            }
+        } catch (Exception e) {
+            logger.warn("close socket error", e);
         }
     }
 }

@@ -2,10 +2,6 @@ package com.tvd12.ezyfoxserver.client.config;
 
 import com.tvd12.ezyfox.builder.EzyBuilder;
 
-/**
- * Created by tavandung12 on 10/11/18.
- */
-
 public class EzyClientConfig implements EzySocketClientConfig {
 
     private final String zoneName;
@@ -24,18 +20,23 @@ public class EzyClientConfig implements EzySocketClientConfig {
         this.reconnect = builder.reconnectConfigBuilder.build();
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public String getZoneName() {
         return zoneName;
     }
 
     public String getClientName() {
-        if(clientName == null)
+        if (clientName == null) {
             return zoneName;
+        }
         return clientName;
     }
-    
+
     public EzyPingConfig getPing() {
-    	return ping;
+        return ping;
     }
 
     public EzyReconnectConfig getReconnect() {
@@ -44,28 +45,24 @@ public class EzyClientConfig implements EzySocketClientConfig {
 
     @Override
     public boolean isEnableSSL() {
-    	return enableSSL;
+        return enableSSL;
     }
-    
+
     public boolean isEnableDebug() {
-    	return enableDebug;
-	}
-    
-    public static Builder builder() {
-        return new Builder();
+        return enableDebug;
     }
 
     public static class Builder implements EzyBuilder<EzyClientConfig> {
 
+        private final EzyPingConfig.Builder pingConfigBuilder;
+        private final EzyReconnectConfig.Builder reconnectConfigBuilder;
         private String zoneName;
         private String clientName;
         private boolean enableSSL;
         private boolean enableDebug;
-        private final EzyPingConfig.Builder pingConfigBuilder;
-        private final EzyReconnectConfig.Builder reconnectConfigBuilder;
 
         public Builder() {
-        	this.pingConfigBuilder = new EzyPingConfig.Builder(this);
+            this.pingConfigBuilder = new EzyPingConfig.Builder(this);
             this.reconnectConfigBuilder = new EzyReconnectConfig.Builder(this);
         }
 
@@ -78,27 +75,27 @@ public class EzyClientConfig implements EzySocketClientConfig {
             this.clientName = clientName;
             return this;
         }
-        
+
         public Builder enableSSL() {
-        	return enableSSL(true);
+            return enableSSL(true);
         }
-        
+
         public Builder enableSSL(boolean enableSSL) {
-        	this.enableSSL = enableSSL;
-        	return this;
+            this.enableSSL = enableSSL;
+            return this;
         }
-        
+
         public Builder enableDebug() {
-        	return enableDebug(true);
+            return enableDebug(true);
         }
-        
+
         public Builder enableDebug(boolean enableDebug) {
-        	this.enableDebug = enableDebug;
-        	return this;
+            this.enableDebug = enableDebug;
+            return this;
         }
-        
+
         public EzyPingConfig.Builder pingConfigBuilder() {
-        	return pingConfigBuilder;
+            return pingConfigBuilder;
         }
 
         public EzyReconnectConfig.Builder reconnectConfigBuilder() {
@@ -109,6 +106,5 @@ public class EzyClientConfig implements EzySocketClientConfig {
         public EzyClientConfig build() {
             return new EzyClientConfig(this);
         }
-
     }
 }

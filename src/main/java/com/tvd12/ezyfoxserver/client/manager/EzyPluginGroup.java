@@ -1,8 +1,8 @@
 package com.tvd12.ezyfoxserver.client.manager;
 
-import java.util.List;
-
 import com.tvd12.ezyfoxserver.client.entity.EzyPlugin;
+
+import java.util.List;
 
 public interface EzyPluginGroup extends EzyPluginByIdGroup {
 
@@ -11,5 +11,4 @@ public interface EzyPluginGroup extends EzyPluginByIdGroup {
     List<EzyPlugin> getPluginList();
 
     EzyPlugin getPluginByName(String appName);
-
 }

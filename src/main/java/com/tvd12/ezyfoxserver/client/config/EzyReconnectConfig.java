@@ -2,10 +2,6 @@ package com.tvd12.ezyfoxserver.client.config;
 
 import com.tvd12.ezyfox.builder.EzyBuilder;
 
-/**
- * Created by tavandung12 on 10/6/18.
- */
-
 public class EzyReconnectConfig {
 
     private final boolean enable;
@@ -34,7 +30,7 @@ public class EzyReconnectConfig {
         private boolean enable = true;
         private int maxReconnectCount = 5;
         private int reconnectPeriod = 3000;
-        private EzyClientConfig.Builder parent;
+        private final EzyClientConfig.Builder parent;
 
         public Builder(EzyClientConfig.Builder parent) {
             this.parent = parent;

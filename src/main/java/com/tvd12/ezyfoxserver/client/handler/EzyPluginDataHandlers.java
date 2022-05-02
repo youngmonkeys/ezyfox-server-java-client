@@ -6,7 +6,7 @@ import java.util.Map;
 @SuppressWarnings("rawtypes")
 public class EzyPluginDataHandlers {
 
-	private final Map<Object, EzyPluginDataHandler> handlers;
+    private final Map<Object, EzyPluginDataHandler> handlers;
 
     public EzyPluginDataHandlers() {
         this.handlers = new HashMap<>();
@@ -17,8 +17,6 @@ public class EzyPluginDataHandlers {
     }
 
     public EzyPluginDataHandler getHandler(Object cmd) {
-    	EzyPluginDataHandler handler = handlers.get(cmd);
-        return handler;
+        return handlers.get(cmd);
     }
-
 }

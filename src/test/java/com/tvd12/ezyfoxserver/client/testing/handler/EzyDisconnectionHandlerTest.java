@@ -1,18 +1,18 @@
 package com.tvd12.ezyfoxserver.client.testing.handler;
 
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
-import com.tvd12.ezyfoxserver.client.constant.EzyConnectionFailedReason;
-import com.tvd12.ezyfoxserver.client.event.EzyConnectionFailureEvent;
-import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
+import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
+import com.tvd12.ezyfoxserver.client.handler.EzyDisconnectionHandler;
 import com.tvd12.ezyfoxserver.client.testing.EzyClientForTest;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.*;
 
-public class EzyConnectionFailureHandlerTest {
+public class EzyDisconnectionHandlerTest {
 
     @Test
-    public void handleMustReconnect() {
+    public void handleMustReconnectNotReconnecting() {
         // given
         EzyClientForTest client = mock(EzyClientForTest.class);
         EzyClientConfig config = EzyClientConfig.builder()
@@ -21,17 +21,16 @@ public class EzyConnectionFailureHandlerTest {
             .done()
             .build();
         when(client.getConfig()).thenReturn(config);
-        EzyConnectionFailureHandler sut = new EzyConnectionFailureHandler();
+        EzyDisconnectionHandler sut = new EzyDisconnectionHandler();
         sut.setClient(client);
-        EzyConnectionFailedReason reason = EzyConnectionFailedReason.CONNECTION_REFUSED;
-        EzyConnectionFailureEvent event = new EzyConnectionFailureEvent(reason);
+        EzyDisconnectReason reason = EzyDisconnectReason.NOT_LOGGED_IN;
+        EzyDisconnectionEvent event = new EzyDisconnectionEvent(reason.getId());
 
         // when
         sut.handle(event);
 
         // then
         verify(client, times(1)).getConfig();
-        verify(client, times(1)).reconnect();
     }
 
     @Test
@@ -45,37 +44,10 @@ public class EzyConnectionFailureHandlerTest {
             .build();
         when(client.getConfig()).thenReturn(config);
         when(client.reconnect()).thenReturn(true);
-        EzyConnectionFailureHandler sut = new EzyConnectionFailureHandler();
+        EzyDisconnectionHandler sut = new EzyDisconnectionHandler();
         sut.setClient(client);
-        EzyConnectionFailedReason reason = EzyConnectionFailedReason.CONNECTION_REFUSED;
-        EzyConnectionFailureEvent event = new EzyConnectionFailureEvent(reason);
-
-        // when
-        sut.handle(event);
-
-        // then
-        verify(client, times(1)).getConfig();
-        verify(client, times(1)).reconnect();
-    }
-
-    @Test
-    public void handleShouldNotReconnect() {
-        // given
-        EzyClientForTest client = mock(EzyClientForTest.class);
-        EzyClientConfig config = EzyClientConfig.builder()
-            .reconnectConfigBuilder()
-            .enable(true)
-            .done()
-            .build();
-        when(client.getConfig()).thenReturn(config);
-        EzyConnectionFailureHandler sut = new EzyConnectionFailureHandler() {
-            protected boolean shouldReconnect(EzyConnectionFailureEvent event) {
-                return false;
-            }
-        };
-        sut.setClient(client);
-        EzyConnectionFailedReason reason = EzyConnectionFailedReason.CONNECTION_REFUSED;
-        EzyConnectionFailureEvent event = new EzyConnectionFailureEvent(reason);
+        EzyDisconnectReason reason = EzyDisconnectReason.NOT_LOGGED_IN;
+        EzyDisconnectionEvent event = new EzyDisconnectionEvent(reason.getId());
 
         // when
         sut.handle(event);
@@ -85,7 +57,7 @@ public class EzyConnectionFailureHandlerTest {
     }
 
     @Test
-    public void handleReconnectIsNotEnable() {
+    public void handleMustReconnectIsNotEnable() {
         // given
         EzyClientForTest client = mock(EzyClientForTest.class);
         EzyClientConfig config = EzyClientConfig.builder()
@@ -94,10 +66,10 @@ public class EzyConnectionFailureHandlerTest {
             .done()
             .build();
         when(client.getConfig()).thenReturn(config);
-        EzyConnectionFailureHandler sut = new EzyConnectionFailureHandler();
+        EzyDisconnectionHandler sut = new EzyDisconnectionHandler();
         sut.setClient(client);
-        EzyConnectionFailedReason reason = EzyConnectionFailedReason.CONNECTION_REFUSED;
-        EzyConnectionFailureEvent event = new EzyConnectionFailureEvent(reason);
+        EzyDisconnectReason reason = EzyDisconnectReason.NOT_LOGGED_IN;
+        EzyDisconnectionEvent event = new EzyDisconnectionEvent(reason.getId());
 
         // when
         sut.handle(event);
@@ -105,4 +77,49 @@ public class EzyConnectionFailureHandlerTest {
         // then
         verify(client, times(1)).getConfig();
     }
+
+    @Test
+    public void handleAnotherSessionLogin() {
+        // given
+        EzyClientForTest client = mock(EzyClientForTest.class);
+        EzyClientConfig config = EzyClientConfig.builder()
+            .reconnectConfigBuilder()
+            .enable(true)
+            .done()
+            .build();
+        when(client.getConfig()).thenReturn(config);
+        EzyDisconnectionHandler sut = new EzyDisconnectionHandler();
+        sut.setClient(client);
+        EzyDisconnectReason reason = EzyDisconnectReason.ANOTHER_SESSION_LOGIN;
+        EzyDisconnectionEvent event = new EzyDisconnectionEvent(reason.getId());
+
+        // when
+        sut.handle(event);
+
+        // then
+        verify(client, times(1)).getConfig();
+    }
+
+    @Test
+    public void handleClientClose() {
+        // given
+        EzyClientForTest client = mock(EzyClientForTest.class);
+        EzyClientConfig config = EzyClientConfig.builder()
+            .reconnectConfigBuilder()
+            .enable(true)
+            .done()
+            .build();
+        when(client.getConfig()).thenReturn(config);
+        EzyDisconnectionHandler sut = new EzyDisconnectionHandler();
+        sut.setClient(client);
+        EzyDisconnectReason reason = EzyDisconnectReason.CLOSE;
+        EzyDisconnectionEvent event = new EzyDisconnectionEvent(reason.getId());
+
+        // when
+        sut.handle(event);
+
+        // then
+        verify(client, times(1)).getConfig();
+    }
+
 }

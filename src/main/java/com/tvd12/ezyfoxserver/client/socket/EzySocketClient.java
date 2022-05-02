@@ -1,42 +1,29 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
-import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketConnectable;
-import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketDisconnectable;
-import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketReconnectable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.codec.EzyCodecFactory;
 import com.tvd12.ezyfoxserver.client.codec.EzySimpleCodecFactory;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
-import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
-import com.tvd12.ezyfoxserver.client.constant.EzyConnectionFailedReason;
-import com.tvd12.ezyfoxserver.client.constant.EzyConnectionType;
-import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
-import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
-import com.tvd12.ezyfoxserver.client.event.EzyConnectionFailureEvent;
-import com.tvd12.ezyfoxserver.client.event.EzyConnectionSuccessEvent;
-import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
-import com.tvd12.ezyfoxserver.client.event.EzyEvent;
-import com.tvd12.ezyfoxserver.client.event.EzyTryConnectEvent;
+import com.tvd12.ezyfoxserver.client.constant.*;
+import com.tvd12.ezyfoxserver.client.event.*;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
 
-/**
- * Created by tavandung12 on 9/30/18.
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-public abstract class EzySocketClient 
-			extends EzyLoggable 
-			implements EzyISocketClient, EzySocketDelegate {
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.*;
+
+public abstract class EzySocketClient
+    extends EzyLoggable
+    implements EzyISocketClient, EzySocketDelegate {
+
     protected String host;
     protected int port;
     protected int reconnectCount;
@@ -47,7 +34,7 @@ public abstract class EzySocketClient
     protected byte[] sessionKey;
     protected EzyReconnectConfig reconnectConfig;
     protected EzyHandlerManager handlerManager;
-    protected Set<Object> unloggableCommands;
+    protected Set<Object> ignoredLogCommands;
     protected EzyPingManager pingManager;
     protected EzyPingSchedule pingSchedule;
     protected EzyEventHandlers eventHandlers;
@@ -63,9 +50,9 @@ public abstract class EzySocketClient
     protected final List<EzyArray> localMessageQueue;
     protected final List<EzySocketStatus> localSocketStatuses;
     protected final EzyValueStack<EzySocketStatus> socketStatuses;
-    
+
     public EzySocketClient() {
-    	this(EzySocketClientConfig.DEFAULT);
+        this(EzySocketClientConfig.DEFAULT);
     }
 
     public EzySocketClient(EzySocketClientConfig config) {
@@ -82,15 +69,14 @@ public abstract class EzySocketClient
     private EzyResponseApi newResponseApi() {
         Object encoder = codecFactory.newEncoder(EzyConnectionType.SOCKET);
         EzySocketDataEncoder socketDataEncoder = new EzySimpleSocketDataEncoder(encoder);
-        EzyResponseApi api = new EzySocketResponseApi(socketDataEncoder, packetQueue);
-        return api;
+        return new EzySocketResponseApi(socketDataEncoder, packetQueue);
     }
 
     @Override
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-        	logger.warn("socket is connecting...");
+            logger.warn("socket is connecting...");
             return;
         }
         this.socketStatuses.push(EzySocketStatus.CONNECTING);
@@ -108,13 +94,14 @@ public abstract class EzySocketClient
             return false;
         }
         int maxReconnectCount = reconnectConfig.getMaxReconnectCount();
-        if (reconnectCount >= maxReconnectCount)
+        if (reconnectCount >= maxReconnectCount) {
             return false;
+        }
         socketStatuses.push(EzySocketStatus.RECONNECTING);
         int reconnectSleepTime = reconnectConfig.getReconnectPeriod();
         connect0(reconnectSleepTime);
         reconnectCount++;
-        logger.info("try reconnect to server: " + reconnectCount + ", wating time: " + reconnectSleepTime);
+        logger.info("try reconnect to server: " + reconnectCount + ", waiting time: " + reconnectSleepTime);
         EzyEvent tryConnectEvent = new EzyTryConnectEvent(reconnectCount);
         socketEventQueue.addEvent(tryConnectEvent);
         return true;
@@ -130,12 +117,7 @@ public abstract class EzySocketClient
         socketStatuses.clear();
         disconnectReason = EzyDisconnectReason.UNKNOWN.getId();
         connectionFailedReason = EzyConnectionFailedReason.UNKNOWN;
-        Thread newThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                connect1(sleepTime);
-            }
-        });
+        Thread newThread = new Thread(() -> connect1(sleepTime));
         newThread.setName("ezyfox-connection");
         newThread.start();
     }
@@ -145,36 +127,36 @@ public abstract class EzySocketClient
         long dt = currentTime - connectTime;
         long realSleepTime = sleepTime;
         if (sleepTime <= 0) {
-        	int minSleepTimeBeforeReconnect = minSleepTimeBeforeReconnect();
-            if (dt < minSleepTimeBeforeReconnect)
+            int minSleepTimeBeforeReconnect = minSleepTimeBeforeReconnect();
+            if (dt < minSleepTimeBeforeReconnect) {
                 realSleepTime = minSleepTimeBeforeReconnect - dt;
+            }
         }
-        if (realSleepTime >= 0)
+        if (realSleepTime >= 0) {
             sleepBeforeConnect(realSleepTime);
+        }
         socketStatuses.push(EzySocketStatus.CONNECTING);
         boolean success = this.connectNow();
         connectTime = System.currentTimeMillis();
 
-        if(success) {
+        if (success) {
             this.reconnectCount = 0;
             this.startAdapters();
             this.socketStatuses.push(EzySocketStatus.CONNECTED);
-        }
-        else {
+        } else {
             this.resetSocket();
             this.socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
         }
     }
-    
+
     protected int minSleepTimeBeforeReconnect() {
-    	return 2000;
+        return 2000;
     }
 
     protected void sleepBeforeConnect(long sleepTime) {
         try {
             Thread.sleep(sleepTime);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new IllegalStateException(e);
         }
     }
@@ -200,10 +182,11 @@ public abstract class EzySocketClient
     }
 
     protected void clearAdapter(EzySocketAdapter adapter) {
-        if (adapter != null)
+        if (adapter != null) {
             adapter.stop();
+        }
     }
-    
+
     protected void clearComponents(int disconnectReason) {}
 
     protected abstract void resetSocket();
@@ -220,56 +203,53 @@ public abstract class EzySocketClient
         clearComponents(reason);
         socketStatuses.push(EzySocketStatus.DISCONNECTED);
     }
-    
+
     @Override
     public void disconnect(int reason) {
-        if (socketStatuses.last() != EzySocketStatus.CONNECTED)
+        if (socketStatuses.last() != EzySocketStatus.CONNECTED) {
             return;
+        }
         onDisconnected(disconnectReason = reason);
     }
-    
+
     @Override
     public void close() {
-    	disconnect(EzyDisconnectReason.CLOSE.getId());
-    	pingSchedule.shutdown();
+        disconnect(EzyDisconnectReason.CLOSE.getId());
+        pingSchedule.shutdown();
     }
-    
+
     @Override
-	public void sendMessage(EzyArray message) {
-    	sendMessage(message, false);
-	}
+    public void sendMessage(EzyArray message) {
+        sendMessage(message, false);
+    }
 
     @Override
     public void sendMessage(EzyArray message, boolean encrypted) {
         EzyPackage pack = new EzySimplePackage(message, encrypted, sessionKey);
         try {
             responseApi.response(pack);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.warn("send message: " + message + " error", e);
         }
     }
 
     public void processEventMessages() {
-    	processReceivedMessages();
+        processReceivedMessages();
         processStatuses();
         processEvents();
     }
 
     protected void processStatuses() {
         socketStatuses.popAll(localSocketStatuses);
-        for (int i = 0; i < localSocketStatuses.size(); ++i) {
-            EzySocketStatus status = localSocketStatuses.get(i);
+        for (EzySocketStatus status : localSocketStatuses) {
             if (status == EzySocketStatus.CONNECTED) {
                 EzyEvent evt = new EzyConnectionSuccessEvent();
                 socketEventQueue.addEvent(evt);
-            }
-            else if (status == EzySocketStatus.CONNECT_FAILED) {
+            } else if (status == EzySocketStatus.CONNECT_FAILED) {
                 EzyEvent evt = new EzyConnectionFailureEvent(connectionFailedReason);
                 socketEventQueue.addEvent(evt);
                 break;
-            }
-            else if (status == EzySocketStatus.DISCONNECTED) {
+            } else if (status == EzySocketStatus.DISCONNECTED) {
                 EzyEvent evt = new EzyDisconnectionEvent(disconnectReason);
                 socketEventQueue.addEvent(evt);
                 break;
@@ -281,14 +261,12 @@ public abstract class EzySocketClient
     protected void processEvents() {
         socketEventQueue.popAll(localEventQueue);
         try {
-	        for (int i = 0; i < localEventQueue.size(); ++i) {
-	            EzyEvent evt = localEventQueue.get(i);
-	            eventHandlers.handle(evt);
-	        }
+            for (EzyEvent evt : localEventQueue) {
+                eventHandlers.handle(evt);
+            }
+        } finally {
+            localEventQueue.clear();
         }
-        finally {
-        	localEventQueue.clear();
-		}
     }
 
     protected void processReceivedMessages() {
@@ -302,8 +280,7 @@ public abstract class EzySocketClient
         if (isSocketDisconnectable(statusLast)) {
             if (socketReader.isStopped()) {
                 onDisconnected(disconnectReason);
-            }
-            else if (socketWriter.isStopped()) {
+            } else if (socketWriter.isStopped()) {
                 onDisconnected(disconnectReason);
             }
         }
@@ -312,20 +289,19 @@ public abstract class EzySocketClient
     protected void processReceivedMessages0() {
         popReadMessages();
         try {
-        	if (localMessageQueue.size() > 0) {
-        		pingManager.setLostPingCount(0);
-        	}
-	        for (int i = 0; i < localMessageQueue.size(); ++i) {
-	            processReceivedMessage(localMessageQueue.get(i));
-	        }
+            if (localMessageQueue.size() > 0) {
+                pingManager.setLostPingCount(0);
+            }
+            for (EzyArray ezyArray : localMessageQueue) {
+                processReceivedMessage(ezyArray);
+            }
+        } finally {
+            localMessageQueue.clear();
         }
-        finally {
-        	localMessageQueue.clear();
-		}
     }
-    
+
     protected void popReadMessages() {
-    	socketReader.popMessages(localMessageQueue);
+        socketReader.popMessages(localMessageQueue);
     }
 
     protected void processReceivedMessage(EzyArray message) {
@@ -334,18 +310,17 @@ public abstract class EzySocketClient
         EzyCommand cmd = EzyCommand.valueOf(cmdId);
         printReceivedData(cmd, data);
         if (cmd == EzyCommand.DISCONNECT) {
-            int reasonId = data.get(0, int.class);
-            disconnectReason = reasonId;
+            disconnectReason = data.get(0, int.class);
             socketStatuses.push(EzySocketStatus.DISCONNECTING);
-        }
-        else {
+        } else {
             dataHandlers.handle(cmd, data);
         }
     }
 
     protected void printReceivedData(EzyCommand cmd, EzyArray data) {
-        if (!unloggableCommands.contains(cmd))
+        if (!ignoredLogCommands.contains(cmd)) {
             logger.debug("received command: " + cmd + " and data: " + data);
+        }
     }
 
     public String getHost() {
@@ -355,18 +330,18 @@ public abstract class EzySocketClient
     public int getPort() {
         return this.port;
     }
-    
+
     public void setSessionId(long sessionId) {
-		this.sessionId = sessionId;
-	}
-    
+        this.sessionId = sessionId;
+    }
+
     public void setSessionToken(String sessionToken) {
-		this.sessionToken = sessionToken;
-	}
-    
+        this.sessionToken = sessionToken;
+    }
+
     public void setSessionKey(byte[] sessionKey) {
-    	this.sessionKey = sessionKey;
-    	this.socketReader.setSessionKey(sessionKey);
+        this.sessionKey = sessionKey;
+        this.socketReader.setSessionKey(sessionKey);
     }
 
     public void setPingManager(EzyPingManager pingManager) {
@@ -388,7 +363,7 @@ public abstract class EzySocketClient
         this.reconnectConfig = reconnectConfig;
     }
 
-    public void setUnloggableCommands(Set<Object> unloggableCommands) {
-        this.unloggableCommands = unloggableCommands;
+    public void setIgnoredLogCommands(Set<Object> ignoredLogCommands) {
+        this.ignoredLogCommands = ignoredLogCommands;
     }
 }

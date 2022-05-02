@@ -5,11 +5,8 @@ import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.event.EzyConnectionFailureEvent;
 
-/**
- * Created by tavandung12 on 10/3/18.
- */
-
-public class EzyConnectionFailureHandler extends EzyAbstractEventHandler<EzyConnectionFailureEvent> {
+public class EzyConnectionFailureHandler
+    extends EzyAbstractEventHandler<EzyConnectionFailureEvent> {
 
     @Override
     public final void handle(EzyConnectionFailureEvent event) {
@@ -20,13 +17,13 @@ public class EzyConnectionFailureHandler extends EzyAbstractEventHandler<EzyConn
         boolean mustReconnect = reconnectConfig.isEnable() && shouldReconnect;
         boolean reconnecting = false;
         client.setStatus(EzyConnectionStatus.FAILURE);
-        if(mustReconnect)
+        if (mustReconnect) {
             reconnecting = client.reconnect();
-        if(reconnecting) {
-        	onReconnecting(event);
         }
-        else {
-        	onConnectionFailed(event);
+        if (reconnecting) {
+            onReconnecting(event);
+        } else {
+            onConnectionFailed(event);
         }
         postHandle(event);
     }
@@ -36,8 +33,8 @@ public class EzyConnectionFailureHandler extends EzyAbstractEventHandler<EzyConn
     }
 
     protected void onReconnecting(EzyConnectionFailureEvent event) {}
-    
+
     protected void onConnectionFailed(EzyConnectionFailureEvent event) {}
-    
+
     protected void postHandle(EzyConnectionFailureEvent event) {}
 }

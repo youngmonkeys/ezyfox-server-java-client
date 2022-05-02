@@ -6,10 +6,6 @@ import com.tvd12.ezyfoxserver.client.entity.EzySimpleApp;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
 
-/**
- * Created by tavandung12 on 10/2/18.
- */
-
 public class EzyAppAccessHandler extends EzyAbstractDataHandler {
 
     @Override
@@ -27,8 +23,6 @@ public class EzyAppAccessHandler extends EzyAbstractDataHandler {
     protected EzyApp newApp(EzyZone zone, EzyArray data) {
         int appId = data.get(0, int.class);
         String appName = data.get(1, String.class);
-        EzyApp app = new EzySimpleApp(zone, appId, appName);
-        return app;
+        return new EzySimpleApp(zone, appId, appName);
     }
-
 }

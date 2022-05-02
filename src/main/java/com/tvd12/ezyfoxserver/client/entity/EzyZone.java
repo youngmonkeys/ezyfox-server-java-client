@@ -13,11 +13,10 @@ public interface EzyZone {
     EzyClient getClient();
 
     EzyAppManager getAppManager();
-    
-    EzyPluginManager getPluginManager();
-    
-    EzyApp getApp();
-    
-    EzyPlugin getPlugin();
 
+    EzyPluginManager getPluginManager();
+
+    EzyApp getApp();
+
+    EzyPlugin getPlugin();
 }

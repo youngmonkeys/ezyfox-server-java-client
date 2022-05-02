@@ -5,14 +5,13 @@ java client for ezyfox server
 # Installation
 
 ```xml
+
 <dependency>
     <groupId>com.tvd12</groupId>
     <artifactId>ezyfox-server-java-client</artifactId>
     <version>1.1.8</version>
 </dependency>
 ```
-
-
 
 # Contact us
 

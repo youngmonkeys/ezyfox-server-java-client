@@ -1,15 +1,11 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 
-/**
- * Created by tavandung12 on 9/30/18.
- */
+import java.util.HashMap;
+import java.util.Map;
 
 public class EzyDataHandlers extends EzyAbstractHandlers {
 
@@ -26,15 +22,15 @@ public class EzyDataHandlers extends EzyAbstractHandlers {
     }
 
     public EzyDataHandler getHandler(Object cmd) {
-        EzyDataHandler handler = handlers.get(cmd);
-        return handler;
+        return handlers.get(cmd);
     }
 
     public void handle(Object cmd, EzyArray data) {
         EzyDataHandler handler = handlers.get(cmd);
-        if(handler != null)
+        if (handler != null) {
             handler.handle(data);
-        else
+        } else {
             logger.warn("has no handler for command: " + cmd);
+        }
     }
 }

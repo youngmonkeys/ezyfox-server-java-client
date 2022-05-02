@@ -3,10 +3,6 @@ package com.tvd12.ezyfoxserver.client.setup;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
 
-/**
- * Created by tavandung12 on 10/3/18.
- */
-
 @SuppressWarnings("rawtypes")
 public class EzySimpleAppSetup implements EzyAppSetup {
 
@@ -18,7 +14,7 @@ public class EzySimpleAppSetup implements EzyAppSetup {
         this.dataHandlers = dataHandlers;
     }
 
-	@Override
+    @Override
     public EzyAppSetup addDataHandler(Object cmd, EzyAppDataHandler dataHandler) {
         dataHandlers.addHandler(cmd, dataHandler);
         return this;

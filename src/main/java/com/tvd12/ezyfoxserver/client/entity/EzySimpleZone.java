@@ -42,42 +42,39 @@ public class EzySimpleZone implements EzyZone {
     public EzyAppManager getAppManager() {
         return appManager;
     }
-    
+
     @Override
     public EzyPluginManager getPluginManager() {
-    	return pluginManager;
-    }
-    
-    @Override
-	public EzyApp getApp() {
-    	return appManager.getApp();
-	}
-    
-    @Override
-    public EzyPlugin getPlugin() {
-    	return pluginManager.getPlugin();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-    	return new EzyEquals<EzySimpleZone>()
-    			.function(t -> t.id)
-    			.isEquals(this, obj);
-    }
-    
-    @Override
-    public int hashCode() {
-    	return id;
-    }
-    
-    @Override
-    public String toString() {
-    	return new StringBuilder()
-    			.append("Zone(")
-    			.append("id: ").append(id).append(", ")
-    			.append("name: ").append(name)
-    			.append(")")
-    			.toString();
+        return pluginManager;
     }
 
+    @Override
+    public EzyApp getApp() {
+        return appManager.getApp();
+    }
+
+    @Override
+    public EzyPlugin getPlugin() {
+        return pluginManager.getPlugin();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return new EzyEquals<EzySimpleZone>()
+            .function(t -> t.id)
+            .isEquals(this, obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Zone(" +
+            "id: " + id + ", " +
+            "name: " + name +
+            ")";
+    }
 }

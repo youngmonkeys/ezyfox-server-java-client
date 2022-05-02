@@ -12,25 +12,25 @@ public class EzySimplePackage implements EzyPackage {
     protected EzyConstant transportType;
 
     public EzySimplePackage(
-    		EzyArray data, 
-    		boolean encrypted, byte[] encryptionKey) {
+        EzyArray data,
+        boolean encrypted, byte[] encryptionKey) {
         this(data, encrypted, encryptionKey, EzyTransportType.TCP);
     }
-    
+
     public EzySimplePackage(EzyArray data, EzyConstant transportType) {
-    	this(data, false, transportType);
-    }
-    
-    public EzySimplePackage(
-    		EzyArray data, 
-    		boolean encrypted, EzyConstant transportType) {
-    	this(data, encrypted, null, transportType);
+        this(data, false, transportType);
     }
 
     public EzySimplePackage(
-    		EzyArray data, 
-    		boolean encrypted, 
-    		byte[] encryptionKey, EzyConstant transportType) {
+        EzyArray data,
+        boolean encrypted, EzyConstant transportType) {
+        this(data, encrypted, null, transportType);
+    }
+
+    public EzySimplePackage(
+        EzyArray data,
+        boolean encrypted,
+        byte[] encryptionKey, EzyConstant transportType) {
         this.data = data;
         this.encrypted = encrypted;
         this.encryptionKey = encryptionKey;
@@ -41,15 +41,15 @@ public class EzySimplePackage implements EzyPackage {
     public EzyArray getData() {
         return data;
     }
-    
+
     @Override
     public boolean isEncrypted() {
-    	return encrypted;
+        return encrypted;
     }
-    
+
     @Override
     public byte[] getEncryptionKey() {
-    	return encryptionKey;
+        return encryptionKey;
     }
 
     @Override
@@ -63,5 +63,4 @@ public class EzySimplePackage implements EzyPackage {
         this.encryptionKey = null;
         this.transportType = null;
     }
-
 }

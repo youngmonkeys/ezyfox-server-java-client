@@ -3,21 +3,20 @@ package com.tvd12.ezyfoxserver.client.socket;
 public interface EzyPacketQueue {
 
     int size();
-    
-	void clear();
-	
-	EzyPacket take();
 
-	EzyPacket peek() throws  InterruptedException;
-	
-	boolean isFull();
-	
-	boolean isEmpty();
+    void clear();
 
-	boolean add(EzyPacket packet);
+    EzyPacket take();
 
-	void again();
+    EzyPacket peek() throws InterruptedException;
 
-	void wakeup();
-	
+    boolean isFull();
+
+    boolean isEmpty();
+
+    boolean add(EzyPacket packet);
+
+    void again();
+
+    void wakeup();
 }

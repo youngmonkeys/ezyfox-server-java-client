@@ -1,8 +1,5 @@
 package com.tvd12.ezyfoxserver.client.setup;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
 import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandler;
@@ -10,9 +7,8 @@ import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
 import com.tvd12.ezyfoxserver.client.handler.EzyPluginDataHandlers;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 
-/**
- * Created by tavandung12 on 9/30/18.
- */
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("rawtypes")
 public class EzySimpleSetup implements EzySetup {
@@ -33,7 +29,7 @@ public class EzySimpleSetup implements EzySetup {
         return this;
     }
 
-	@Override
+    @Override
     public EzySetup addEventHandler(EzyEventType eventType, EzyEventHandler eventHandler) {
         handlerManager.addEventHandler(eventType, eventHandler);
         return this;
@@ -42,18 +38,18 @@ public class EzySimpleSetup implements EzySetup {
     @Override
     public EzyAppSetup setupApp(String appName) {
         EzyAppSetup appSetup = appSetups.get(appName);
-        if(appSetup == null) {
+        if (appSetup == null) {
             EzyAppDataHandlers dataHandlers = handlerManager.getAppDataHandlers(appName);
             appSetup = new EzySimpleAppSetup(dataHandlers, this);
             appSetups.put(appName, appSetup);
         }
         return appSetup;
     }
-    
+
     @Override
     public EzyPluginSetup setupPlugin(String pluginName) {
         EzyPluginSetup pluginSetup = pluginSetups.get(pluginName);
-        if(pluginSetup == null) {
+        if (pluginSetup == null) {
             EzyPluginDataHandlers dataHandlers = handlerManager.getPluginDataHandlers(pluginName);
             pluginSetup = new EzySimplePluginSetup(dataHandlers, this);
             pluginSetups.put(pluginName, pluginSetup);

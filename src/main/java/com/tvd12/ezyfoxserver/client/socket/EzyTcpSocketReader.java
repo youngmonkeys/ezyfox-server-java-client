@@ -13,11 +13,9 @@ public class EzyTcpSocketReader extends EzySocketReader {
     @Override
     protected int readSocketData() {
         try {
-            int bytesToRead = socket.read(buffer);
-            return bytesToRead;
-        }
-        catch (Exception e) {
-        	handleSocketReaderException(e);
+            return socket.read(buffer);
+        } catch (Exception e) {
+            handleSocketReaderException(e);
             return -1;
         }
     }

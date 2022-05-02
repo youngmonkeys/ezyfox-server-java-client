@@ -4,14 +4,10 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 
-/**
- * Created by tavandung12 on 9/30/18.
- */
-
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EzyAppResponseHandler extends EzyAbstractDataHandler {
 
-	@Override
+    @Override
     public void handle(EzyArray data) {
         int appId = data.get(0, int.class);
         EzyArray commandData = data.get(1, EzyArray.class);
@@ -19,14 +15,15 @@ public class EzyAppResponseHandler extends EzyAbstractDataHandler {
         EzyData responseData = commandData.get(1, EzyData.class, null);
 
         EzyApp app = client.getAppById(appId);
-        if(app == null) {
-        	logger.info("receive message when has not joined app yet");
-        	return;
+        if (app == null) {
+            logger.info("receive message when has not joined app yet");
+            return;
         }
         EzyAppDataHandler dataHandler = app.getDataHandler(cmd);
-        if(dataHandler != null)
+        if (dataHandler != null) {
             dataHandler.handle(app, responseData);
-        else
+        } else {
             logger.warn("app: {} has no handler for command: {}", app.getName(), cmd);
+        }
     }
 }

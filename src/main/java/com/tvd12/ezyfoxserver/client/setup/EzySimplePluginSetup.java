@@ -14,7 +14,7 @@ public class EzySimplePluginSetup implements EzyPluginSetup {
         this.dataHandlers = dataHandlers;
     }
 
-	@Override
+    @Override
     public EzyPluginSetup addDataHandler(Object cmd, EzyPluginDataHandler dataHandler) {
         dataHandlers.addHandler(cmd, dataHandler);
         return this;

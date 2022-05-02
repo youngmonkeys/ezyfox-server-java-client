@@ -1,21 +1,21 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
 <suite name="AllTests">
-	<test name="All">
-		<packages>
-			<package name="com.tvd12.ezyfoxserver.client.testing"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.codec"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.concurrent"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.config"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.constant"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.entity"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.event"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.handler"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.manager"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.request"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.setup"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.socket"></package>
-			<package name="com.tvd12.ezyfoxserver.client.testing.util"></package>
-		</packages>
-	</test>
+    <test name="All">
+        <packages>
+            <package name="com.tvd12.ezyfoxserver.client.testing"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.codec"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.concurrent"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.config"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.constant"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.entity"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.event"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.handler"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.manager"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.request"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.setup"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.socket"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.util"/>
+        </packages>
+    </test>
 </suite>

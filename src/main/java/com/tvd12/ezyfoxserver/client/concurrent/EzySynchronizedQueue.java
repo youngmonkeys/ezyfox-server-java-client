@@ -26,39 +26,36 @@ public class EzySynchronizedQueue<E> extends EzyQueue<E> {
 
     @Override
     public boolean offer(E e) {
-        boolean success = add(e);
-        return success;
+        return add(e);
     }
 
     @Override
     public E peek() {
         synchronized (queue) {
-            E e = queue.peek();
-            return e;
+            return queue.peek();
         }
     }
 
     @Override
     public E poll() {
         synchronized (queue) {
-            E e = queue.poll();
-            return e;
+            return queue.poll();
         }
     }
 
     @Override
     public void pollAll(List<E> list) {
         synchronized (queue) {
-            while (queue.size() > 0)
+            while (queue.size() > 0) {
                 list.add(queue.poll());
+            }
         }
     }
 
     @Override
     public int size() {
         synchronized (queue) {
-            int count = queue.size();
-            return count;
+            return queue.size();
         }
     }
 

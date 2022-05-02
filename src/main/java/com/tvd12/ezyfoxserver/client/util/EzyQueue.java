@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class EzyQueue<E> {
-	
+
     protected final int capacity;
     protected final Queue<E> queue;
 
@@ -13,8 +13,7 @@ public class EzyQueue<E> {
         this(Integer.MAX_VALUE);
     }
 
-    public EzyQueue(int capacity)
-    {
+    public EzyQueue(int capacity) {
         this.capacity = capacity;
         this.queue = newQueue(capacity);
     }
@@ -44,8 +43,9 @@ public class EzyQueue<E> {
     }
 
     public void pollAll(List<E> list) {
-        while (queue.size() > 0)
+        while (queue.size() > 0) {
             list.add(queue.poll());
+        }
     }
 
     public int size() {

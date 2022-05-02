@@ -6,25 +6,23 @@ import com.tvd12.ezyfox.constant.EzyConstant;
 
 public class EzySimpleCodecFactory implements EzyCodecFactory {
 
-	private final EzyCodecCreator socketCodecCreator;
-	
-	public EzySimpleCodecFactory() {
-		this(false);
-	}
-	
-	public EzySimpleCodecFactory(boolean enableSSL) {
-		this.socketCodecCreator = new MsgPackCodecCreator(enableSSL);
-	}
-	
-	@Override
-    public Object newEncoder(EzyConstant connectionType) {
-        Object encoder = socketCodecCreator.newEncoder();
-        return encoder;
+    private final EzyCodecCreator socketCodecCreator;
+
+    public EzySimpleCodecFactory() {
+        this(false);
     }
-	
-	@Override
-	public Object newDecoder(EzyConstant connectionType) {
-		Object decoder = socketCodecCreator.newDecoder(Integer.MAX_VALUE);
-		return decoder;
-	}
+
+    public EzySimpleCodecFactory(boolean enableSSL) {
+        this.socketCodecCreator = new MsgPackCodecCreator(enableSSL);
+    }
+
+    @Override
+    public Object newEncoder(EzyConstant connectionType) {
+        return socketCodecCreator.newEncoder();
+    }
+
+    @Override
+    public Object newDecoder(EzyConstant connectionType) {
+        return socketCodecCreator.newDecoder(Integer.MAX_VALUE);
+    }
 }

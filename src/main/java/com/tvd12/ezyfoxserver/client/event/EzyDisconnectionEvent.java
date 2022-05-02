@@ -1,9 +1,5 @@
 package com.tvd12.ezyfoxserver.client.event;
 
-/**
- * Created by tavandung12 on 10/5/18.
- */
-
 public class EzyDisconnectionEvent implements EzyEvent {
 
     private final int reason;

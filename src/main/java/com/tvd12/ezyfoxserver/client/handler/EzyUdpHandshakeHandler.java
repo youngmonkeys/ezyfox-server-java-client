@@ -9,30 +9,28 @@ import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
 
 public class EzyUdpHandshakeHandler extends EzyAbstractDataHandler {
 
-	@Override
-	public final void handle(EzyArray data) {
-		int responseCode = data.get(0, int.class);
-		EzyUTClient utClient = (EzyUTClient)client;
-		EzyUTSocketClient socket = (EzyUTSocketClient)client.getSocket();
-		if(responseCode == EzyStatusCodes.OK) {
-			utClient.setUdpStatus(EzyConnectionStatus.CONNECTED);
-			socket.udpSetStatus(EzySocketStatus.CONNECTED);
-			onAuthenticated(data);
-		}
-		else {
-			utClient.setUdpStatus(EzyConnectionStatus.FAILURE);
-			socket.udpSetStatus(EzySocketStatus.CONNECT_FAILED);
-			onAuthenticationError(data);
-		}
-	}
-	
-	protected void onAuthenticated(EzyArray data) {
-		logger.info("udp authenticated");
-	}
-	
-	protected void onAuthenticationError(EzyArray data) {
-		int responseCode = data.get(0, int.class);
-		logger.info("udp authentication error: " + responseCode);
-	}
+    @Override
+    public final void handle(EzyArray data) {
+        int responseCode = data.get(0, int.class);
+        EzyUTClient utClient = (EzyUTClient) client;
+        EzyUTSocketClient socket = (EzyUTSocketClient) client.getSocket();
+        if (responseCode == EzyStatusCodes.OK) {
+            utClient.setUdpStatus(EzyConnectionStatus.CONNECTED);
+            socket.udpSetStatus(EzySocketStatus.CONNECTED);
+            onAuthenticated(data);
+        } else {
+            utClient.setUdpStatus(EzyConnectionStatus.FAILURE);
+            socket.udpSetStatus(EzySocketStatus.CONNECT_FAILED);
+            onAuthenticationError(data);
+        }
+    }
 
+    protected void onAuthenticated(EzyArray data) {
+        logger.info("udp authenticated");
+    }
+
+    protected void onAuthenticationError(EzyArray data) {
+        int responseCode = data.get(0, int.class);
+        logger.info("udp authentication error: " + responseCode);
+    }
 }

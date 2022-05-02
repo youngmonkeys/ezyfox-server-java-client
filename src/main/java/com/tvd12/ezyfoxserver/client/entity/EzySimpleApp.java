@@ -32,7 +32,7 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
         EzyData data = request.serialize();
         send(cmd, data);
     }
-    
+
     @Override
     public void send(String cmd) {
         send(cmd, EzyEntityFactory.EMPTY_OBJECT);
@@ -40,28 +40,28 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
 
     @Override
     public void send(String cmd, EzyData data) {
-    	send(cmd, data, false);
+        send(cmd, data, false);
     }
-    
+
     @Override
     public void send(String cmd, EzyData data, boolean encrypted) {
-    	EzyArray commandData = EzyEntityFactory.newArray();
-    	commandData.add(cmd, data);
-    	send(commandData, encrypted);
+        EzyArray commandData = EzyEntityFactory.newArray();
+        commandData.add(cmd, data);
+        send(commandData, encrypted);
     }
-    
+
     @Override
     public void send(EzyArray request) {
         send(request, false);
     }
-    
+
     @Override
     public void send(EzyArray request, boolean encrypted) {
-    	EzyArray requestData = EzyEntityFactory.newArray();
+        EzyArray requestData = EzyEntityFactory.newArray();
         requestData.add(id, request);
-    	client.send(EzyCommand.APP_REQUEST, requestData, encrypted);
+        client.send(EzyCommand.APP_REQUEST, requestData, encrypted);
     }
-    
+
     @Override
     public void udpSend(EzyRequest request) {
         String cmd = (String) request.getCommand();
@@ -76,8 +76,8 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
 
     @Override
     public void udpSend(String cmd, EzyData data) {
-    	EzyArray commandData = EzyEntityFactory.newArray();
-    	commandData.add(cmd, data);
+        EzyArray commandData = EzyEntityFactory.newArray();
+        commandData.add(cmd, data);
         EzyArray requestData = EzyEntityFactory.newArray();
         requestData.add(id, commandData);
         client.udpSend(EzyCommand.APP_REQUEST, requestData);
@@ -105,29 +105,26 @@ public class EzySimpleApp extends EzyEntity implements EzyApp {
 
     @Override
     public EzyAppDataHandler<?> getDataHandler(Object cmd) {
-        EzyAppDataHandler<?> handler = dataHandlers.getHandler(cmd);
-        return handler;
+        return (EzyAppDataHandler<?>) dataHandlers.getHandler(cmd);
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-    	return new EzyEquals<EzySimpleApp>()
-    			.function(t -> t.id)
-    			.isEquals(this, obj);
+        return new EzyEquals<EzySimpleApp>()
+            .function(t -> t.id)
+            .isEquals(this, obj);
     }
-    
+
     @Override
     public int hashCode() {
-    	return id;
+        return id;
     }
-    
+
     @Override
     public String toString() {
-    	return new StringBuilder()
-    			.append("App(")
-    			.append("id: ").append(id).append(", ")
-    			.append("name: ").append(name)
-    			.append(")")
-    			.toString();
+        return "App(" +
+            "id: " + id + ", " +
+            "name: " + name +
+            ")";
     }
 }

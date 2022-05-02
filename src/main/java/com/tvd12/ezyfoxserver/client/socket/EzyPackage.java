@@ -7,11 +7,10 @@ import com.tvd12.ezyfox.util.EzyReleasable;
 public interface EzyPackage extends EzyReleasable {
 
     EzyArray getData();
-    
+
     boolean isEncrypted();
-    
+
     byte[] getEncryptionKey();
-    
+
     EzyConstant getTransportType();
-    
 }

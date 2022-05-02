@@ -14,7 +14,7 @@ public enum EzySocketStatus implements EzyConstant {
 
     private final int id;
 
-    private EzySocketStatus(int id) {
+    EzySocketStatus(int id) {
         this.id = id;
     }
 

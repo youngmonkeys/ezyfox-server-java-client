@@ -8,10 +8,9 @@ public class EzySimpleRequestSerializer implements EzyRequestSerializer {
 
     @Override
     public EzyArray serialize(EzyCommand cmd, EzyArray data) {
-        EzyArray array = EzyEntityFactory.newArrayBuilder()
-                .append(cmd.getId())
-                .append(data)
-                .build();
-        return array;
+        return EzyEntityFactory.newArrayBuilder()
+            .append(cmd.getId())
+            .append(data)
+            .build();
     }
 }

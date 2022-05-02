@@ -1,35 +1,15 @@
 package com.tvd12.ezyfoxserver.client.manager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
-import com.tvd12.ezyfoxserver.client.handler.EzyAppAccessHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyAppDataHandlers;
-import com.tvd12.ezyfoxserver.client.handler.EzyAppExitHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyAppResponseHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyConnectionFailureHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyDataHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
-import com.tvd12.ezyfoxserver.client.handler.EzyDisconnectionHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyEventHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
-import com.tvd12.ezyfoxserver.client.handler.EzyLoginErrorHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyLoginSuccessHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyPluginDataHandlers;
-import com.tvd12.ezyfoxserver.client.handler.EzyPongHandler;
-import com.tvd12.ezyfoxserver.client.handler.EzyUdpHandshakeHandler;
+import com.tvd12.ezyfoxserver.client.handler.*;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
-
 import lombok.Getter;
 
-/**
- * Created by tavandung12 on 10/9/18.
- */
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("rawtypes")
 public class EzySimpleHandlerManager implements EzyHandlerManager {
@@ -85,17 +65,17 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
     @Override
     public EzyAppDataHandlers getAppDataHandlers(String appName) {
         EzyAppDataHandlers answer = appDataHandlersByName.get(appName);
-        if(answer == null) {
+        if (answer == null) {
             answer = new EzyAppDataHandlers();
             appDataHandlersByName.put(appName, answer);
         }
         return answer;
     }
-    
+
     @Override
     public EzyPluginDataHandlers getPluginDataHandlers(String pluginName) {
-    	EzyPluginDataHandlers answer = pluginDataHandlersByName.get(pluginName);
-        if(answer == null) {
+        EzyPluginDataHandlers answer = pluginDataHandlersByName.get(pluginName);
+        if (answer == null) {
             answer = new EzyPluginDataHandlers();
             pluginDataHandlersByName.put(pluginName, answer);
         }
