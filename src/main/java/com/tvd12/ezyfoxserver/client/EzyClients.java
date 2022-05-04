@@ -30,11 +30,11 @@ public final class EzyClients {
         EzyTransportType transportType,
         EzyClientConfig config) {
         synchronized (clients) {
-            return newClient0(transportType, config);
+            return doNewClient(transportType, config);
         }
     }
 
-    private EzyClient newClient0(
+    private EzyClient doNewClient(
         EzyTransportType transportType,
         EzyClientConfig config) {
         String clientName = config.getClientName();
@@ -61,7 +61,7 @@ public final class EzyClients {
         EzyTransportType transportType,
         EzyClientConfig config) {
         synchronized (clients) {
-            EzyClient client = newClient0(transportType, config);
+            EzyClient client = doNewClient(transportType, config);
             defaultClientName = client.getName();
             return client;
         }
