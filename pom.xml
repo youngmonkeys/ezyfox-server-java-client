@@ -6,17 +6,17 @@
     <parent>
         <groupId>com.tvd12</groupId>
         <artifactId>ezyfox</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.5</version>
     </parent>
 
     <artifactId>ezyfox-server-java-client</artifactId>
 
-    <version>1.1.9</version>
+    <version>1.2.0</version>
     <name>ezyfox-server-java-client</name>
     <url>https://youngmonkeys.org/</url>
 
     <properties>
-        <ezy.version>1.2.3</ezy.version>
+        <ezy.version>1.2.4</ezy.version>
     </properties>
 
     <dependencies>

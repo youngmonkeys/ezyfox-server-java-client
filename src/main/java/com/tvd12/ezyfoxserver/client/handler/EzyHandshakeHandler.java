@@ -1,7 +1,7 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
 import com.tvd12.ezyfox.entity.EzyArray;
-import com.tvd12.ezyfox.sercurity.EzyAsyCrypt;
+import com.tvd12.ezyfox.security.EzyAsyCrypt;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingScheduleAware;

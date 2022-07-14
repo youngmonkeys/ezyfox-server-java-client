@@ -1,6 +1,6 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
-import com.tvd12.ezyfox.sercurity.EzyKeysGenerator;
+import com.tvd12.ezyfox.security.EzyKeysGenerator;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.event.EzyEvent;
 import com.tvd12.ezyfoxserver.client.request.EzyHandshakeRequest;
