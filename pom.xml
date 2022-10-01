@@ -11,12 +11,12 @@
 
     <artifactId>ezyfox-server-java-client</artifactId>
 
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <name>ezyfox-server-java-client</name>
     <url>https://youngmonkeys.org/</url>
 
     <properties>
-        <ezy.version>1.2.4</ezy.version>
+        <ezy.version>1.2.5</ezy.version>
     </properties>
 
     <dependencies>
