@@ -9,7 +9,7 @@ java client for ezyfox server
 <dependency>
     <groupId>com.tvd12</groupId>
     <artifactId>ezyfox-server-java-client</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.3</version>
 </dependency>
 ```
 
