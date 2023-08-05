@@ -75,7 +75,7 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
         return remainBytes;
     }
 
-    private byte[] getBytesToWrite(EzyPacket packet) {
+    protected byte[] getBytesToWrite(EzyPacket packet) {
         return (byte[]) packet.getData();
     }
 

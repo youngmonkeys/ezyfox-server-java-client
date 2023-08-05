@@ -10,6 +10,7 @@ import com.tvd12.ezyfoxserver.client.EzyClients;
 import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
@@ -30,6 +31,8 @@ public class EzyHelloClientTest {
         EzyClientConfig clientConfig = EzyClientConfig.builder()
             .clientName("example")
             .zoneName("example")
+            .enableSSL()
+            .sslType(EzySslType.CERTIFICATION)
             .pingConfigBuilder()
             .pingPeriod(1000)
             .done()
@@ -49,7 +52,8 @@ public class EzyHelloClientTest {
         EzyAppSetup appSetup = setup.setupApp("hello-world");
         appSetup.addDataHandler("hello", new HelloMessageResponseHandler());
 
-        client.connect("tvd12.com", 3005);
+        client.connect("localhost", 3005);
+//        client.connect("ws.tvd12.com", 3005);
 
         EzyMainEventsLoop mainEventsLoop = new EzyMainEventsLoop();
         mainEventsLoop.start();

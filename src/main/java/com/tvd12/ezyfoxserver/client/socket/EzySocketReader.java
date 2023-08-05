@@ -23,13 +23,12 @@ public abstract class EzySocketReader extends EzySocketAdapter {
         super();
         this.readBufferSize = EzySocketConstants.MAX_READ_BUFFER_SIZE;
         this.dataQueue = new EzySynchronizedQueue<>();
-        this.buffer = ByteBuffer.allocateDirect(readBufferSize);
+        this.buffer = newBuffer(readBufferSize);
         this.decodeBytesCallback = this::onMessageReceived;
     }
 
-    @Override
-    protected void loop() {
-        super.loop();
+    protected ByteBuffer newBuffer(int readBufferSize) {
+        return ByteBuffer.allocateDirect(readBufferSize);
     }
 
     @Override

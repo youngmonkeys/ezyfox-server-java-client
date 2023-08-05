@@ -7,6 +7,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.*;
 import com.tvd12.ezyfoxserver.client.manager.*;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
@@ -17,9 +18,11 @@ import com.tvd12.ezyfoxserver.client.setup.EzySimpleSetup;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzyTcpSslSocketClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,7 +74,7 @@ public class EzyTcpClient
     }
 
     protected EzySocketClient newSocketClient() {
-        EzyTcpSocketClient client = newTcpSocketClient(config);
+        EzySocketClient client = newTcpSocketClient(config);
         client.setPingSchedule(pingSchedule);
         client.setPingManager(pingManager);
         client.setHandlerManager(handlerManager);
@@ -80,8 +83,10 @@ public class EzyTcpClient
         return client;
     }
 
-    protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
-        return new EzyTcpSocketClient(config);
+    protected EzySocketClient newTcpSocketClient(EzySocketClientConfig config) {
+        return isEnableCertificationSSL()
+            ? new EzyTcpSslSocketClient(config)
+            : new EzyTcpSocketClient(config);
     }
 
     @Override
@@ -187,6 +192,27 @@ public class EzyTcpClient
     @Override
     public boolean isEnableSSL() {
         return config.isEnableSSL();
+    }
+
+    @Override
+    public EzySslType getSslType() {
+        return config.getSslType();
+    }
+
+    @Override
+    public boolean isEnableEncryption() {
+        return isEnableSSL() && getSslType() == EzySslType.CUSTOMIZATION;
+    }
+
+    protected boolean isEnableCertificationSSL() {
+        return isEnableSSL() && getSslType() == EzySslType.CERTIFICATION;
+    }
+
+    @Override
+    public void setSslContext(SSLContext sslContext) {
+        if (socketClient instanceof EzyTcpSslSocketClient) {
+            ((EzyTcpSslSocketClient) socketClient).setSslContext(sslContext);
+        }
     }
 
     @Override

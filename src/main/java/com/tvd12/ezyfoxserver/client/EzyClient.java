@@ -6,6 +6,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
@@ -15,6 +16,8 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.setup.EzySetup;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
+
+import javax.net.ssl.SSLContext;
 
 public interface EzyClient extends EzyCloseable {
 
@@ -55,6 +58,12 @@ public interface EzyClient extends EzyCloseable {
     EzyClientConfig getConfig();
 
     boolean isEnableSSL();
+
+    EzySslType getSslType();
+
+    boolean isEnableEncryption();
+
+    void setSslContext(SSLContext sslContext);
 
     boolean isEnableDebug();
 

@@ -40,8 +40,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     private EzyResponseApi newResponseApi() {
         Object encoder = codecFactory.newEncoder(EzyConnectionType.SOCKET);
         EzySocketDataEncoder socketDataEncoder = new EzySimpleSocketDataEncoder(encoder);
-        EzyResponseApi api = new EzySocketResponseApi(socketDataEncoder, packetQueue);
-        return api;
+        return new EzySocketResponseApi(socketDataEncoder, packetQueue);
     }
 
     @Override

@@ -6,8 +6,9 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
-import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzyUTSslSocketClient;
 
 public class EzyUTClient extends EzyTcpClient {
 
@@ -16,8 +17,10 @@ public class EzyUTClient extends EzyTcpClient {
     }
 
     @Override
-    protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
-        return new EzyUTSocketClient(config);
+    protected EzySocketClient newTcpSocketClient(EzySocketClientConfig config) {
+        return isEnableCertificationSSL()
+            ? new EzyUTSslSocketClient(config)
+            : new EzyUTSocketClient(config);
     }
 
     @Override

@@ -14,6 +14,8 @@ import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
 
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -314,6 +316,21 @@ public abstract class EzySocketClient
             socketStatuses.push(EzySocketStatus.DISCONNECTING);
         } else {
             dataHandlers.handle(cmd, data);
+        }
+    }
+
+    protected void processConnectionException(Exception e) {
+        if (e instanceof ConnectException) {
+            ConnectException c = (ConnectException) e;
+            if ("Network is unreachable".equalsIgnoreCase(c.getMessage())) {
+                connectionFailedReason = EzyConnectionFailedReason.NETWORK_UNREACHABLE;
+            } else {
+                connectionFailedReason = EzyConnectionFailedReason.CONNECTION_REFUSED;
+            }
+        } else if (e instanceof UnknownHostException) {
+            connectionFailedReason = EzyConnectionFailedReason.UNKNOWN_HOST;
+        } else {
+            connectionFailedReason = EzyConnectionFailedReason.UNKNOWN;
         }
     }
 

@@ -22,12 +22,7 @@ public abstract class EzySocketAdapter extends EzyLoggable {
             }
             active = true;
             stopped = false;
-            Thread newThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    loop();
-                }
-            });
+            Thread newThread = new Thread(this::loop);
             newThread.setName(getThreadName());
             newThread.start();
         }

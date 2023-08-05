@@ -25,7 +25,7 @@ public abstract class EzyHandshakeHandler
     protected void preHandle(EzyArray data) {
         this.client.setSessionToken(data.get(1, String.class));
         this.client.setSessionId(data.get(2, long.class));
-        if (client.isEnableSSL()) {
+        if (client.isEnableEncryption()) {
             this.client.setSessionKey(decryptSessionKey(data.get(3, byte[].class, null)));
         }
     }
