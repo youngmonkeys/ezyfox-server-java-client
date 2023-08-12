@@ -24,6 +24,9 @@ public class AccessAppHandler extends EzyAppAccessHandler {
     }
 
     private void sendMessage(EzyApp app) {
+        if (!app.getClient().isConnected()) {
+            return;
+        }
         if (useUdp) {
             app.udpSend("udpBroadcastMessage", newMessageData());
         } else {

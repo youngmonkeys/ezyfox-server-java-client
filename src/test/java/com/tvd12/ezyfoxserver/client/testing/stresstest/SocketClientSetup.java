@@ -37,11 +37,11 @@ public class SocketClientSetup {
         EzyAppSetup appSetup = setup.setupApp("hello-world");
         appSetup.addDataHandler("broadcastMessage", (app, data) -> {
 			String message = ((EzyObject)data).get("message", String.class);
-			System.out.println("tcp > server response: " + message);
+			 System.out.println(app.getClient().getSocket() + ": > server response: " + message);
         });
         appSetup.addDataHandler("udpBroadcastMessage", (app, data) -> {
 			String message = ((EzyObject)data).get("message", String.class);
-			System.out.println("udp > server response: " + message);
+			 System.out.println("udp > server response: " + message);
         });
     }
 

@@ -14,7 +14,11 @@ public class EzyTcpSocketWriter extends EzySocketWriter {
     @Override
     protected int writeToSocket(ByteBuffer buffer) {
         try {
-            return socket.write(buffer);
+            int writtenBytes = 0;
+            while (buffer.hasRemaining()) {
+                writtenBytes += socket.write(buffer);
+            }
+            return writtenBytes;
         } catch (Exception e) {
             logger.warn("I/O error at socket-writer", e);
             return -1;

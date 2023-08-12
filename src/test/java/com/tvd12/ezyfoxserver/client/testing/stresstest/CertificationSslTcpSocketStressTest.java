@@ -7,10 +7,10 @@ import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class SslTcpSocketStressTest extends SocketStressTest {
+public class CertificationSslTcpSocketStressTest extends SocketStressTest {
 
     public static void main(String[] args) {
-        new SslTcpSocketStressTest().test();
+        new CertificationSslTcpSocketStressTest().test();
     }
 
     @Override
@@ -42,6 +42,5 @@ public class SslTcpSocketStressTest extends SocketStressTest {
     @Override
     protected void connect(EzyClient client) {
         client.connect("127.0.0.1", 3005);
-//        client.connect("ws.tvd12.com", 3005);
     }
 }
