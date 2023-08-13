@@ -10,6 +10,8 @@ import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
+import com.tvd12.test.base.BaseTest;
+import com.tvd12.test.util.RandomUtil;
 import org.testng.annotations.Test;
 
 import java.util.Random;
@@ -17,7 +19,7 @@ import java.util.Random;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("resource")
-public class EzyUTClientTest {
+public class EzyUTClientTest extends BaseTest {
 
     @Test
     public void creation() {
@@ -91,11 +93,12 @@ public class EzyUTClientTest {
             .append(cmd.getId())
             .append(data)
             .build();
+        boolean encrypted = RandomUtil.randomBoolean();
 
         // when
-        sut.udpSend(request);
+        sut.udpSend(request, encrypted);
 
         // then
-        verify(mockSocketClient).udpSendMessage(message);
+        verify(mockSocketClient).udpSendMessage(message, encrypted);
     }
 }

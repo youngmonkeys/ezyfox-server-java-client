@@ -19,6 +19,8 @@ import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSslSocketClient;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,25 +35,45 @@ public class EzyTcpClient
     extends EzyEntity
     implements EzyClient, EzyMeAware, EzyZoneAware {
 
+    @Setter
+    @Getter
+    protected EzyUser me;
+    @Setter
+    @Getter
+    protected EzyZone zone;
+    @Getter
+    protected long sessionId;
+    @Setter
+    @Getter
+    protected byte[] publicKey;
+    @Setter
+    @Getter
+    protected byte[] privateKey;
+    @Getter
+    protected byte[] sessionKey;
+    @Getter
+    protected String sessionToken;
+    @Setter
+    @Getter
+    protected EzyConnectionStatus status;
+    @Setter
+    @Getter
+    protected EzyConnectionStatus udpStatus;
+    @Getter
     protected final String name;
     protected final EzySetup settingUp;
+    @Getter
     protected final EzyClientConfig config;
+    @Getter
     protected final EzyPingManager pingManager;
+    @Getter
     protected final EzyHandlerManager handlerManager;
     protected final EzyRequestSerializer requestSerializer;
     protected final Set<Object> ignoredLogCommands;
     protected final EzySocketClient socketClient;
+    @Getter
     protected final EzyPingSchedule pingSchedule;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected EzyUser me;
-    protected EzyZone zone;
-    protected long sessionId;
-    protected byte[] publicKey;
-    protected byte[] privateKey;
-    protected byte[] sessionKey;
-    protected String sessionToken;
-    protected EzyConnectionStatus status;
-    protected EzyConnectionStatus udpStatus;
 
     public EzyTcpClient(EzyClientConfig config) {
         this.config = config;
@@ -138,20 +160,10 @@ public class EzyTcpClient
     }
 
     @Override
-    public void send(EzyRequest request) {
-        send(request, false);
-    }
-
-    @Override
     public void send(EzyRequest request, boolean encrypted) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
         send((EzyCommand) cmd, (EzyArray) data, encrypted);
-    }
-
-    @Override
-    public void send(EzyCommand cmd, EzyArray data) {
-        send(cmd, data, false);
     }
 
     @Override
@@ -180,16 +192,6 @@ public class EzyTcpClient
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public EzyClientConfig getConfig() {
-        return config;
-    }
-
-    @Override
     public boolean isEnableSSL() {
         return config.isEnableSSL();
     }
@@ -201,11 +203,12 @@ public class EzyTcpClient
 
     @Override
     public boolean isEnableEncryption() {
-        return isEnableSSL() && getSslType() == EzySslType.CUSTOMIZATION;
+        return config.isEnableEncryption();
     }
 
-    protected boolean isEnableCertificationSSL() {
-        return isEnableSSL() && getSslType() == EzySslType.CERTIFICATION;
+    @Override
+    public boolean isEnableCertificationSSL() {
+        return config.isEnableCertificationSSL();
     }
 
     @Override
@@ -221,59 +224,9 @@ public class EzyTcpClient
     }
 
     @Override
-    public EzyZone getZone() {
-        return zone;
-    }
-
-    @Override
-    public void setZone(EzyZone zone) {
-        this.zone = zone;
-    }
-
-    @Override
-    public EzyUser getMe() {
-        return me;
-    }
-
-    @Override
-    public void setMe(EzyUser me) {
-        this.me = me;
-    }
-
-    @Override
-    public EzyConnectionStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setStatus(EzyConnectionStatus status) {
-        this.status = status;
-    }
-
-    @Override
-    public EzyConnectionStatus getUdpStatus() {
-        return udpStatus;
-    }
-
-    @Override
-    public void setUdpStatus(EzyConnectionStatus status) {
-        this.udpStatus = status;
-    }
-
-    @Override
-    public long getSessionId() {
-        return sessionId;
-    }
-
-    @Override
     public void setSessionId(long sessionId) {
         this.sessionId = sessionId;
         this.socketClient.setSessionId(sessionId);
-    }
-
-    @Override
-    public String getSessionToken() {
-        return sessionToken;
     }
 
     @Override
@@ -283,34 +236,9 @@ public class EzyTcpClient
     }
 
     @Override
-    public byte[] getSessionKey() {
-        return sessionKey;
-    }
-
-    @Override
     public void setSessionKey(byte[] sessionKey) {
         this.sessionKey = sessionKey;
         this.socketClient.setSessionKey(sessionKey);
-    }
-
-    @Override
-    public byte[] getPublicKey() {
-        return publicKey;
-    }
-
-    @Override
-    public void setPublicKey(byte[] publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    @Override
-    public byte[] getPrivateKey() {
-        return privateKey;
-    }
-
-    @Override
-    public void setPrivateKey(byte[] privateKey) {
-        this.privateKey = privateKey;
     }
 
     @Override
@@ -336,21 +264,6 @@ public class EzyTcpClient
         return null;
     }
 
-    @Override
-    public EzyPingManager getPingManager() {
-        return pingManager;
-    }
-
-    @Override
-    public EzyPingSchedule getPingSchedule() {
-        return pingSchedule;
-    }
-
-    @Override
-    public EzyHandlerManager getHandlerManager() {
-        return handlerManager;
-    }
-
     protected void printSentData(EzyCommand cmd, EzyArray data) {
         if (!ignoredLogCommands.contains(cmd)) {
             logger.debug("send command: " + cmd + " and data: " + data);
@@ -368,15 +281,16 @@ public class EzyTcpClient
     }
 
     @Override
-    public void udpSend(EzyRequest request) {
+    public void udpSend(EzyRequest request, boolean encrypted) {
         throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
     }
 
     @Override
-    public void udpSend(EzyCommand cmd, EzyArray data) {
+    public void udpSend(EzyCommand cmd, EzyArray data, boolean encrypted) {
         throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
     }
 
+    @Override
     public void close() {
         socketClient.close();
     }

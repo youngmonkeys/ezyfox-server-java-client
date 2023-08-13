@@ -36,7 +36,6 @@ public class UdpSocketStressTest extends SocketStressTest {
 
     @Override
     protected void connect(EzyClient client) {
-//        client.connect("ws.tvd12.com", 3005);
         client.connect("localhost", 3005);
     }
 }

@@ -4,11 +4,12 @@ import com.tvd12.ezyfox.callback.EzyCallback;
 import com.tvd12.ezyfox.codec.EzyMessage;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketDataDecoder;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketReader;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.*;
 
-public class EzySocketReaderTest {
+public class EzySocketReaderTest extends BaseTest {
 
     @SuppressWarnings({"unchecked"})
     @Test

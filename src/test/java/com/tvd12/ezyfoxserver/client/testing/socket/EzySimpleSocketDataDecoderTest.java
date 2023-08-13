@@ -4,6 +4,7 @@ import com.tvd12.ezyfox.codec.EzyByteToObjectDecoder;
 import com.tvd12.ezyfox.codec.EzyMessage;
 import com.tvd12.ezyfoxserver.client.socket.EzySimpleSocketDataDecoder;
 import com.tvd12.test.assertion.Asserts;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
 import java.nio.ByteBuffer;
@@ -12,7 +13,7 @@ import java.util.Queue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class EzySimpleSocketDataDecoderTest {
+public class EzySimpleSocketDataDecoderTest extends BaseTest {
 
     @Test
     public void decodeMessage() throws Exception {

@@ -1,6 +1,7 @@
 package com.tvd12.ezyfoxserver.client.testing.socket;
 
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketWriter;
+import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.MethodInvoker;
 import org.testng.annotations.Test;
 
@@ -12,14 +13,19 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EzyTcpSocketWriterTest {
+public class EzyTcpSocketWriterTest extends BaseTest {
 
     @Test
     public void writeToSocketSuccess() throws Exception {
         // given
         int bytesToRead = new Random().nextInt();
         SocketChannel socketChannel = mock(SocketChannel.class);
-        when(socketChannel.write(any(ByteBuffer.class))).thenReturn(bytesToRead);
+        when(socketChannel.write(any(ByteBuffer.class))).thenAnswer(it -> {
+            ByteBuffer buffer = it.getArgumentAt(0, ByteBuffer.class);
+            buffer.clear();
+            buffer.flip();
+            return bytesToRead;
+        });
 
         EzyTcpSocketWriter sut = new EzyTcpSocketWriter();
         sut.setSocket(socketChannel);

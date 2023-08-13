@@ -42,7 +42,7 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
     }
 
     protected byte[] generateClientKey() {
-        if (!client.isEnableSSL()) {
+        if (!client.isEnableEncryption()) {
             return null;
         }
         KeyPair keyPair = EzyKeysGenerator.builder()

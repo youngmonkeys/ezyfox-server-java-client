@@ -102,5 +102,4 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
     protected String getThreadName() {
         return "udp-socket-reader";
     }
-
 }

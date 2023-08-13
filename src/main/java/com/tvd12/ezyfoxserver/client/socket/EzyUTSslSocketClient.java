@@ -20,6 +20,7 @@ public class EzyUTSslSocketClient extends EzyTcpSslSocketClient {
     public void udpConnect(String host, int port) {
         this.udpClient.setSessionId(sessionId);
         this.udpClient.setSessionToken(sessionToken);
+        this.udpClient.setSessionKey(sessionKey);
         this.udpClient.connectTo(host, port);
     }
 

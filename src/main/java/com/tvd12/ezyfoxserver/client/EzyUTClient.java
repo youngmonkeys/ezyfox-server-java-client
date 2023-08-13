@@ -34,16 +34,16 @@ public class EzyUTClient extends EzyTcpClient {
     }
 
     @Override
-    public void udpSend(EzyRequest request) {
+    public void udpSend(EzyRequest request, boolean encrypted) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
-        udpSend((EzyCommand) cmd, (EzyArray) data);
+        udpSend((EzyCommand) cmd, (EzyArray) data, encrypted);
     }
 
     @Override
-    public void udpSend(EzyCommand cmd, EzyArray data) {
+    public void udpSend(EzyCommand cmd, EzyArray data, boolean encrypted) {
         EzyArray array = requestSerializer.serialize(cmd, data);
-        ((EzyUTSocketClient) socketClient).udpSendMessage(array);
+        ((EzyUTSocketClient) socketClient).udpSendMessage(array, encrypted);
         printSentData(cmd, data);
     }
 }

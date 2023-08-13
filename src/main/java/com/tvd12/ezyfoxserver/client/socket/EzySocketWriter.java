@@ -44,7 +44,7 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
         }
     }
 
-    protected int writePacketToSocket(EzyPacket packet) throws Exception {
+    protected int writePacketToSocket(EzyPacket packet) {
         byte[] bytes = getBytesToWrite(packet);
         int bytesToWrite = bytes.length;
         ByteBuffer buffer = getWriteBuffer(writeBuffer, bytesToWrite);

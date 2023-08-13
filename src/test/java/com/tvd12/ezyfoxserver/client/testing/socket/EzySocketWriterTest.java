@@ -3,11 +3,12 @@ package com.tvd12.ezyfoxserver.client.testing.socket;
 import com.tvd12.ezyfoxserver.client.socket.EzyPacket;
 import com.tvd12.ezyfoxserver.client.socket.EzyPacketQueue;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketWriter;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.*;
 
-public class EzySocketWriterTest {
+public class EzySocketWriterTest extends BaseTest {
 
     @Test
     public void loopWithPacketNull() throws Exception {

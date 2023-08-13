@@ -1,4 +1,4 @@
-package com.tvd12.ezyfoxserver.client.testing.stresstest;
+package com.tvd12.ezyfoxserver.client.testing.stresstest.setup;
 
 import com.tvd12.ezyfox.concurrent.EzyExecutors;
 import com.tvd12.ezyfox.entity.EzyObject;

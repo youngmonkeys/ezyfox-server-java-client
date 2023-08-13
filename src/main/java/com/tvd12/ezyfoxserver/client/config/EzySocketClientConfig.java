@@ -13,4 +13,12 @@ public interface EzySocketClientConfig {
     default EzySslType getSslType() {
         return EzySslType.CUSTOMIZATION;
     }
+
+    default boolean isEnableEncryption() {
+        return isEnableSSL() && getSslType() == EzySslType.CUSTOMIZATION;
+    }
+
+    default boolean isEnableCertificationSSL() {
+        return isEnableSSL() && getSslType() == EzySslType.CERTIFICATION;
+    }
 }
