@@ -5,7 +5,7 @@ import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyStatusCodes;
-import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketConnector;
 
 public class EzyUdpHandshakeHandler extends EzyAbstractDataHandler {
 
@@ -13,7 +13,8 @@ public class EzyUdpHandshakeHandler extends EzyAbstractDataHandler {
     public final void handle(EzyArray data) {
         int responseCode = data.get(0, int.class);
         EzyUTClient utClient = (EzyUTClient) client;
-        EzyUTSocketClient socket = (EzyUTSocketClient) client.getSocket();
+        EzyUdpSocketConnector socket =
+            (EzyUdpSocketConnector) client.getSocket();
         if (responseCode == EzyStatusCodes.OK) {
             utClient.setUdpStatus(EzyConnectionStatus.CONNECTED);
             socket.udpSetStatus(EzySocketStatus.CONNECTED);

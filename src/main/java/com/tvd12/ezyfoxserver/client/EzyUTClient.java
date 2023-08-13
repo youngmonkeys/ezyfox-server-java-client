@@ -9,6 +9,7 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSslSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketConnector;
 
 public class EzyUTClient extends EzyTcpClient {
 
@@ -25,12 +26,12 @@ public class EzyUTClient extends EzyTcpClient {
 
     @Override
     public void udpConnect(int port) {
-        ((EzyUTSocketClient) socketClient).udpConnect(port);
+        ((EzyUdpSocketConnector) socketClient).udpConnect(port);
     }
 
     @Override
     public void udpConnect(String host, int port) {
-        ((EzyUTSocketClient) socketClient).udpConnect(host, port);
+        ((EzyUdpSocketConnector) socketClient).udpConnect(host, port);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class EzyUTClient extends EzyTcpClient {
     @Override
     public void udpSend(EzyCommand cmd, EzyArray data, boolean encrypted) {
         EzyArray array = requestSerializer.serialize(cmd, data);
-        ((EzyUTSocketClient) socketClient).udpSendMessage(array, encrypted);
+        ((EzyUdpSocketConnector) socketClient).udpSendMessage(array, encrypted);
         printSentData(cmd, data);
     }
 }

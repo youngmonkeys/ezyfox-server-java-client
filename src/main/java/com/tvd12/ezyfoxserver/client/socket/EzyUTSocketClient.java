@@ -4,7 +4,9 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 
-public class EzyUTSocketClient extends EzyTcpSocketClient {
+public class EzyUTSocketClient
+    extends EzyTcpSocketClient
+    implements EzyUdpSocketConnector {
 
     protected final EzyUdpSocketClient udpClient;
 
@@ -13,10 +15,12 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
         this.udpClient = new EzyUdpSocketClient(codecFactory);
     }
 
+    @Override
     public void udpConnect(int port) {
         udpConnect(host, port);
     }
 
+    @Override
     public void udpConnect(String host, int port) {
         this.udpClient.setSessionId(sessionId);
         this.udpClient.setSessionToken(sessionToken);
@@ -24,18 +28,14 @@ public class EzyUTSocketClient extends EzyTcpSocketClient {
         this.udpClient.connectTo(host, port);
     }
 
+    @Override
     public void udpSendMessage(EzyArray message, boolean encrypted) {
         this.udpClient.sendMessage(message, encrypted);
     }
 
+    @Override
     public void udpSetStatus(EzySocketStatus status) {
         this.udpClient.setStatus(status);
-    }
-
-    @Override
-    public void setSessionKey(byte[] sessionKey) {
-        super.setSessionKey(sessionKey);
-        this.udpClient.setSessionKey(sessionKey);
     }
 
     @Override
