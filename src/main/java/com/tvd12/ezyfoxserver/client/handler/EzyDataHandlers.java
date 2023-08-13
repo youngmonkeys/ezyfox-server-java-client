@@ -30,7 +30,7 @@ public class EzyDataHandlers extends EzyAbstractHandlers {
         if (handler != null) {
             handler.handle(data);
         } else {
-            logger.warn("has no handler for command: " + cmd);
+            logger.info("has no handler for command: " + cmd);
         }
     }
 }

@@ -58,7 +58,9 @@ public abstract class EzySocketClient
     }
 
     public EzySocketClient(EzySocketClientConfig config) {
-        this.codecFactory = new EzySimpleCodecFactory(config.isEnableSSL());
+        this.codecFactory = new EzySimpleCodecFactory(
+            config.isEnableEncryption()
+        );
         this.packetQueue = new EzyBlockingPacketQueue();
         this.socketEventQueue = new EzySocketEventQueue();
         this.responseApi = newResponseApi();
@@ -78,7 +80,7 @@ public abstract class EzySocketClient
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-            logger.warn("socket is connecting...");
+            logger.info("socket is connecting...");
             return;
         }
         this.socketStatuses.push(EzySocketStatus.CONNECTING);
@@ -92,7 +94,7 @@ public abstract class EzySocketClient
     public boolean reconnect() {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketReconnectable(status)) {
-            logger.warn("socket is not in a reconnectable status");
+            logger.info("socket is not in a reconnectable status");
             return false;
         }
         int maxReconnectCount = reconnectConfig.getMaxReconnectCount();
@@ -221,17 +223,17 @@ public abstract class EzySocketClient
     }
 
     @Override
-    public void sendMessage(EzyArray message) {
-        sendMessage(message, false);
-    }
-
-    @Override
     public void sendMessage(EzyArray message, boolean encrypted) {
-        EzyPackage pack = new EzySimplePackage(message, encrypted, sessionKey);
+        EzyPackage pack = new EzySimplePackage(
+            message,
+            encrypted,
+            sessionKey,
+            EzyTransportType.TCP
+        );
         try {
             responseApi.response(pack);
         } catch (Exception e) {
-            logger.warn("send message: " + message + " error", e);
+            logger.info("send message: " + message + " error", e);
         }
     }
 

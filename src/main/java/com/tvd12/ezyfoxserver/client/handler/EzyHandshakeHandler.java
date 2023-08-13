@@ -58,14 +58,10 @@ public abstract class EzyHandshakeHandler
 
     protected void handleLogin(EzyArray data) {
         EzyRequest loginRequest = getLoginRequest();
-        client.send(loginRequest, encryptedLoginRequest());
+        client.send(loginRequest, client.isEnableEncryption());
     }
 
     protected abstract EzyRequest getLoginRequest();
-
-    protected boolean encryptedLoginRequest() {
-        return false;
-    }
 
     @Override
     public void setPingSchedule(EzyPingSchedule pingSchedule) {

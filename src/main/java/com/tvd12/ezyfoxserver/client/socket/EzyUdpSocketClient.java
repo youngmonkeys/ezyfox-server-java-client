@@ -8,6 +8,7 @@ import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
+import lombok.Setter;
 
 import java.net.BindException;
 import java.net.InetSocketAddress;
@@ -19,8 +20,12 @@ import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketC
 
 public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient {
 
+    @Setter
     protected long sessionId;
+    @Setter
     protected String sessionToken;
+    @Setter
+    protected byte[] sessionKey;
     protected InetSocketAddress serverAddress;
     protected DatagramChannel datagramChannel;
     protected EzyUdpSocketReader socketReader;
@@ -47,7 +52,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-            logger.warn("udp socket is connecting...");
+            logger.info("udp socket is connecting...");
             return;
         }
         serverAddress = new InetSocketAddress(host, port);
@@ -95,19 +100,16 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
             startAdapters();
             socketStatuses.push(EzySocketStatus.CONNECTING);
             sendHandshakeRequest();
-            Thread newThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(sleepTimeBeforeReconnect());
-                        EzySocketStatus status = socketStatuses.last();
-                        if (status == EzySocketStatus.CONNECTING) {
-                            socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
-                        }
-                        reconnect();
-                    } catch (InterruptedException e) {
-                        logger.error("udp reconnect interrupted", e);
+            Thread newThread = new Thread(() -> {
+                try {
+                    Thread.sleep(sleepTimeBeforeReconnect());
+                    EzySocketStatus status = socketStatuses.last();
+                    if (status == EzySocketStatus.CONNECTING) {
+                        socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
                     }
+                    reconnect();
+                } catch (InterruptedException e) {
+                    logger.error("udp reconnect interrupted", e);
                 }
             });
             newThread.setName("udp-reconnect");
@@ -138,12 +140,17 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     }
 
     @Override
-    public void sendMessage(EzyArray message) {
-        EzyPackage pack = new EzySimplePackage(message, EzyTransportType.UDP);
+    public void sendMessage(EzyArray message, boolean encrypted) {
+        EzyPackage pack = new EzySimplePackage(
+            message,
+            encrypted,
+            sessionKey,
+            EzyTransportType.UDP
+        );
         try {
             responseApi.response(pack);
         } catch (Exception e) {
-            logger.warn("udp send message: " + message + " error", e);
+            logger.info("udp send message: " + message + " error", e);
         }
     }
 
@@ -192,7 +199,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
                 datagramChannel.close();
             }
         } catch (Exception e) {
-            logger.warn("close udp socket error", e);
+            logger.info("close udp socket error", e);
         }
     }
 
@@ -213,13 +220,4 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         buffer.flip();
         datagramChannel.send(buffer, serverAddress);
     }
-
-    public void setSessionId(long sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void setSessionToken(String sessionToken) {
-        this.sessionToken = sessionToken;
-    }
-
 }

@@ -2,9 +2,10 @@ package com.tvd12.ezyfoxserver.client.testing;
 
 import com.tvd12.ezyfoxserver.client.socket.EzyBlockingPacketQueue;
 import com.tvd12.ezyfoxserver.client.socket.EzyPacket;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
-public class EzyBlockingPacketQueueTest {
+public class EzyBlockingPacketQueueTest extends BaseTest {
 
     @Test
     public void test() throws Exception {

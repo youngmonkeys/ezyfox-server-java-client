@@ -20,6 +20,7 @@ public class EzyUTSslSocketClient extends EzyTcpSslSocketClient {
     public void udpConnect(String host, int port) {
         this.udpClient.setSessionId(sessionId);
         this.udpClient.setSessionToken(sessionToken);
+        this.udpClient.setSessionKey(sessionKey);
         this.udpClient.connectTo(host, port);
     }
 
@@ -40,5 +41,17 @@ public class EzyUTSslSocketClient extends EzyTcpSslSocketClient {
     @Override
     protected void clearComponents(int disconnectReason) {
         this.udpClient.disconnect(disconnectReason);
+    }
+
+    @Override
+    public void disconnect(int reason) {
+        super.disconnect(reason);
+        this.udpClient.disconnect(reason);
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        this.udpClient.close();
     }
 }

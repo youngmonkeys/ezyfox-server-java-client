@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import com.tvd12.ezyfox.constant.EzyConstant;
 import com.tvd12.ezyfox.entity.EzyArray;
 
 public abstract class EzyAbstractResponseApi implements EzyResponseApi {
@@ -15,13 +16,13 @@ public abstract class EzyAbstractResponseApi implements EzyResponseApi {
         Object bytes = pack.isEncrypted()
             ? encodeData(pack.getData(), pack.getEncryptionKey())
             : encodeData(pack.getData());
-        EzyPacket packet = createPacket(bytes, pack);
+        EzyPacket packet = createPacket(pack.getTransportType(), bytes);
         packetQueue.add(packet);
     }
 
-    private EzyPacket createPacket(Object bytes, EzyPackage pack) {
+    private EzyPacket createPacket(EzyConstant transportType, Object bytes) {
         EzySimplePacket packet = new EzySimplePacket();
-        packet.setTransportType(pack.getTransportType());
+        packet.setTransportType(transportType);
         packet.setData(bytes);
         return packet;
     }

@@ -6,13 +6,14 @@ import com.tvd12.ezyfoxserver.client.EzyTcpClient;
 import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EzyClientsTest {
+public class EzyClientsTest extends BaseTest {
 
     @BeforeMethod
     public void before() {

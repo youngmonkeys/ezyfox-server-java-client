@@ -22,7 +22,7 @@ public class EzyUdpSocketWriter extends EzySocketWriter {
             buffer.flip();
             return datagramChannel.write(buffer);
         } catch (Exception e) {
-            logger.warn("I/O error at socket-writer", e);
+            logger.info("I/O error at socket-writer", e);
             return -1;
         } finally {
             packet.release();

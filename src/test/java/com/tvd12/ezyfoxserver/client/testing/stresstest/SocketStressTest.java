@@ -5,17 +5,19 @@ import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.EzyClients;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.socket.EzyMainEventsLoop;
+import com.tvd12.ezyfoxserver.client.testing.stresstest.setup.ClientConfigFactory;
+import com.tvd12.ezyfoxserver.client.testing.stresstest.setup.SocketClientSetup;
 
 public abstract class SocketStressTest {
 
     public void test() {
-        DefaultClientConfig clientConfig = new DefaultClientConfig();
+        ClientConfigFactory clientConfig = new ClientConfigFactory();
         SocketClientSetup setup = new SocketClientSetup("tcp-socket");
         EzyClients clients = EzyClients.getInstance();
         new Thread(() -> {
             for (int i = 0; i < clientCount(); i++) {
                 EzyClientConfig.Builder configBuilder = clientConfig
-                    .newClientConfigBuilder(i);
+                    .newConfigBuilder(i);
                 decorateConfigBuilder(configBuilder);
                 EzyClient client = newClient(configBuilder.build());
                 try {
@@ -49,7 +51,6 @@ public abstract class SocketStressTest {
                 EzyClients.getInstance().disconnectClients();
                 // eventLoopGroup.shutdown();
                 setup.close();
-                // nettyEventLoopGroup.shutdownGracefully();
             }
         };
         mainEventsLoop.start(5);

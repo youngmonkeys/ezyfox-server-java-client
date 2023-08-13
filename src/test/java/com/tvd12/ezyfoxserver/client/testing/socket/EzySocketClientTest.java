@@ -18,6 +18,7 @@ import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketReader;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketWriter;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
+import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
@@ -27,7 +28,7 @@ import java.util.List;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class EzySocketClientTest {
+public class EzySocketClientTest extends BaseTest {
 
     @Test
     public void connectToInConnectingStatus() {

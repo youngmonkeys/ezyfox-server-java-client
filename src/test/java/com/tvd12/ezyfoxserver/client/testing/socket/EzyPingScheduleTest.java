@@ -5,11 +5,12 @@ import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.request.EzyPingRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketEventQueue;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.*;
 
-public class EzyPingScheduleTest {
+public class EzyPingScheduleTest extends BaseTest {
 
     @Test
     public void start() throws Exception {

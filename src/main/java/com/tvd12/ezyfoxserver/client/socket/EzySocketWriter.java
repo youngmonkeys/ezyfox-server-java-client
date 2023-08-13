@@ -39,12 +39,12 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
                 logger.debug("socket-writer thread interrupted", e);
                 return;
             } catch (Exception e) {
-                logger.warn("problems in socket-writer main loop, thread", e);
+                logger.info("problems in socket-writer main loop, thread", e);
             }
         }
     }
 
-    protected int writePacketToSocket(EzyPacket packet) throws Exception {
+    protected int writePacketToSocket(EzyPacket packet) {
         byte[] bytes = getBytesToWrite(packet);
         int bytesToWrite = bytes.length;
         ByteBuffer buffer = getWriteBuffer(writeBuffer, bytesToWrite);

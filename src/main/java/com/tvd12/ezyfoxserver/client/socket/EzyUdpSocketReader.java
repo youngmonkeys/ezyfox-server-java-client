@@ -46,7 +46,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
                 logger.debug("socket reader interrupted", e);
                 return;
             } catch (Exception e) {
-                logger.warn("I/O error at socket-reader", e);
+                logger.info("I/O error at socket-reader", e);
                 return;
             }
         }
@@ -86,7 +86,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
             Object data = decoder.decode(message, null);
             dataQueue.add((EzyArray) data);
         } catch (Exception e) {
-            logger.warn("decode error at socket-reader", e);
+            logger.info("decode error at socket-reader", e);
         }
     }
 
@@ -102,5 +102,4 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
     protected String getThreadName() {
         return "udp-socket-reader";
     }
-
 }

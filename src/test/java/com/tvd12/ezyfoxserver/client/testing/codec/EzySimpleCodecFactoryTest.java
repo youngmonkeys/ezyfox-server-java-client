@@ -11,7 +11,7 @@ public class EzySimpleCodecFactoryTest {
     @Test
     public void newEncoder() {
         // given
-        EzySimpleCodecFactory factory = new EzySimpleCodecFactory();
+        EzySimpleCodecFactory factory = new EzySimpleCodecFactory(false);
 
         // when
         Object encoder = factory.newEncoder(EzyConnectionType.SOCKET);
@@ -23,7 +23,7 @@ public class EzySimpleCodecFactoryTest {
     @Test
     public void newDecoder() {
         // given
-        EzySimpleCodecFactory factory = new EzySimpleCodecFactory();
+        EzySimpleCodecFactory factory = new EzySimpleCodecFactory(false);
 
         // when
         Object decoder = factory.newDecoder(EzyConnectionType.SOCKET);

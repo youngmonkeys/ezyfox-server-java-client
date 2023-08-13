@@ -37,7 +37,7 @@ public class EzyMainEventsLoop extends EzyLoggable {
                 one.processEvents();
             }
         } catch (Exception e) {
-            logger.warn("process events error", e);
+            logger.info("process events error", e);
         }
     }
 

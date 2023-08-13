@@ -14,6 +14,7 @@ import com.tvd12.ezyfoxserver.client.entity.EzyZone;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
 import java.util.Random;
@@ -21,7 +22,7 @@ import java.util.Random;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("resource")
-public class EzyTcpClientTest {
+public class EzyTcpClientTest extends BaseTest {
 
     @Test
     public void connect() {
