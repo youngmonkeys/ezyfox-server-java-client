@@ -6,6 +6,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.concurrent.EzySynchronizedQueue;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
 import com.tvd12.ezyfoxserver.client.util.EzyQueue;
+import lombok.Setter;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -16,7 +17,11 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
     protected final ByteBuffer buffer;
     protected final int readBufferSize;
     protected final EzyQueue<EzyArray> dataQueue;
+    @Setter
+    protected byte[] decryptionKey;
+    @Setter
     protected EzySocketDataDecoder decoder;
+    @Setter
     protected DatagramChannel datagramChannel;
 
     public EzyUdpSocketReader() {
@@ -45,7 +50,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
             } catch (InterruptedException e) {
                 logger.debug("socket reader interrupted", e);
                 return;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.info("I/O error at socket-reader", e);
                 return;
             }
@@ -56,7 +61,7 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
         try {
             datagramChannel.receive(buffer);
             return buffer.position();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             handleSocketReaderException(e);
             return -1;
         }
@@ -83,19 +88,11 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 
     private void onMessageReceived(EzyMessage message) {
         try {
-            Object data = decoder.decode(message, null);
+            Object data = decoder.decode(message, decryptionKey);
             dataQueue.add((EzyArray) data);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("decode error at socket-reader", e);
         }
-    }
-
-    public void setDecoder(EzySocketDataDecoder decoder) {
-        this.decoder = decoder;
-    }
-
-    public void setDatagramChannel(DatagramChannel datagramChannel) {
-        this.datagramChannel = datagramChannel;
     }
 
     @Override

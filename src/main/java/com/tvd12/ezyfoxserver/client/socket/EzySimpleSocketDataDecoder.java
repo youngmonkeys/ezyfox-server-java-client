@@ -3,6 +3,7 @@ package com.tvd12.ezyfoxserver.client.socket;
 import com.tvd12.ezyfox.callback.EzyCallback;
 import com.tvd12.ezyfox.codec.EzyByteToObjectDecoder;
 import com.tvd12.ezyfox.codec.EzyMessage;
+import com.tvd12.ezyfox.codec.EzyMessageHeader;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
@@ -23,13 +24,15 @@ public class EzySimpleSocketDataDecoder implements EzySocketDataDecoder {
     }
 
     @Override
-    public Object decode(EzyMessage message, byte[] encryptionKey) throws Exception {
-        return decoder.decode(message, encryptionKey);
+    public Object decode(EzyMessage message, byte[] decryptionKey) throws Exception {
+        EzyMessageHeader messageHeader = message.getHeader();
+        return messageHeader.isEncrypted()
+            ? decoder.decode(message, decryptionKey)
+            : decoder.decode(message);
     }
 
     @Override
-    public void decode(
-        byte[] bytes, EzyCallback<EzyMessage> callback) throws Exception {
+    public void decode(byte[] bytes, EzyCallback<EzyMessage> callback) throws Exception {
         preDecode(bytes);
         decoder.decode(buffer, queue);
         handleQueue(callback);

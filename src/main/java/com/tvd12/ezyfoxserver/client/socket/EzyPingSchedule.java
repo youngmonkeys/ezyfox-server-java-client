@@ -41,7 +41,7 @@ public class EzyPingSchedule extends EzyLoggable {
                 () -> {
                     try {
                         sendPingRequest();
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         logger.info("send ping request failed", e);
                     }
                 },

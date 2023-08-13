@@ -115,7 +115,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
             newThread.start();
         } catch (BindException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException("udp can't connect to: " + serverAddress, e);
         }
     }
@@ -148,7 +148,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         );
         try {
             responseApi.response(pack);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("udp send message: " + message + " error", e);
         }
     }
@@ -202,7 +202,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
             if (datagramChannel != null) {
                 datagramChannel.close();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("close udp socket error", e);
         }
     }
