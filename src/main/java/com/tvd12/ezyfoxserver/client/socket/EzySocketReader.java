@@ -50,7 +50,7 @@ public abstract class EzySocketReader extends EzySocketAdapter {
             } catch (InterruptedException e) {
                 logger.debug("socket reader interrupted", e);
                 return;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.info("I/O error at socket-reader", e);
             }
         }
@@ -73,7 +73,7 @@ public abstract class EzySocketReader extends EzySocketAdapter {
         try {
             Object data = decoder.decode(message, sessionKey);
             dataQueue.add((EzyArray) data);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("decode error at socket-reader", e);
         }
     }

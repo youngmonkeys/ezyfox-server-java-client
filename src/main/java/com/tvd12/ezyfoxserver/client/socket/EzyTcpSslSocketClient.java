@@ -38,7 +38,7 @@ public class EzyTcpSslSocketClient extends EzySocketClient {
             outputStream = sslSocket.getOutputStream();
             sslSocket.startHandshake();
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             processConnectionException(e);
             return false;
         }
@@ -57,7 +57,7 @@ public class EzyTcpSslSocketClient extends EzySocketClient {
             if (sslSocket != null) {
                 this.sslSocket.close();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("close socket error");
         }
     }

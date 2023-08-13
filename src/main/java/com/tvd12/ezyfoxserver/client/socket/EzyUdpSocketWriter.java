@@ -21,7 +21,7 @@ public class EzyUdpSocketWriter extends EzySocketWriter {
             buffer.put(bytes);
             buffer.flip();
             return datagramChannel.write(buffer);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("I/O error at socket-writer", e);
             return -1;
         } finally {

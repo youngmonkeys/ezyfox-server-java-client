@@ -126,7 +126,7 @@ public class EzyTcpClient
             preConnect();
             socketClient.connectTo(host, port);
             setStatus(EzyConnectionStatus.CONNECTING);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("connect to server error", e);
         }
     }

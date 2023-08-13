@@ -46,7 +46,7 @@ public abstract class EzyHandshakeHandler
                 .privateKey(client.getPrivateKey())
                 .build()
                 .decrypt(sessionKey);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException(
                 "can not decrypt session key: " + Arrays.toString(sessionKey),
                 e

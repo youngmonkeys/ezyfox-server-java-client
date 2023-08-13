@@ -160,7 +160,7 @@ public abstract class EzySocketClient
     protected void sleepBeforeConnect(long sleepTime) {
         try {
             Thread.sleep(sleepTime);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException(e);
         }
     }
@@ -232,7 +232,7 @@ public abstract class EzySocketClient
         );
         try {
             responseApi.response(pack);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("send message: " + message + " error", e);
         }
     }
@@ -321,7 +321,7 @@ public abstract class EzySocketClient
         }
     }
 
-    protected void processConnectionException(Exception e) {
+    protected void processConnectionException(Throwable e) {
         if (e instanceof ConnectException) {
             ConnectException c = (ConnectException) e;
             if ("Network is unreachable".equalsIgnoreCase(c.getMessage())) {
