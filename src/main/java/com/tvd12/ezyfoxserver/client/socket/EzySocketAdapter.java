@@ -75,7 +75,7 @@ public abstract class EzySocketAdapter extends EzyLoggable {
         if (e instanceof AsynchronousCloseException) {
             logger.debug("Socket closed by another thread", e);
         } else {
-            logger.warn("I/O error at socket-reader", e);
+            logger.info("I/O error at socket-reader", e);
         }
     }
 }

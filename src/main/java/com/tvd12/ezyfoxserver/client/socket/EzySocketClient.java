@@ -80,7 +80,7 @@ public abstract class EzySocketClient
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-            logger.warn("socket is connecting...");
+            logger.info("socket is connecting...");
             return;
         }
         this.socketStatuses.push(EzySocketStatus.CONNECTING);
@@ -94,7 +94,7 @@ public abstract class EzySocketClient
     public boolean reconnect() {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketReconnectable(status)) {
-            logger.warn("socket is not in a reconnectable status");
+            logger.info("socket is not in a reconnectable status");
             return false;
         }
         int maxReconnectCount = reconnectConfig.getMaxReconnectCount();

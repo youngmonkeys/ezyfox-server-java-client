@@ -17,7 +17,7 @@ public class EzyTcpSslSocketWriter extends EzySocketWriter {
             outputStream.write(bytes);
             return bytes.length;
         } catch (Exception e) {
-            logger.warn("I/O error at socket-writer", e);
+            logger.info("I/O error at socket-writer", e);
             return -1;
         } finally {
             packet.release();

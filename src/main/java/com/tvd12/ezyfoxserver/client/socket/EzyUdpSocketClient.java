@@ -52,7 +52,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     public void connectTo(String host, int port) {
         EzySocketStatus status = socketStatuses.last();
         if (!isSocketConnectable(status)) {
-            logger.warn("udp socket is connecting...");
+            logger.info("udp socket is connecting...");
             return;
         }
         serverAddress = new InetSocketAddress(host, port);
@@ -150,7 +150,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         try {
             responseApi.response(pack);
         } catch (Exception e) {
-            logger.warn("udp send message: " + message + " error", e);
+            logger.info("udp send message: " + message + " error", e);
         }
     }
 
@@ -199,7 +199,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
                 datagramChannel.close();
             }
         } catch (Exception e) {
-            logger.warn("close udp socket error", e);
+            logger.info("close udp socket error", e);
         }
     }
 

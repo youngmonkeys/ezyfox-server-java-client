@@ -58,7 +58,7 @@ public class EzyTcpSslSocketClient extends EzySocketClient {
                 this.sslSocket.close();
             }
         } catch (Exception e) {
-            logger.warn("close socket error");
+            logger.info("close socket error");
         }
     }
 

@@ -20,7 +20,7 @@ public class AccessAppHandler extends EzyAppAccessHandler {
 
     @Override
     protected void postHandle(EzyApp app, EzyArray data) {
-        executorService.scheduleAtFixedRate(() -> sendMessage(app), 1000, 1000, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(() -> sendMessage(app), 1, 1, TimeUnit.SECONDS);
     }
 
     private void sendMessage(EzyApp app) {
@@ -29,6 +29,8 @@ public class AccessAppHandler extends EzyAppAccessHandler {
         }
         if (useUdp) {
             app.udpSend("udpBroadcastMessage", newMessageData());
+        } else if (client.isEnableEncryption()) {
+            app.send("broadcastSecureMessage", newMessageData(), true);
         } else {
             app.send("broadcastMessage", newMessageData());
         }
