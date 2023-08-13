@@ -59,7 +59,7 @@ public abstract class EzySocketClient
 
     public EzySocketClient(EzySocketClientConfig config) {
         this.codecFactory = new EzySimpleCodecFactory(
-            config.isEnableSSL()
+            config.isEnableEncryption()
         );
         this.packetQueue = new EzyBlockingPacketQueue();
         this.socketEventQueue = new EzySocketEventQueue();
@@ -228,12 +228,12 @@ public abstract class EzySocketClient
             message,
             encrypted,
             sessionKey,
-            EzyTransportType.UDP
+            EzyTransportType.TCP
         );
         try {
             responseApi.response(pack);
         } catch (Exception e) {
-            logger.warn("send message: " + message + " error", e);
+            logger.info("send message: " + message + " error", e);
         }
     }
 

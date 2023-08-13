@@ -42,4 +42,16 @@ public class EzyUTSslSocketClient extends EzyTcpSslSocketClient {
     protected void clearComponents(int disconnectReason) {
         this.udpClient.disconnect(disconnectReason);
     }
+
+    @Override
+    public void disconnect(int reason) {
+        super.disconnect(reason);
+        this.udpClient.disconnect(reason);
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        this.udpClient.close();
+    }
 }
