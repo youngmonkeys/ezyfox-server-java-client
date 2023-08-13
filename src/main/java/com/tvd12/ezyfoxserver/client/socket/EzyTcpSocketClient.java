@@ -22,7 +22,7 @@ public class EzyTcpSocketClient extends EzySocketClient {
             socket.connect(socketAddress);
             socket.configureBlocking(true);
             return true;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             processConnectionException(e);
             return false;
         }
@@ -53,7 +53,7 @@ public class EzyTcpSocketClient extends EzySocketClient {
             if (socket != null) {
                 this.socket.close();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("close socket error", e);
         }
     }

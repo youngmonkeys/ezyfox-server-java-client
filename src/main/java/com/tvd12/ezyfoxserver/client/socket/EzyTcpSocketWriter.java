@@ -19,7 +19,7 @@ public class EzyTcpSocketWriter extends EzySocketWriter {
                 writtenBytes += socket.write(buffer);
             }
             return writtenBytes;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("I/O error at socket-writer", e);
             return -1;
         }

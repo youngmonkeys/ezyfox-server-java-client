@@ -25,7 +25,7 @@ public class EzyTcpSslSocketReader extends EzySocketReader {
             }
             buffer.put(in, 0, readBytes);
             return readBytes;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("I/O error at socket-reader", e);
             return -1;
         }

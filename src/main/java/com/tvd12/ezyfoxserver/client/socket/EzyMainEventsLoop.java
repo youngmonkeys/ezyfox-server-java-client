@@ -36,7 +36,7 @@ public class EzyMainEventsLoop extends EzyLoggable {
             for (EzyClient one : cachedClients) {
                 one.processEvents();
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.info("process events error", e);
         }
     }

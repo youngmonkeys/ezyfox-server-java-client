@@ -38,7 +38,7 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
             } catch (InterruptedException e) {
                 logger.debug("socket-writer thread interrupted", e);
                 return;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.info("problems in socket-writer main loop, thread", e);
             }
         }
