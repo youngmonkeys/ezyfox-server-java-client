@@ -21,7 +21,7 @@ public class EzyTcpSslSocketWriterTest {
         EzyPacket packet = mock(EzyPacket.class);
         byte[] data = RandomUtil.randomShortByteArray();
         when(packet.getData()).thenReturn(data);
-        when(packetQueue.peek()).thenReturn(packet);
+        when(packetQueue.peekNow()).thenReturn(packet);
 
         EzyTcpSslSocketWriter instance = new EzyTcpSslSocketWriter();
         instance.setPacketQueue(packetQueue);
@@ -49,7 +49,7 @@ public class EzyTcpSslSocketWriterTest {
         EzyPacket packet = mock(EzyPacket.class);
         byte[] data = RandomUtil.randomShortByteArray();
         when(packet.getData()).thenReturn(data);
-        when(packetQueue.peek()).thenReturn(packet);
+        when(packetQueue.peekNow()).thenReturn(packet);
 
         EzyTcpSslSocketWriter instance = new EzyTcpSslSocketWriter();
         instance.setPacketQueue(packetQueue);

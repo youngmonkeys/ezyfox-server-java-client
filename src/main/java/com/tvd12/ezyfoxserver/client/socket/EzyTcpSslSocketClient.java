@@ -84,9 +84,7 @@ public class EzyTcpSslSocketClient extends EzySocketClient {
 
     @Override
     public void setEventLoopGroup(EzyEventLoopGroup eventLoopGroup) {
-        throw new UnsupportedOperationException(
-            "currently we haven't supported event loop group " +
-                "with tcp ssl socket yet"
-        );
+        // "currently we haven't supported event loop group
+        // with tcp ssl socket yet"
     }
 }
