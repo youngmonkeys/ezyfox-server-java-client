@@ -1,12 +1,9 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
-import com.tvd12.ezyfoxserver.client.constant.EzyConnectionFailedReason;
 
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 
 public class EzyTcpSocketClient extends EzySocketClient {
@@ -23,21 +20,10 @@ public class EzyTcpSocketClient extends EzySocketClient {
             SocketAddress socketAddress = new InetSocketAddress(host, port);
             socket = SocketChannel.open();
             socket.connect(socketAddress);
-            socket.configureBlocking(true);
+            socket.configureBlocking(eventLoopGroup == null);
             return true;
-        } catch (Exception e) {
-            if (e instanceof ConnectException) {
-                ConnectException c = (ConnectException) e;
-                if ("Network is unreachable".equalsIgnoreCase(c.getMessage())) {
-                    connectionFailedReason = EzyConnectionFailedReason.NETWORK_UNREACHABLE;
-                } else {
-                    connectionFailedReason = EzyConnectionFailedReason.CONNECTION_REFUSED;
-                }
-            } else if (e instanceof UnknownHostException) {
-                connectionFailedReason = EzyConnectionFailedReason.UNKNOWN_HOST;
-            } else {
-                connectionFailedReason = EzyConnectionFailedReason.UNKNOWN;
-            }
+        } catch (Throwable e) {
+            processConnectionException(e);
             return false;
         }
     }
@@ -67,8 +53,8 @@ public class EzyTcpSocketClient extends EzySocketClient {
             if (socket != null) {
                 this.socket.close();
             }
-        } catch (Exception e) {
-            logger.warn("close socket error", e);
+        } catch (Throwable e) {
+            logger.info("close socket error", e);
         }
     }
 }

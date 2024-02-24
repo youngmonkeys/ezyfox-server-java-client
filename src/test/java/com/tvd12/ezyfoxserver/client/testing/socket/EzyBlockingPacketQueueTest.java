@@ -2,12 +2,13 @@ package com.tvd12.ezyfoxserver.client.testing.socket;
 
 import com.tvd12.ezyfoxserver.client.socket.EzyBlockingPacketQueue;
 import com.tvd12.ezyfoxserver.client.socket.EzyPacket;
+import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.mock;
 
-public class EzyBlockingPacketQueueTest {
+public class EzyBlockingPacketQueueTest extends BaseTest {
 
     @Test
     public void addMaxCapacityProcessingTrue() {

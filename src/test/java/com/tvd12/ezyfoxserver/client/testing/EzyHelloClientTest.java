@@ -10,6 +10,7 @@ import com.tvd12.ezyfoxserver.client.EzyClients;
 import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
 import com.tvd12.ezyfoxserver.client.event.EzyEventType;
@@ -20,16 +21,19 @@ import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.setup.EzyAppSetup;
 import com.tvd12.ezyfoxserver.client.setup.EzySetup;
 import com.tvd12.ezyfoxserver.client.socket.EzyMainEventsLoop;
+import com.tvd12.test.base.BaseTest;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class EzyHelloClientTest {
+public class EzyHelloClientTest extends BaseTest {
 
     public static void main(String[] args) {
         EzyClientConfig clientConfig = EzyClientConfig.builder()
             .clientName("example")
             .zoneName("example")
+            .enableSSL()
+            .sslType(EzySslType.CERTIFICATION)
             .pingConfigBuilder()
             .pingPeriod(1000)
             .done()
@@ -40,7 +44,7 @@ public class EzyHelloClientTest {
         EzySetup setup = client.setup();
         setup.addEventHandler(EzyEventType.CONNECTION_SUCCESS, new EzyConnectionSuccessHandler());
         setup.addEventHandler(EzyEventType.CONNECTION_FAILURE, new EzyConnectionFailureHandler());
-        setup.addEventHandler(EzyEventType.DISCONNECTION, new EzyDisconnectionHandler());
+        setup.addEventHandler(EzyEventType.DISCONNECTION, new DisconnectionHandler());
         setup.addDataHandler(EzyCommand.HANDSHAKE, new HelloHandshakeEventHandler());
         setup.addDataHandler(EzyCommand.LOGIN, new HelloLoginSuccessHandler());
         setup.addDataHandler(EzyCommand.APP_ACCESS, new HelloAccessAppHandler());
@@ -49,7 +53,7 @@ public class EzyHelloClientTest {
         EzyAppSetup appSetup = setup.setupApp("hello-world");
         appSetup.addDataHandler("hello", new HelloMessageResponseHandler());
 
-        client.connect("tvd12.com", 3005);
+        client.connect("localhost", 3005);
 
         EzyMainEventsLoop mainEventsLoop = new EzyMainEventsLoop();
         mainEventsLoop.start();

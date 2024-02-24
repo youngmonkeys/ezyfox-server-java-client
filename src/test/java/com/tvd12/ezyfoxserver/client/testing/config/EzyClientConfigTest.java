@@ -2,6 +2,9 @@ package com.tvd12.ezyfoxserver.client.testing.config;
 
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.config.EzyPingConfig;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
+import com.tvd12.test.assertion.Asserts;
 import org.testng.annotations.Test;
 
 import java.util.Random;
@@ -48,6 +51,9 @@ public class EzyClientConfigTest {
         assert config.getReconnect().isEnable();
         assert config.getReconnect().getMaxReconnectCount() == maxReconnectCount;
         assert config.getReconnect().getReconnectPeriod() == reconnectPeriod;
+        assert config.getSslType() == EzySslType.CUSTOMIZATION;
+        assert !config.isEnableEncryption();
+        assert !config.isEnableCertificationSSL();
     }
 
     @Test
@@ -63,4 +69,61 @@ public class EzyClientConfigTest {
         // then
         assert config.getClientName().equals(zoneName);
     }
+
+    @Test
+    public void isEnableEncryptionTest() {
+        // given
+        EzyClientConfig config = EzyClientConfig.builder()
+            .enableSSL()
+            .sslType(EzySslType.CUSTOMIZATION)
+            .build();
+
+        // when
+        // then
+        Asserts.assertTrue(config.isEnableEncryption());
+        Asserts.assertFalse(config.isEnableCertificationSSL());
+    }
+
+    @Test
+    public void isNotEnableSslTest() {
+        // given
+        EzyClientConfig config = EzyClientConfig.builder()
+            .sslType(EzySslType.CUSTOMIZATION)
+            .build();
+
+        // when
+        // then
+        Asserts.assertFalse(config.isEnableEncryption());
+        Asserts.assertFalse(config.isEnableCertificationSSL());
+    }
+
+    @Test
+    public void isEnableCertificationSSLTest() {
+        // given
+        EzyClientConfig config = EzyClientConfig.builder()
+            .enableSSL()
+            .sslType(EzySslType.CERTIFICATION)
+            .build();
+
+        // when
+        // then
+        Asserts.assertFalse(config.isEnableEncryption());
+        Asserts.assertTrue(config.isEnableCertificationSSL());
+    }
+
+    @Test
+    public void defaultFunctionsTest() {
+        // given
+        EzySocketClientConfig config = new TestClientConfig();
+
+        // when
+        // then
+        assert !config.isEnableSSL();
+        assert config.getSslType() == EzySslType.CUSTOMIZATION;
+        assert !config.isEnableEncryption();
+        assert !config.isEnableCertificationSSL();
+    }
+
+
+    public static class TestClientConfig implements EzySocketClientConfig {}
 }

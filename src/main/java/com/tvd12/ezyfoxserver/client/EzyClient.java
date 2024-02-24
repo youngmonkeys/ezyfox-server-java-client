@@ -6,6 +6,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
@@ -16,6 +17,8 @@ import com.tvd12.ezyfoxserver.client.setup.EzySetup;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 
+import javax.net.ssl.SSLContext;
+
 public interface EzyClient extends EzyCloseable {
 
     EzySetup setup();
@@ -24,11 +27,15 @@ public interface EzyClient extends EzyCloseable {
 
     boolean reconnect();
 
-    void send(EzyRequest request);
+    default void send(EzyRequest request) {
+        send(request, false);
+    }
 
     void send(EzyRequest request, boolean encrypted);
 
-    void send(EzyCommand cmd, EzyArray data);
+    default void send(EzyCommand cmd, EzyArray data) {
+        send(cmd, data, false);
+    }
 
     void send(EzyCommand cmd, EzyArray data, boolean encrypted);
 
@@ -44,9 +51,17 @@ public interface EzyClient extends EzyCloseable {
 
     void udpConnect(String host, int port);
 
-    void udpSend(EzyRequest request);
+    default void udpSend(EzyRequest request) {
+        udpSend(request, false);
+    }
 
-    void udpSend(EzyCommand cmd, EzyArray data);
+    void udpSend(EzyRequest request, boolean encrypted);
+
+    default void udpSend(EzyCommand cmd, EzyArray data) {
+        udpSend(cmd, data, false);
+    }
+
+    void udpSend(EzyCommand cmd, EzyArray data, boolean encrypted);
 
     void close();
 
@@ -55,6 +70,14 @@ public interface EzyClient extends EzyCloseable {
     EzyClientConfig getConfig();
 
     boolean isEnableSSL();
+
+    EzySslType getSslType();
+
+    boolean isEnableEncryption();
+
+    boolean isEnableCertificationSSL();
+
+    void setSslContext(SSLContext sslContext);
 
     boolean isEnableDebug();
 

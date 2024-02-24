@@ -35,7 +35,7 @@ public class EzyEventHandlers extends EzyAbstractHandlers {
         if (handler != null) {
             handler.handle(event);
         } else {
-            logger.warn("has no handler for event type: " + eventType);
+            logger.info("has no handler for event type: " + eventType);
         }
     }
 }

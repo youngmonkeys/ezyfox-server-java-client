@@ -6,7 +6,9 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.concurrent.EzySynchronizedQueue;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
 import com.tvd12.ezyfoxserver.client.util.EzyQueue;
+import lombok.Setter;
 
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
@@ -16,7 +18,11 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
     protected final ByteBuffer buffer;
     protected final int readBufferSize;
     protected final EzyQueue<EzyArray> dataQueue;
+    @Setter
+    protected byte[] decryptionKey;
+    @Setter
     protected EzySocketDataDecoder decoder;
+    @Setter
     protected DatagramChannel datagramChannel;
 
     public EzyUdpSocketReader() {
@@ -45,18 +51,55 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
             } catch (InterruptedException e) {
                 logger.debug("socket reader interrupted", e);
                 return;
-            } catch (Exception e) {
-                logger.warn("I/O error at socket-reader", e);
+            } catch (Throwable e) {
+                logger.info("I/O error at socket-reader", e);
                 return;
             }
         }
+    }
+
+    @Override
+    public boolean call() {
+        try {
+            if (!active) {
+                return false;
+            }
+            this.buffer.clear();
+            Integer bytesToRead = nonBlockingReadSocketData();
+            if (bytesToRead == null) {
+                return true;
+            } else if (bytesToRead <= 0) {
+                return false;
+            }
+            buffer.flip();
+            byte[] binary = new byte[buffer.limit()];
+            buffer.get(binary);
+            handleReceivedBytes(binary);
+        } catch (Throwable e) {
+            logger.info("I/O error at socket-reader event loop", e);
+            return false;
+        }
+        return true;
     }
 
     protected int readSocketData() throws Exception {
         try {
             datagramChannel.receive(buffer);
             return buffer.position();
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            handleSocketReaderException(e);
+            return -1;
+        }
+    }
+
+    protected Integer nonBlockingReadSocketData() {
+        try {
+            SocketAddress serverAddress = datagramChannel.receive(buffer);
+            if (serverAddress == null) {
+                return null;
+            }
+            return buffer.position();
+        } catch (Throwable e) {
             handleSocketReaderException(e);
             return -1;
         }
@@ -83,24 +126,15 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
 
     private void onMessageReceived(EzyMessage message) {
         try {
-            Object data = decoder.decode(message, null);
+            Object data = decoder.decode(message, decryptionKey);
             dataQueue.add((EzyArray) data);
-        } catch (Exception e) {
-            logger.warn("decode error at socket-reader", e);
+        } catch (Throwable e) {
+            logger.info("decode error at socket-reader", e);
         }
-    }
-
-    public void setDecoder(EzySocketDataDecoder decoder) {
-        this.decoder = decoder;
-    }
-
-    public void setDatagramChannel(DatagramChannel datagramChannel) {
-        this.datagramChannel = datagramChannel;
     }
 
     @Override
     protected String getThreadName() {
         return "udp-socket-reader";
     }
-
 }

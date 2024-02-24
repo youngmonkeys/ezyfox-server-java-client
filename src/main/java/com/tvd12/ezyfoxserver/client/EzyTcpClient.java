@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyEntity;
@@ -7,6 +8,7 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.*;
 import com.tvd12.ezyfoxserver.client.manager.*;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
@@ -17,9 +19,13 @@ import com.tvd12.ezyfoxserver.client.setup.EzySimpleSetup;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzyTcpSslSocketClient;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,32 +36,61 @@ public class EzyTcpClient
     extends EzyEntity
     implements EzyClient, EzyMeAware, EzyZoneAware {
 
+    @Setter
+    @Getter
+    protected EzyUser me;
+    @Setter
+    @Getter
+    protected EzyZone zone;
+    @Getter
+    protected long sessionId;
+    @Setter
+    @Getter
+    protected byte[] publicKey;
+    @Setter
+    @Getter
+    protected byte[] privateKey;
+    @Getter
+    protected byte[] sessionKey;
+    @Getter
+    protected String sessionToken;
+    @Setter
+    @Getter
+    protected EzyConnectionStatus status;
+    @Setter
+    @Getter
+    protected EzyConnectionStatus udpStatus;
+    @Getter
     protected final String name;
     protected final EzySetup settingUp;
+    @Getter
     protected final EzyClientConfig config;
+    @Getter
     protected final EzyPingManager pingManager;
+    @Getter
     protected final EzyHandlerManager handlerManager;
     protected final EzyRequestSerializer requestSerializer;
     protected final Set<Object> ignoredLogCommands;
     protected final EzySocketClient socketClient;
+    @Getter
     protected final EzyPingSchedule pingSchedule;
+    protected final EzyEventLoopGroup eventLoopGroup;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected EzyUser me;
-    protected EzyZone zone;
-    protected long sessionId;
-    protected byte[] publicKey;
-    protected byte[] privateKey;
-    protected byte[] sessionKey;
-    protected String sessionToken;
-    protected EzyConnectionStatus status;
-    protected EzyConnectionStatus udpStatus;
 
     public EzyTcpClient(EzyClientConfig config) {
+        this(config, null);
+    }
+
+    public EzyTcpClient(
+        EzyClientConfig config,
+        EzyEventLoopGroup eventLoopGroup
+    ) {
         this.config = config;
         this.name = config.getClientName();
         this.status = EzyConnectionStatus.NULL;
+        this.eventLoopGroup = eventLoopGroup;
         this.pingManager = new EzySimplePingManager(config.getPing());
-        this.pingSchedule = new EzyPingSchedule(this);
+        this.pingSchedule = new EzyPingSchedule(this, eventLoopGroup);
         this.handlerManager = new EzySimpleHandlerManager(this);
         this.requestSerializer = new EzySimpleRequestSerializer();
         this.settingUp = new EzySimpleSetup(handlerManager);
@@ -71,17 +106,20 @@ public class EzyTcpClient
     }
 
     protected EzySocketClient newSocketClient() {
-        EzyTcpSocketClient client = newTcpSocketClient(config);
+        EzySocketClient client = newTcpSocketClient(config);
         client.setPingSchedule(pingSchedule);
         client.setPingManager(pingManager);
         client.setHandlerManager(handlerManager);
+        client.setEventLoopGroup(eventLoopGroup);
         client.setReconnectConfig(config.getReconnect());
         client.setIgnoredLogCommands(ignoredLogCommands);
         return client;
     }
 
-    protected EzyTcpSocketClient newTcpSocketClient(EzySocketClientConfig config) {
-        return new EzyTcpSocketClient(config);
+    protected EzySocketClient newTcpSocketClient(EzySocketClientConfig config) {
+        return isEnableCertificationSSL()
+            ? new EzyTcpSslSocketClient(config)
+            : new EzyTcpSocketClient(config);
     }
 
     @Override
@@ -93,13 +131,13 @@ public class EzyTcpClient
     public void connect(String host, int port) {
         try {
             if (!isClientConnectable(status)) {
-                logger.warn("client has already connected to: " + host + ":" + port);
+                logger.info("client has already connected to: " + host + ":" + port);
                 return;
             }
             preConnect();
             socketClient.connectTo(host, port);
             setStatus(EzyConnectionStatus.CONNECTING);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             logger.error("connect to server error", e);
         }
     }
@@ -108,7 +146,7 @@ public class EzyTcpClient
         if (!isClientReconnectable(status)) {
             String host = socketClient.getHost();
             int port = socketClient.getPort();
-            logger.warn("client has already connected to: " + host + ":" + port);
+            logger.info("client has already connected to: " + host + ":" + port);
             return false;
         }
         preConnect();
@@ -133,20 +171,10 @@ public class EzyTcpClient
     }
 
     @Override
-    public void send(EzyRequest request) {
-        send(request, false);
-    }
-
-    @Override
     public void send(EzyRequest request, boolean encrypted) {
         Object cmd = request.getCommand();
         EzyData data = request.serialize();
         send((EzyCommand) cmd, (EzyArray) data, encrypted);
-    }
-
-    @Override
-    public void send(EzyCommand cmd, EzyArray data) {
-        send(cmd, data, false);
     }
 
     @Override
@@ -175,68 +203,35 @@ public class EzyTcpClient
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public EzyClientConfig getConfig() {
-        return config;
-    }
-
-    @Override
     public boolean isEnableSSL() {
         return config.isEnableSSL();
     }
 
     @Override
+    public EzySslType getSslType() {
+        return config.getSslType();
+    }
+
+    @Override
+    public boolean isEnableEncryption() {
+        return config.isEnableEncryption();
+    }
+
+    @Override
+    public boolean isEnableCertificationSSL() {
+        return config.isEnableCertificationSSL();
+    }
+
+    @Override
+    public void setSslContext(SSLContext sslContext) {
+        if (socketClient instanceof EzyTcpSslSocketClient) {
+            ((EzyTcpSslSocketClient) socketClient).setSslContext(sslContext);
+        }
+    }
+
+    @Override
     public boolean isEnableDebug() {
         return config.isEnableDebug();
-    }
-
-    @Override
-    public EzyZone getZone() {
-        return zone;
-    }
-
-    @Override
-    public void setZone(EzyZone zone) {
-        this.zone = zone;
-    }
-
-    @Override
-    public EzyUser getMe() {
-        return me;
-    }
-
-    @Override
-    public void setMe(EzyUser me) {
-        this.me = me;
-    }
-
-    @Override
-    public EzyConnectionStatus getStatus() {
-        return status;
-    }
-
-    @Override
-    public void setStatus(EzyConnectionStatus status) {
-        this.status = status;
-    }
-
-    @Override
-    public EzyConnectionStatus getUdpStatus() {
-        return udpStatus;
-    }
-
-    @Override
-    public void setUdpStatus(EzyConnectionStatus status) {
-        this.udpStatus = status;
-    }
-
-    @Override
-    public long getSessionId() {
-        return sessionId;
     }
 
     @Override
@@ -246,45 +241,15 @@ public class EzyTcpClient
     }
 
     @Override
-    public String getSessionToken() {
-        return sessionToken;
-    }
-
-    @Override
     public void setSessionToken(String token) {
         this.sessionToken = token;
         this.socketClient.setSessionToken(sessionToken);
     }
 
     @Override
-    public byte[] getSessionKey() {
-        return sessionKey;
-    }
-
-    @Override
     public void setSessionKey(byte[] sessionKey) {
         this.sessionKey = sessionKey;
         this.socketClient.setSessionKey(sessionKey);
-    }
-
-    @Override
-    public byte[] getPublicKey() {
-        return publicKey;
-    }
-
-    @Override
-    public void setPublicKey(byte[] publicKey) {
-        this.publicKey = publicKey;
-    }
-
-    @Override
-    public byte[] getPrivateKey() {
-        return privateKey;
-    }
-
-    @Override
-    public void setPrivateKey(byte[] privateKey) {
-        this.privateKey = privateKey;
     }
 
     @Override
@@ -310,21 +275,6 @@ public class EzyTcpClient
         return null;
     }
 
-    @Override
-    public EzyPingManager getPingManager() {
-        return pingManager;
-    }
-
-    @Override
-    public EzyPingSchedule getPingSchedule() {
-        return pingSchedule;
-    }
-
-    @Override
-    public EzyHandlerManager getHandlerManager() {
-        return handlerManager;
-    }
-
     protected void printSentData(EzyCommand cmd, EzyArray data) {
         if (!ignoredLogCommands.contains(cmd)) {
             logger.debug("send command: " + cmd + " and data: " + data);
@@ -342,15 +292,16 @@ public class EzyTcpClient
     }
 
     @Override
-    public void udpSend(EzyRequest request) {
+    public void udpSend(EzyRequest request, boolean encrypted) {
         throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
     }
 
     @Override
-    public void udpSend(EzyCommand cmd, EzyArray data) {
+    public void udpSend(EzyCommand cmd, EzyArray data, boolean encrypted) {
         throw new UnsupportedOperationException("only support TCP, use EzyUTClient instead");
     }
 
+    @Override
     public void close() {
         socketClient.close();
     }

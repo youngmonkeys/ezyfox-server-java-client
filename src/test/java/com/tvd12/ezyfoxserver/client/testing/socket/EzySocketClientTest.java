@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.testing.socket;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
@@ -18,6 +19,7 @@ import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketReader;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketWriter;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
+import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
@@ -27,7 +29,7 @@ import java.util.List;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class EzySocketClientTest {
+public class EzySocketClientTest extends BaseTest {
 
     @Test
     public void connectToInConnectingStatus() {
@@ -230,5 +232,52 @@ public class EzySocketClientTest {
         // when
         // then
         sut.disconnect(EzyDisconnectReason.CLOSE.getId());
+    }
+
+    @Test
+    public void connectWithEvenLoopGroupTest() {
+        // given
+        TestEzySocketClient instance = new TestEzySocketClient();
+
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        instance.setEventLoopGroup(eventLoopGroup);
+
+        String host = "host";
+        int port = 0;
+
+        // when
+        instance.connectTo(host, port);
+
+        // then
+        verify(eventLoopGroup, times(1)).addOneTimeEvent(
+            any(Runnable.class),
+            any(long.class)
+        );
+    }
+
+    public static class TestEzySocketClient extends EzySocketClient {
+
+        @Override
+        protected boolean connectNow() {
+            return false;
+        }
+
+        @Override
+        protected void createAdapters() {
+            socketReader = mock(EzySocketReader.class);
+            socketWriter = mock(EzySocketWriter.class);
+        }
+
+        @Override
+        protected void startAdapters() {
+        }
+
+        @Override
+        protected void resetSocket() {
+        }
+
+        @Override
+        protected void closeSocket() {
+        }
     }
 }

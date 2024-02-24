@@ -3,9 +3,12 @@ package com.tvd12.ezyfoxserver.client;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.tvd12.ezyfox.util.EzyProcessor.processWithLogException;
 
 public final class EzyClients {
 
@@ -28,7 +31,8 @@ public final class EzyClients {
 
     public EzyClient newClient(
         EzyTransportType transportType,
-        EzyClientConfig config) {
+        EzyClientConfig config
+    ) {
         synchronized (clients) {
             return doNewClient(transportType, config);
         }
@@ -46,9 +50,6 @@ public final class EzyClients {
                 client = new EzyUTClient(config);
             }
             doAddClient(client);
-            if (defaultClientName == null) {
-                defaultClientName = client.getName();
-            }
         }
         return client;
     }
@@ -112,6 +113,9 @@ public final class EzyClients {
     public void removeClient(String name) {
         synchronized (clients) {
             clients.remove(name);
+            if (name.equals(defaultClientName)) {
+                defaultClientName = null;
+            }
         }
     }
 
@@ -119,5 +123,13 @@ public final class EzyClients {
         synchronized (clients) {
             this.clients.clear();
         }
+    }
+
+    public void disconnectClients() {
+        List<EzyClient> clientsToDisconnect = new ArrayList<>();
+        getClients(clientsToDisconnect);
+        clientsToDisconnect.forEach(it ->
+            processWithLogException(it::disconnect)
+        );
     }
 }

@@ -11,11 +11,7 @@ public interface EzyISocketClient extends EzyCloseable {
 
     void disconnect(int reason);
 
-    void sendMessage(EzyArray message);
-
-    default void sendMessage(EzyArray message, boolean encrypted) {
-        sendMessage(message);
-    }
+    void sendMessage(EzyArray message, boolean encrypted);
 
     void close();
 }

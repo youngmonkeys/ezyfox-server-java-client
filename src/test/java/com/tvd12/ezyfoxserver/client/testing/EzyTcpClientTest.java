@@ -8,20 +8,30 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
+import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
+import com.tvd12.ezyfoxserver.client.request.EzyAppAccessRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzySocketReader;
+import com.tvd12.ezyfoxserver.client.socket.EzyTcpSslSocketClient;
+import com.tvd12.test.assertion.Asserts;
+import com.tvd12.test.base.BaseTest;
+import com.tvd12.test.reflect.FieldUtil;
+import com.tvd12.test.util.RandomUtil;
 import org.testng.annotations.Test;
 
+import javax.net.ssl.SSLContext;
+import java.util.Objects;
 import java.util.Random;
 
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("resource")
-public class EzyTcpClientTest {
+public class EzyTcpClientTest extends BaseTest {
 
     @Test
     public void connect() {
@@ -267,6 +277,26 @@ public class EzyTcpClientTest {
         String sessionToken = "testSessionToken";
         sut.setSessionToken(sessionToken);
 
+        byte[] publicKey = RandomUtil.randomShortByteArray();
+        sut.setPublicKey(publicKey);
+
+        byte[] privateKey = RandomUtil.randomShortByteArray();
+        sut.setPrivateKey(privateKey);
+
+        sut.setUdpStatus(EzyConnectionStatus.CONNECTING);
+
+        EzySocketReader socketReader = mock(EzySocketReader.class);
+        FieldUtil.setFieldValue(
+            sut.getSocket(),
+            "socketReader",
+            socketReader
+        );
+        byte[] sessionKey = "hello".getBytes();
+        sut.setSessionKey(sessionKey);
+
+        SSLContext sslContext = mock(SSLContext.class);
+        sut.setSslContext(sslContext);
+
         // then
         assert sut.setup() != null;
         assert sut.getName().equals(clientName);
@@ -278,6 +308,17 @@ public class EzyTcpClientTest {
         assert sut.getApp() == app;
         assert sut.getAppById(appId) == app;
         assert sut.isConnected();
+        assert sut.getSessionId() == sessionId;
+        assert sut.getPublicKey() == publicKey;
+        assert sut.getPrivateKey() == privateKey;
+        assert sut.getUdpStatus() == EzyConnectionStatus.CONNECTING;
+        assert !sut.isUdpConnected();
+        assert sut.getSessionKey() == sessionKey;
+        assert sut.isEnableSSL() == config.isEnableSSL();
+        assert sut.getSslType() == config.getSslType();
+        assert sut.isEnableEncryption() == config.isEnableEncryption();
+        assert sut.isEnableDebug() == config.isEnableDebug();
+        assert Objects.equals(sut.getSessionToken(), sessionToken);
     }
 
     @Test
@@ -334,5 +375,113 @@ public class EzyTcpClientTest {
         } catch (Exception e) {
             assert e instanceof UnsupportedOperationException;
         }
+
+        try {
+            sut.udpSend(new EzyAppAccessRequest("app"));
+        } catch (Exception e) {
+            assert e instanceof UnsupportedOperationException;
+        }
+
+        try {
+            sut.udpSend(
+                EzyCommand.APP_REQUEST,
+                EzyEntityFactory.EMPTY_ARRAY
+            );
+        } catch (Exception e) {
+            assert e instanceof UnsupportedOperationException;
+        }
+    }
+
+    @Test
+    public void sendEncryptedSessionKeyNullAndDebug() {
+        // given
+        String clientName = "testClientName";
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .enableDebug()
+            .build();
+        EzyTcpClient sut = new EzyTcpClient(config);
+
+        // when
+        // then
+        sut.send(
+            EzyCommand.APP_REQUEST,
+            EzyEntityFactory.EMPTY_ARRAY,
+            true
+        );
+    }
+
+    @Test
+    public void sendEncryptedSessionKeyNullButNotDebug() {
+        // given
+        String clientName = "testClientName";
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .enableDebug(false)
+            .build();
+        EzyTcpClient sut = new EzyTcpClient(config);
+
+        // when
+        Throwable e = Asserts.assertThrows(() ->
+            sut.send(
+                EzyCommand.APP_REQUEST,
+                EzyEntityFactory.EMPTY_ARRAY,
+                true
+            )
+        );
+
+        // then
+        Asserts.assertEqualsType(e, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void sendEncryptedSessionKeyNotNull() {
+        // given
+        String clientName = "testClientName";
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .enableDebug(false)
+            .build();
+        EzyTcpClient sut = new EzyTcpClient(config);
+        byte[] sessionKey = RandomUtil.randomShortByteArray();
+        EzySocketReader socketReader = mock(EzySocketReader.class);
+        FieldUtil.setFieldValue(
+            sut.getSocket(),
+            "socketReader",
+            socketReader
+        );
+        sut.setSessionKey(sessionKey);
+
+        // when
+        sut.send(
+            EzyCommand.APP_REQUEST,
+            EzyEntityFactory.EMPTY_ARRAY,
+            true
+        );
+
+        // then
+        verify(socketReader, times(1)).setSessionKey(sessionKey);
+    }
+
+    @Test
+    public void createSslSocketClientTest() {
+        // given
+        String clientName = "testClientName";
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .enableSSL()
+            .sslType(EzySslType.CERTIFICATION)
+            .build();
+
+        // when
+        EzyTcpClient sut = new EzyTcpClient(config);
+        SSLContext sslContext = mock(SSLContext.class);
+        sut.setSslContext(sslContext);
+
+        // then
+        Asserts.assertEqualsType(
+            sut.getSocket(),
+            EzyTcpSslSocketClient.class
+        );
     }
 }

@@ -1,6 +1,7 @@
 package com.tvd12.ezyfoxserver.client.testing.socket;
 
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSocketReader;
+import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.MethodInvoker;
 import org.testng.annotations.Test;
 
@@ -12,7 +13,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class EzyTcpSocketReaderTest {
+public class EzyTcpSocketReaderTest extends BaseTest {
 
     @Test
     public void readSocketDataSuccess() throws Exception {

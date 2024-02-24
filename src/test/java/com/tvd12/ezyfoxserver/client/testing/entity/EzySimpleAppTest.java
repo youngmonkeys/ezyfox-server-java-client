@@ -96,6 +96,39 @@ public class EzySimpleAppTest {
     }
 
     @Test
+    public void sendArrayRequest() {
+        // given
+        int appId = new Random().nextInt();
+        String appName = "testAppName";
+        EzyZone zone = mock(EzyZone.class);
+
+        EzyClient client = mock(EzyClient.class);
+        when(zone.getClient()).thenReturn(client);
+
+        EzyHandlerManager handlerManager = mock(EzyHandlerManager.class);
+        when(client.getHandlerManager()).thenReturn(handlerManager);
+
+        EzyAppDataHandlers dataHandlers = new EzyAppDataHandlers();
+        when(handlerManager.getAppDataHandlers(appName)).thenReturn(dataHandlers);
+
+        EzyArray request = EzyEntityFactory.EMPTY_ARRAY;
+
+        EzySimpleApp app = new EzySimpleApp(zone, appId, appName);
+
+        // when
+        app.send(request);
+
+        // then
+        verify(handlerManager, times(1)).getAppDataHandlers(appName);
+
+        verify(client, times(1)).getHandlerManager();
+
+        EzyArray finalRequestData = EzyEntityFactory.newArray();
+        finalRequestData.add(appId, request);
+        verify(client, times(1)).send(EzyCommand.APP_REQUEST, finalRequestData, false);
+    }
+
+    @Test
     public void udpSendRequest() {
         // given
         int appId = new Random().nextInt();

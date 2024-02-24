@@ -1,13 +1,21 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopEvent;
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.util.EzyLoggable;
+import lombok.Setter;
 
 import java.nio.channels.AsynchronousCloseException;
 
-public abstract class EzySocketAdapter extends EzyLoggable {
-    protected final Object adapterLock;
+public abstract class EzySocketAdapter
+    extends EzyLoggable
+    implements EzyEventLoopEvent {
+
     protected volatile boolean active;
     protected volatile boolean stopped;
+    protected final Object adapterLock;
+    @Setter
+    protected EzyEventLoopGroup eventLoopGroup;
 
     public EzySocketAdapter() {
         this.active = false;
@@ -22,22 +30,31 @@ public abstract class EzySocketAdapter extends EzyLoggable {
             }
             active = true;
             stopped = false;
-            Thread newThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    loop();
-                }
-            });
-            newThread.setName(getThreadName());
-            newThread.start();
+            if (eventLoopGroup != null) {
+                eventLoopGroup.addEvent(this);
+            } else {
+                Thread newThread = new Thread(this::loop);
+                newThread.setName(getThreadName());
+                newThread.start();
+            }
         }
+    }
+
+    @Override
+    public boolean call() {
+        return false;
+    }
+
+    @Override
+    public void onFinished() {
+        setStopped();
     }
 
     protected abstract String getThreadName();
 
     protected void loop() {
         update();
-        setStopped(true);
+        setStopped();
     }
 
     protected abstract void update();
@@ -46,21 +63,17 @@ public abstract class EzySocketAdapter extends EzyLoggable {
         synchronized (adapterLock) {
             clear();
             active = false;
+            if (eventLoopGroup != null) {
+                eventLoopGroup.removeEvent(this);
+            }
         }
     }
 
-    protected void clear() {
-    }
+    protected void clear() {}
 
     public boolean isActive() {
         synchronized (adapterLock) {
             return active;
-        }
-    }
-
-    protected void setActive(boolean active) {
-        synchronized (adapterLock) {
-            this.active = active;
         }
     }
 
@@ -70,17 +83,17 @@ public abstract class EzySocketAdapter extends EzyLoggable {
         }
     }
 
-    protected void setStopped(boolean stopped) {
+    protected void setStopped() {
         synchronized (adapterLock) {
-            this.stopped = stopped;
+            this.stopped = true;
         }
     }
 
-    protected void handleSocketReaderException(Exception e) {
+    protected void handleSocketReaderException(Throwable e) {
         if (e instanceof AsynchronousCloseException) {
             logger.debug("Socket closed by another thread", e);
         } else {
-            logger.warn("I/O error at socket-reader", e);
+            logger.info("I/O error at socket-reader", e);
         }
     }
 }

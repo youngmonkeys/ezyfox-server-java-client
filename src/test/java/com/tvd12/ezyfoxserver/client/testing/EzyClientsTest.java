@@ -6,13 +6,16 @@ import com.tvd12.ezyfoxserver.client.EzyTcpClient;
 import com.tvd12.ezyfoxserver.client.EzyUTClient;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
+import com.tvd12.test.assertion.Asserts;
+import com.tvd12.test.base.BaseTest;
+import com.tvd12.test.util.RandomUtil;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class EzyClientsTest {
+public class EzyClientsTest extends BaseTest {
 
     @BeforeMethod
     public void before() {
@@ -135,5 +138,28 @@ public class EzyClientsTest {
         List<EzyClient> cachedClients = new ArrayList<>();
         sut.getClients(cachedClients);
         assert cachedClients.size() >= 1;
+    }
+
+    @Test
+    public void addRemoveGetDefaultClient() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        String clientName = RandomUtil.randomShortAlphabetString();
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .build();
+
+        // when
+        EzyClient client = clients.newClient(config);
+
+        // then
+        Asserts.assertEquals(
+            clients.getDefaultClient(),
+            client
+        );
+        clients.disconnectClients();
+        clients.removeClient(clientName);
+        clients.removeClient(clientName);
+        Asserts.assertNull(clients.getDefaultClient());
     }
 }

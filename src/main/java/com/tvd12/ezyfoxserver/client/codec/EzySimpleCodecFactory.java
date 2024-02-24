@@ -8,12 +8,8 @@ public class EzySimpleCodecFactory implements EzyCodecFactory {
 
     private final EzyCodecCreator socketCodecCreator;
 
-    public EzySimpleCodecFactory() {
-        this(false);
-    }
-
-    public EzySimpleCodecFactory(boolean enableSSL) {
-        this.socketCodecCreator = new MsgPackCodecCreator(enableSSL);
+    public EzySimpleCodecFactory(boolean enableEncryption) {
+        this.socketCodecCreator = new MsgPackCodecCreator(enableEncryption);
     }
 
     @Override

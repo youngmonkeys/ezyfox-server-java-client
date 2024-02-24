@@ -15,6 +15,7 @@
             <package name="com.tvd12.ezyfoxserver.client.testing.request"/>
             <package name="com.tvd12.ezyfoxserver.client.testing.setup"/>
             <package name="com.tvd12.ezyfoxserver.client.testing.socket"/>
+            <package name="com.tvd12.ezyfoxserver.client.testing.ssl"/>
             <package name="com.tvd12.ezyfoxserver.client.testing.util"/>
         </packages>
     </test>

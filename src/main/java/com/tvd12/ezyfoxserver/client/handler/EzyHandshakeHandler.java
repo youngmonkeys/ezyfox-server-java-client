@@ -25,7 +25,7 @@ public abstract class EzyHandshakeHandler
     protected void preHandle(EzyArray data) {
         this.client.setSessionToken(data.get(1, String.class));
         this.client.setSessionId(data.get(2, long.class));
-        if (client.isEnableSSL()) {
+        if (client.isEnableEncryption()) {
             this.client.setSessionKey(decryptSessionKey(data.get(3, byte[].class, null)));
         }
     }
@@ -46,7 +46,7 @@ public abstract class EzyHandshakeHandler
                 .privateKey(client.getPrivateKey())
                 .build()
                 .decrypt(sessionKey);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new IllegalStateException(
                 "can not decrypt session key: " + Arrays.toString(sessionKey),
                 e
@@ -58,14 +58,10 @@ public abstract class EzyHandshakeHandler
 
     protected void handleLogin(EzyArray data) {
         EzyRequest loginRequest = getLoginRequest();
-        client.send(loginRequest, encryptedLoginRequest());
+        client.send(loginRequest, client.isEnableEncryption());
     }
 
     protected abstract EzyRequest getLoginRequest();
-
-    protected boolean encryptedLoginRequest() {
-        return false;
-    }
 
     @Override
     public void setPingSchedule(EzyPingSchedule pingSchedule) {

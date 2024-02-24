@@ -5,11 +5,12 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketDataDecoder;
 import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketReader;
+import com.tvd12.test.base.BaseTest;
 import org.testng.annotations.Test;
 
 import static org.mockito.Mockito.*;
 
-public class EzyUdpSocketReaderTest {
+public class EzyUdpSocketReaderTest extends BaseTest {
 
     @Test
     public void loop() throws Exception {
