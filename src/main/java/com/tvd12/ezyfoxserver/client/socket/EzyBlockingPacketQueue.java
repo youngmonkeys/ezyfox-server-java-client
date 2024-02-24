@@ -60,6 +60,10 @@ public class EzyBlockingPacketQueue implements EzyPacketQueue {
     @Override
     public EzyPacket peekNow() {
         synchronized (this) {
+            if (empty || processing) {
+                return null;
+            }
+            processing = true;
             return queue.peek();
         }
     }

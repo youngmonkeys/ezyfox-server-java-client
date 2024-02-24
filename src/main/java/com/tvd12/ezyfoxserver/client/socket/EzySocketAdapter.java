@@ -3,6 +3,7 @@ package com.tvd12.ezyfoxserver.client.socket;
 import com.tvd12.ezyfox.concurrent.EzyEventLoopEvent;
 import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.util.EzyLoggable;
+import lombok.Setter;
 
 import java.nio.channels.AsynchronousCloseException;
 
@@ -13,6 +14,7 @@ public abstract class EzySocketAdapter
     protected volatile boolean active;
     protected volatile boolean stopped;
     protected final Object adapterLock;
+    @Setter
     protected EzyEventLoopGroup eventLoopGroup;
 
     public EzySocketAdapter() {
@@ -85,10 +87,6 @@ public abstract class EzySocketAdapter
         synchronized (adapterLock) {
             this.stopped = true;
         }
-    }
-
-    public void setEventLoopGroup(EzyEventLoopGroup eventLoopGroup) {
-        this.eventLoopGroup = eventLoopGroup;
     }
 
     protected void handleSocketReaderException(Throwable e) {
