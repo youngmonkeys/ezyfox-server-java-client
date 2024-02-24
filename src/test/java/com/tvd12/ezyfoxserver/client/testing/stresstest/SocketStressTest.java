@@ -51,6 +51,7 @@ public abstract class SocketStressTest {
                 EzyClients.getInstance().disconnectClients();
                 // eventLoopGroup.shutdown();
                 setup.close();
+                destroy();
             }
         };
         mainEventsLoop.start(5);
@@ -73,4 +74,6 @@ public abstract class SocketStressTest {
     );
 
     protected abstract void connect(EzyClient client);
+
+    protected void destroy() {}
 }

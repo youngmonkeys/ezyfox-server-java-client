@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
@@ -17,8 +18,17 @@ public class EzyUTClient extends EzyTcpClient {
         super(config);
     }
 
+    public EzyUTClient(
+        EzyClientConfig config,
+        EzyEventLoopGroup eventLoopGroup
+    ) {
+        super(config, eventLoopGroup);
+    }
+
     @Override
-    protected EzySocketClient newTcpSocketClient(EzySocketClientConfig config) {
+    protected EzySocketClient newTcpSocketClient(
+        EzySocketClientConfig config
+    ) {
         return isEnableCertificationSSL()
             ? new EzyUTSslSocketClient(config)
             : new EzyUTSocketClient(config);

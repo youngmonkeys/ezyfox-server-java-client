@@ -6,14 +6,11 @@ import java.nio.ByteBuffer;
 
 public abstract class EzySocketWriter extends EzySocketAdapter {
 
-    protected ByteBuffer writeBuffer;
     protected EzyPacketQueue packetQueue;
 
-    @Override
-    protected void loop() {
-        this.writeBuffer = ByteBuffer.allocate(EzySocketConstants.MIN_WRITER_BUFFER_SIZE);
-        super.loop();
-    }
+    protected final ByteBuffer writeBuffer = ByteBuffer.allocate(
+        EzySocketConstants.MIN_WRITER_BUFFER_SIZE
+    );
 
     @Override
     protected void update() {
@@ -42,6 +39,32 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
                 logger.info("problems in socket-writer main loop, thread", e);
             }
         }
+    }
+
+    @Override
+    public boolean call() {
+        try {
+            if (!active) {
+                return false;
+            }
+            EzyPacket packet = packetQueue.peekNow();
+            if (packet == null) {
+                return true;
+            }
+            int writtenBytes = writePacketToSocket(packet);
+            if (writtenBytes < 0) {
+                return false;
+            }
+            if (packet.isReleased()) {
+                packetQueue.take();
+            } else {
+                packetQueue.again();
+            }
+        } catch (Throwable e) {
+            logger.info("problems in socket-writer main loop, thread", e);
+            return false;
+        }
+        return true;
     }
 
     protected int writePacketToSocket(EzyPacket packet) {

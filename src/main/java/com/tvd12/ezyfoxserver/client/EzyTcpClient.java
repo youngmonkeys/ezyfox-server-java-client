@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.entity.EzyEntity;
@@ -73,14 +74,23 @@ public class EzyTcpClient
     protected final EzySocketClient socketClient;
     @Getter
     protected final EzyPingSchedule pingSchedule;
+    protected final EzyEventLoopGroup eventLoopGroup;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public EzyTcpClient(EzyClientConfig config) {
+        this(config, null);
+    }
+
+    public EzyTcpClient(
+        EzyClientConfig config,
+        EzyEventLoopGroup eventLoopGroup
+    ) {
         this.config = config;
         this.name = config.getClientName();
         this.status = EzyConnectionStatus.NULL;
+        this.eventLoopGroup = eventLoopGroup;
         this.pingManager = new EzySimplePingManager(config.getPing());
-        this.pingSchedule = new EzyPingSchedule(this);
+        this.pingSchedule = new EzyPingSchedule(this, eventLoopGroup);
         this.handlerManager = new EzySimpleHandlerManager(this);
         this.requestSerializer = new EzySimpleRequestSerializer();
         this.settingUp = new EzySimpleSetup(handlerManager);
@@ -100,6 +110,7 @@ public class EzyTcpClient
         client.setPingSchedule(pingSchedule);
         client.setPingManager(pingManager);
         client.setHandlerManager(handlerManager);
+        client.setEventLoopGroup(eventLoopGroup);
         client.setReconnectConfig(config.getReconnect());
         client.setIgnoredLogCommands(ignoredLogCommands);
         return client;

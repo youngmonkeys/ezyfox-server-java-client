@@ -25,4 +25,22 @@ public class EzyConnectionSuccessHandlerTest {
         // then
         verify(client, times(1)).setStatus(EzyConnectionStatus.CONNECTED);
     }
+
+    @Test
+    public void handleEncryptionEnable() {
+        // given
+        EzyClientForTest client = mock(EzyClientForTest.class);
+        when(client.isEnableEncryption()).thenReturn(true);
+        EzyConnectionSuccessHandler sut = new EzyConnectionSuccessHandler();
+        sut.setClient(client);
+
+        // when
+        EzyEvent event = mock(EzyEvent.class);
+        sut.handle(event);
+
+        // then
+        verify(client, times(1)).setStatus(EzyConnectionStatus.CONNECTED);
+        verify(client, times(1)).setPublicKey(any());
+        verify(client, times(1)).setPrivateKey(any());
+    }
 }

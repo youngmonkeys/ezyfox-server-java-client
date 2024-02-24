@@ -20,7 +20,7 @@ public class EzyTcpSocketClient extends EzySocketClient {
             SocketAddress socketAddress = new InetSocketAddress(host, port);
             socket = SocketChannel.open();
             socket.connect(socketAddress);
-            socket.configureBlocking(true);
+            socket.configureBlocking(eventLoopGroup == null);
             return true;
         } catch (Throwable e) {
             processConnectionException(e);

@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.ssl.EzySslContextFactory;
 
@@ -79,5 +80,13 @@ public class EzyTcpSslSocketClient extends EzySocketClient {
 
         sslSocketReader.start();
         sslSocketWriter.start();
+    }
+
+    @Override
+    public void setEventLoopGroup(EzyEventLoopGroup eventLoopGroup) {
+        throw new UnsupportedOperationException(
+            "currently we haven't supported event loop group " +
+                "with tcp ssl socket yet"
+        );
     }
 }

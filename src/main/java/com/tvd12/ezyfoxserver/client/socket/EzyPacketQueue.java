@@ -10,6 +10,8 @@ public interface EzyPacketQueue {
 
     EzyPacket peek() throws InterruptedException;
 
+    EzyPacket peekNow();
+
     boolean isFull();
 
     boolean isEmpty();

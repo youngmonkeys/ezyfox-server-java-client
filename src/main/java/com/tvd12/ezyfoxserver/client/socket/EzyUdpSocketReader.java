@@ -8,6 +8,7 @@ import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
 import com.tvd12.ezyfoxserver.client.util.EzyQueue;
 import lombok.Setter;
 
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
@@ -57,9 +58,46 @@ public class EzyUdpSocketReader extends EzySocketAdapter {
         }
     }
 
+    @Override
+    public boolean call() {
+        try {
+            if (!active) {
+                return false;
+            }
+            this.buffer.clear();
+            Integer bytesToRead = nonBlockingReadSocketData();
+            if (bytesToRead == null) {
+                return true;
+            } else if (bytesToRead <= 0) {
+                return false;
+            }
+            buffer.flip();
+            byte[] binary = new byte[buffer.limit()];
+            buffer.get(binary);
+            handleReceivedBytes(binary);
+        } catch (Throwable e) {
+            logger.info("I/O error at socket-reader event loop", e);
+            return false;
+        }
+        return true;
+    }
+
     protected int readSocketData() throws Exception {
         try {
             datagramChannel.receive(buffer);
+            return buffer.position();
+        } catch (Throwable e) {
+            handleSocketReaderException(e);
+            return -1;
+        }
+    }
+
+    protected Integer nonBlockingReadSocketData() {
+        try {
+            SocketAddress serverAddress = datagramChannel.receive(buffer);
+            if (serverAddress == null) {
+                return null;
+            }
             return buffer.position();
         } catch (Throwable e) {
             handleSocketReaderException(e);

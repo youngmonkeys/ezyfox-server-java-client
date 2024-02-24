@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.testing.socket;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
@@ -231,5 +232,52 @@ public class EzySocketClientTest extends BaseTest {
         // when
         // then
         sut.disconnect(EzyDisconnectReason.CLOSE.getId());
+    }
+
+    @Test
+    public void connectWithEvenLoopGroupTest() {
+        // given
+        TestEzySocketClient instance = new TestEzySocketClient();
+
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        instance.setEventLoopGroup(eventLoopGroup);
+
+        String host = "host";
+        int port = 0;
+
+        // when
+        instance.connectTo(host, port);
+
+        // then
+        verify(eventLoopGroup, times(1)).addOneTimeEvent(
+            any(Runnable.class),
+            any(long.class)
+        );
+    }
+
+    public static class TestEzySocketClient extends EzySocketClient {
+
+        @Override
+        protected boolean connectNow() {
+            return false;
+        }
+
+        @Override
+        protected void createAdapters() {
+            socketReader = mock(EzySocketReader.class);
+            socketWriter = mock(EzySocketWriter.class);
+        }
+
+        @Override
+        protected void startAdapters() {
+        }
+
+        @Override
+        protected void resetSocket() {
+        }
+
+        @Override
+        protected void closeSocket() {
+        }
     }
 }

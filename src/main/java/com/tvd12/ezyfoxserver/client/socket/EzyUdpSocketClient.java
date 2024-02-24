@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.codec.EzyCodecFactory;
@@ -26,6 +27,8 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     protected String sessionToken;
     @Setter
     protected byte[] sessionKey;
+    @Setter
+    protected EzyEventLoopGroup eventLoopGroup;
     protected InetSocketAddress serverAddress;
     protected DatagramChannel datagramChannel;
     protected EzyUdpSocketReader socketReader;
@@ -95,30 +98,42 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
             packetQueue.clear();
             socketStatuses.clear();
             datagramChannel = DatagramChannel.open();
+            datagramChannel.configureBlocking(eventLoopGroup == null);
             datagramChannel.bind(null);
             datagramChannel.connect(serverAddress);
             startAdapters();
             socketStatuses.push(EzySocketStatus.CONNECTING);
             sendHandshakeRequest();
-            Thread newThread = new Thread(() -> {
-                try {
-                    Thread.sleep(sleepTimeBeforeReconnect());
-                    EzySocketStatus status = socketStatuses.last();
-                    if (status == EzySocketStatus.CONNECTING) {
-                        socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
+            if (eventLoopGroup != null) {
+                eventLoopGroup.addOneTimeEvent(
+                    this::reconnectIfNeed,
+                    sleepTimeBeforeReconnect()
+                );
+            } else {
+                Thread newThread = new Thread(() -> {
+                    try {
+                        Thread.sleep(sleepTimeBeforeReconnect());
+                        reconnectIfNeed();
+                    } catch (InterruptedException e) {
+                        logger.error("udp reconnect interrupted", e);
                     }
-                    reconnect();
-                } catch (InterruptedException e) {
-                    logger.error("udp reconnect interrupted", e);
-                }
-            });
-            newThread.setName("udp-reconnect");
-            newThread.start();
+                });
+                newThread.setName("udp-reconnect");
+                newThread.start();
+            }
         } catch (BindException e) {
             throw e;
         } catch (Throwable e) {
             throw new IllegalStateException("udp can't connect to: " + serverAddress, e);
         }
+    }
+
+    private void reconnectIfNeed() {
+        EzySocketStatus status = socketStatuses.last();
+        if (status == EzySocketStatus.CONNECTING) {
+            socketStatuses.push(EzySocketStatus.CONNECT_FAILED);
+        }
+        reconnect();
     }
 
     protected int sleepTimeBeforeReconnect() {
@@ -170,7 +185,9 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         Object decoder = codecFactory.newDecoder(EzyConnectionType.SOCKET);
         EzySocketDataDecoder socketDataDecoder = new EzySimpleSocketDataDecoder(decoder);
         this.socketReader.setDecoder(socketDataDecoder);
+        this.socketReader.setEventLoopGroup(eventLoopGroup);
         this.socketWriter.setPacketQueue(packetQueue);
+        this.socketWriter.setEventLoopGroup(eventLoopGroup);
     }
 
     protected void startAdapters() {

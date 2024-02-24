@@ -57,6 +57,28 @@ public class EzyDisconnectionHandlerTest {
     }
 
     @Test
+    public void handleMustReconnectUnauthorized() {
+        // given
+        EzyClientForTest client = mock(EzyClientForTest.class);
+        EzyClientConfig config = EzyClientConfig.builder()
+            .reconnectConfigBuilder()
+            .enable(true)
+            .done()
+            .build();
+        when(client.getConfig()).thenReturn(config);
+        EzyDisconnectionHandler sut = new EzyDisconnectionHandler();
+        sut.setClient(client);
+        EzyDisconnectReason reason = EzyDisconnectReason.UNAUTHORIZED;
+        EzyDisconnectionEvent event = new EzyDisconnectionEvent(reason.getId());
+
+        // when
+        sut.handle(event);
+
+        // then
+        verify(client, times(1)).getConfig();
+    }
+
+    @Test
     public void handleMustReconnectIsNotEnable() {
         // given
         EzyClientForTest client = mock(EzyClientForTest.class);

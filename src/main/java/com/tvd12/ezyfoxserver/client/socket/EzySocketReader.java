@@ -56,6 +56,30 @@ public abstract class EzySocketReader extends EzySocketAdapter {
         }
     }
 
+    @Override
+    public boolean call() {
+        try {
+            if (!active) {
+                return false;
+            }
+            this.buffer.clear();
+            int bytesToRead = readSocketData();
+            if (bytesToRead < 0) {
+                return false;
+            }
+            if (bytesToRead > 0) {
+                buffer.flip();
+                byte[] binary = new byte[buffer.limit()];
+                buffer.get(binary);
+                decoder.decode(binary, decodeBytesCallback);
+            }
+        } catch (Throwable e) {
+            logger.info("I/O error at socket-reader", e);
+            return false;
+        }
+        return true;
+    }
+
     protected abstract int readSocketData();
 
     @Override

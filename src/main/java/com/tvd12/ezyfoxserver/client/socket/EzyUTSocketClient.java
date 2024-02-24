@@ -25,6 +25,7 @@ public class EzyUTSocketClient
         this.udpClient.setSessionId(sessionId);
         this.udpClient.setSessionToken(sessionToken);
         this.udpClient.setSessionKey(sessionKey);
+        this.udpClient.setEventLoopGroup(eventLoopGroup);
         this.udpClient.connectTo(host, port);
     }
 

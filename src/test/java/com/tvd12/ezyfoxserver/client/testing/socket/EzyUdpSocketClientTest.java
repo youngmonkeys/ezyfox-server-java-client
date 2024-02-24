@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.testing.socket;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.codec.EzySimpleCodecFactory;
@@ -19,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("resource")
 public class EzyUdpSocketClientTest extends BaseTest {
@@ -70,6 +72,35 @@ public class EzyUdpSocketClientTest extends BaseTest {
         Thread.sleep(350);
         sut.close();
         datagramChannel.close();
+    }
+
+    @Test
+    public void connectToWithEvenLoopGroup() throws Exception {
+        // given
+        String host = "localhost";
+        int port = 10000 + new Random().nextInt(10000);
+        DatagramChannel datagramChannel = startUdpServer(port);
+        EzySimpleCodecFactory codecFactory = new EzySimpleCodecFactory(false);
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(codecFactory);
+        String sessionToken = "testSessionToken";
+        long sessionId = new Random().nextLong();
+        sut.setSessionId(sessionId);
+        sut.setSessionToken(sessionToken);
+
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        sut.setEventLoopGroup(eventLoopGroup);
+
+        // when
+        sut.connectTo(host, port);
+
+        // then
+        sut.close();
+        datagramChannel.close();
+
+        verify(eventLoopGroup, times(1)).addOneTimeEvent(
+            any(Runnable.class),
+            any(long.class)
+        );
     }
 
     @Test
