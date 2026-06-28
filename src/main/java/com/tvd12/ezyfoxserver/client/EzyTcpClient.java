@@ -275,6 +275,15 @@ public class EzyTcpClient
         return null;
     }
 
+    @Override
+    public EzyPlugin getPluginById(int pluginId) {
+        if (zone != null) {
+            EzyPluginManager pluginManager = zone.getPluginManager();
+            return pluginManager.getPluginById(pluginId);
+        }
+        return null;
+    }
+
     protected void printSentData(EzyCommand cmd, EzyArray data) {
         if (!ignoredLogCommands.contains(cmd)) {
             logger.debug("send command: " + cmd + " and data: " + data);
