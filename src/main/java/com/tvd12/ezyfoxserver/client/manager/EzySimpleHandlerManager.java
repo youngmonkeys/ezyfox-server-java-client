@@ -49,6 +49,8 @@ public class EzySimpleHandlerManager implements EzyHandlerManager {
         handlers.addHandler(EzyCommand.APP_REQUEST, new EzyAppResponseHandler());
         handlers.addHandler(EzyCommand.APP_EXIT, new EzyAppExitHandler());
         handlers.addHandler(EzyCommand.UDP_HANDSHAKE, new EzyUdpHandshakeHandler());
+        handlers.addHandler(EzyCommand.PLUGIN_INFO, new EzyPluginInfoHandler());
+        handlers.addHandler(EzyCommand.PLUGIN_REQUEST, new EzyPluginResponseHandler());
         return handlers;
     }
 
