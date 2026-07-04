@@ -158,8 +158,29 @@ public class EzyClientsTest extends BaseTest {
             client
         );
         clients.disconnectClients();
-        clients.removeClient(clientName);
-        clients.removeClient(clientName);
+        Asserts.assertEquals(clients.removeClient(clientName), client);
+        client.close();
+        Asserts.assertNull(clients.removeClient(clientName));
         Asserts.assertNull(clients.getDefaultClient());
+    }
+
+    @Test
+    public void processEventTest() throws InterruptedException {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        String clientName = RandomUtil.randomShortAlphabetString();
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .build();
+        EzyClient client = clients.newClient(config);
+        clients.addClient(client);
+
+        // when
+        clients.startProcessEvents();
+        Thread.sleep(100);
+        clients.startProcessEvents();
+
+        // then
+        clients.stopProcessEvents();
     }
 }

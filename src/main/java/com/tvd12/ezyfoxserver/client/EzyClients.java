@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client;
 
+import com.tvd12.ezyfox.concurrent.EzyExecutors;
+import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 
@@ -7,13 +9,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.tvd12.ezyfox.util.EzyProcessor.processWithLogException;
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketConstants.PROCESS_EVENTS_PERIOD;
 
-public final class EzyClients {
+public final class EzyClients extends EzyLoggable {
 
     private String defaultClientName;
     private final Map<String, EzyClient> clients;
+    private ScheduledExecutorService processEventsScheduledExecutorService;
 
     private static final EzyClients INSTANCE = new EzyClients();
 
@@ -110,19 +116,23 @@ public final class EzyClients {
         }
     }
 
-    public void removeClient(String name) {
+    public EzyClient removeClient(String name) {
         synchronized (clients) {
-            clients.remove(name);
+            EzyClient client = clients.remove(name);
             if (name.equals(defaultClientName)) {
                 defaultClientName = null;
             }
+            return client;
         }
     }
 
-    public void clear() {
+    public Map<String, EzyClient> clear() {
+        Map<String, EzyClient> removedClients;
         synchronized (clients) {
+            removedClients = new HashMap<>(clients);
             this.clients.clear();
         }
+        return removedClients;
     }
 
     public void disconnectClients() {
@@ -131,5 +141,54 @@ public final class EzyClients {
         clientsToDisconnect.forEach(it ->
             processWithLogException(it::disconnect)
         );
+    }
+
+    public void startProcessEvents() {
+        startProcessEvents(PROCESS_EVENTS_PERIOD);
+    }
+
+    public void startProcessEvents(int sleepTime) {
+        synchronized (this) {
+            if (processEventsScheduledExecutorService != null) {
+                return;
+            }
+            processEventsScheduledExecutorService = EzyExecutors
+                .newSingleThreadScheduledExecutor("process-events");
+            startProcessEvents(
+                processEventsScheduledExecutorService,
+                sleepTime
+            );
+        }
+    }
+
+    public void startProcessEvents(
+        ScheduledExecutorService scheduledExecutorService,
+        int sleepTime
+    ) {
+        List<EzyClient> cachedClients = new ArrayList<>();
+        scheduledExecutorService.scheduleAtFixedRate(
+            () -> {
+                try {
+                    getClients(cachedClients);
+                    for (EzyClient one : cachedClients) {
+                        one.processEvents();
+                    }
+                } catch (Throwable e) {
+                    logger.info("process events error", e);
+                }
+            },
+            sleepTime,
+            sleepTime,
+            TimeUnit.MILLISECONDS
+        );
+    }
+
+    public void stopProcessEvents() {
+        synchronized (this) {
+            if (processEventsScheduledExecutorService != null) {
+                processEventsScheduledExecutorService.shutdown();
+                processEventsScheduledExecutorService = null;
+            }
+        }
     }
 }
