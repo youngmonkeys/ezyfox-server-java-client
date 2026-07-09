@@ -128,7 +128,7 @@ public abstract class EzySocketClient
         int reconnectSleepTime = reconnectConfig.getReconnectPeriod();
         connect0(reconnectSleepTime);
         reconnectCount++;
-        logger.info("try reconnect to server: " + reconnectCount + ", waiting time: " + reconnectSleepTime);
+        logger.info("try reconnect to server: {}, waiting time: {}", reconnectCount, reconnectSleepTime);
         EzyEvent tryConnectEvent = new EzyTryConnectEvent(reconnectCount);
         socketEventQueue.addEvent(tryConnectEvent);
         return true;
@@ -272,7 +272,7 @@ public abstract class EzySocketClient
         try {
             responseApi.response(pack);
         } catch (Throwable e) {
-            logger.info("send message: " + message + " error", e);
+            logger.info("send message: {} error", message, e);
         }
     }
 
@@ -377,7 +377,7 @@ public abstract class EzySocketClient
 
     protected void printReceivedData(EzyCommand cmd, EzyArray data) {
         if (!ignoredLogCommands.contains(cmd)) {
-            logger.debug("received command: " + cmd + " and data: " + data);
+            logger.debug("received command: {} and data: {}", cmd, data);
         }
     }
 

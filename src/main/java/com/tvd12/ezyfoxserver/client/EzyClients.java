@@ -242,22 +242,30 @@ public final class EzyClients extends EzyLoggable {
                 || processEventsEventLoopGroup != null) {
                 return;
             }
-            List<EzyClient> cachedClients = new ArrayList<>();
-            EzyEventLoopEvent event = () -> {
-                try {
-                    getClients(cachedClients);
-                    for (EzyClient one : cachedClients) {
-                        one.processEvents();
-                    }
-                } catch (Throwable e) {
-                    logger.info("process events error", e);
-                }
-                return true;
-            };
+            EzyEventLoopEvent event = createProcessClientEvent();
             eventLoopGroup.addScheduleEvent(event, sleepTime, sleepTime);
             this.processEventsEventLoopGroup = eventLoopGroup;
             this.processEventsLoopEvent = event;
         }
+    }
+
+    private EzyEventLoopEvent createProcessClientEvent() {
+        List<EzyClient> cachedClients = new ArrayList<>();
+        return () -> {
+            getClients(cachedClients);
+            for (EzyClient one : cachedClients) {
+                try {
+                    one.processEvents();
+                } catch (Throwable e) {
+                    logger.info(
+                        "process client: {} events error",
+                        one.getName(),
+                        e
+                    );
+                }
+            }
+            return true;
+        };
     }
 
     public void stopProcessEvents() {
