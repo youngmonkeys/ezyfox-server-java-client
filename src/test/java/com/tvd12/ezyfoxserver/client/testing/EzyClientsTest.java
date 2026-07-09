@@ -182,9 +182,9 @@ public class EzyClientsTest extends BaseTest {
         clients.addClient(client);
 
         // when
-        clients.startProcessEvents();
+        clients.startProcessEventsWithScheduledExecutor();
         Thread.sleep(100);
-        clients.startProcessEvents();
+        clients.startProcessEventsWithScheduledExecutor();
 
         // then
         clients.stopProcessEvents();
@@ -229,7 +229,7 @@ public class EzyClientsTest extends BaseTest {
 
         // when
         clients.startProcessEvents(eventLoopGroup);
-        clients.startProcessEvents(3);
+        clients.startProcessEventsWithScheduledExecutor(3);
 
         // then
         assert !isProcessEventsScheduledExecutorServiceRunning(clients);

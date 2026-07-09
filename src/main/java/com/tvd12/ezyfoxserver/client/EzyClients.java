@@ -15,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static com.tvd12.ezyfox.util.EzyProcessor.processWithLogException;
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketConstants.ONE_THREAD;
 import static com.tvd12.ezyfoxserver.client.constant.EzySocketConstants.PROCESS_EVENTS_PERIOD;
 
 public final class EzyClients extends EzyLoggable {
@@ -24,6 +25,7 @@ public final class EzyClients extends EzyLoggable {
     private ScheduledExecutorService processEventsScheduledExecutorService;
     private EzyEventLoopGroup processEventsEventLoopGroup;
     private EzyEventLoopEvent processEventsLoopEvent;
+    private boolean ownsProcessEventsEventLoopGroup;
 
     private static final EzyClients INSTANCE = new EzyClients();
 
@@ -155,11 +157,38 @@ public final class EzyClients extends EzyLoggable {
         );
     }
 
-    public void startProcessEvents() {
-        startProcessEvents(PROCESS_EVENTS_PERIOD);
+    public void startProcessEventsWithEventLoop() {
+        startProcessEventsWithEventLoop(
+            ONE_THREAD,
+            PROCESS_EVENTS_PERIOD
+        );
     }
 
-    public void startProcessEvents(int sleepTime) {
+    public void startProcessEventsWithEventLoop(
+        int numberOfThreads,
+        int sleepTime
+    ) {
+        synchronized (this) {
+            if (processEventsScheduledExecutorService != null
+                || processEventsEventLoopGroup != null) {
+                return;
+            }
+            EzyEventLoopGroup eventLoopGroup =
+                new EzyEventLoopGroup(numberOfThreads);
+            startProcessEvents(eventLoopGroup, sleepTime);
+            ownsProcessEventsEventLoopGroup = true;
+        }
+    }
+
+    public void startProcessEventsWithScheduledExecutor() {
+        startProcessEventsWithScheduledExecutor(
+            PROCESS_EVENTS_PERIOD
+        );
+    }
+
+    public void startProcessEventsWithScheduledExecutor(
+        int sleepTime
+    ) {
         synchronized (this) {
             if (processEventsScheduledExecutorService != null
                 || processEventsEventLoopGroup != null) {
@@ -239,8 +268,12 @@ public final class EzyClients extends EzyLoggable {
             }
             if (processEventsEventLoopGroup != null) {
                 processEventsEventLoopGroup.removeEvent(processEventsLoopEvent);
+                if (ownsProcessEventsEventLoopGroup) {
+                    processEventsEventLoopGroup.shutdown();
+                }
                 processEventsEventLoopGroup = null;
                 processEventsLoopEvent = null;
+                ownsProcessEventsEventLoopGroup = false;
             }
         }
     }

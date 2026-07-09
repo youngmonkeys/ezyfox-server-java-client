@@ -12,7 +12,7 @@ import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
 import com.tvd12.ezyfoxserver.client.setup.EzyAppSetup;
 import com.tvd12.ezyfoxserver.client.setup.EzySetup;
 
-public class EzyClientUseEventLoopAndClientsTest {
+public class EzyClientUseEventLoopAndScheduledClientsTest {
 
     public static void main(String[] args) {
         EzyClientConfig clientConfig = EzyClientConfig.builder().clientName("first").zoneName("example").build();
@@ -35,7 +35,7 @@ public class EzyClientUseEventLoopAndClientsTest {
 //		client.connect("ws.tvd12.com", 3005);
         client.connect("127.0.0.1", 3005);
 
-        clients.startProcessEvents(eventLoopGroup);
+        clients.startProcessEventsWithScheduledExecutor();
 
         while (true) {
             try {
