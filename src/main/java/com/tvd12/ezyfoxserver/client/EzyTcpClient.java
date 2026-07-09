@@ -131,7 +131,11 @@ public class EzyTcpClient
     public void connect(String host, int port) {
         try {
             if (!isClientConnectable(status)) {
-                logger.info("client has already connected to: " + host + ":" + port);
+                logger.info(
+                    "client has already connected to: {}:{} from connect",
+                    host,
+                    port
+                );
                 return;
             }
             preConnect();
@@ -146,7 +150,11 @@ public class EzyTcpClient
         if (!isClientReconnectable(status)) {
             String host = socketClient.getHost();
             int port = socketClient.getPort();
-            logger.info("client has already connected to: " + host + ":" + port);
+            logger.info(
+                "client has already connected to: {}:{} from reconnect",
+                host,
+                port
+            );
             return false;
         }
         preConnect();
