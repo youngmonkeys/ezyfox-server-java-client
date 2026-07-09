@@ -22,7 +22,7 @@ public class EzySocketEventQueue {
 
     public void popAll(List<EzyEvent> buffer) {
         synchronized (events) {
-            while (events.size() > 0) {
+            while (!events.isEmpty()) {
                 buffer.add(events.poll());
             }
         }

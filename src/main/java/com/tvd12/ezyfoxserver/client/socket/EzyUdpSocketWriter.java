@@ -1,15 +1,14 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
+import lombok.Setter;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
+@Setter
 public class EzyUdpSocketWriter extends EzySocketWriter {
 
     protected DatagramChannel datagramChannel;
-
-    public void setDatagramChannel(DatagramChannel datagramChannel) {
-        this.datagramChannel = datagramChannel;
-    }
 
     @Override
     protected int writePacketToSocket(EzyPacket packet) {

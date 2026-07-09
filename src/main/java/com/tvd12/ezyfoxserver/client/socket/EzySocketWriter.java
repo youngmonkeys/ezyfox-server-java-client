@@ -1,11 +1,13 @@
 package com.tvd12.ezyfoxserver.client.socket;
 
 import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
+import lombok.Setter;
 
 import java.nio.ByteBuffer;
 
 public abstract class EzySocketWriter extends EzySocketAdapter {
 
+    @Setter
     protected EzyPacketQueue packetQueue;
 
     protected final ByteBuffer writeBuffer = ByteBuffer.allocate(
@@ -100,10 +102,6 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
 
     protected byte[] getBytesToWrite(EzyPacket packet) {
         return (byte[]) packet.getData();
-    }
-
-    public void setPacketQueue(EzyPacketQueue packetQueue) {
-        this.packetQueue = packetQueue;
     }
 
     @Override
