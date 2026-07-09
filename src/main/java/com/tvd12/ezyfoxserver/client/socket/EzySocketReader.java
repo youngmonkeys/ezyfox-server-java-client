@@ -6,6 +6,7 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.concurrent.EzySynchronizedQueue;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
 import com.tvd12.ezyfoxserver.client.util.EzyQueue;
+import lombok.Setter;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -16,7 +17,9 @@ public abstract class EzySocketReader extends EzySocketAdapter {
     protected final EzyQueue<EzyArray> dataQueue;
     protected final int readBufferSize;
     protected final EzyCallback<EzyMessage> decodeBytesCallback;
+    @Setter
     protected byte[] sessionKey;
+    @Setter
     protected EzySocketDataDecoder decoder;
 
     public EzySocketReader() {
@@ -100,14 +103,6 @@ public abstract class EzySocketReader extends EzySocketAdapter {
         } catch (Throwable e) {
             logger.info("decode error at socket-reader", e);
         }
-    }
-
-    public void setSessionKey(byte[] sessionKey) {
-        this.sessionKey = sessionKey;
-    }
-
-    public void setDecoder(EzySocketDataDecoder decoder) {
-        this.decoder = decoder;
     }
 
     @Override

@@ -5,6 +5,7 @@ public final class EzySocketConstants {
     public static final int MAX_READ_BUFFER_SIZE = 8192;
     public static final int MIN_WRITER_BUFFER_SIZE = 8192;
     public static final int PROCESS_EVENTS_PERIOD = 3;
+    public static final int ONE_THREAD = 1;
 
     private EzySocketConstants() {}
 }

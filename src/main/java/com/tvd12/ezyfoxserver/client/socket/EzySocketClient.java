@@ -7,13 +7,24 @@ import com.tvd12.ezyfoxserver.client.codec.EzyCodecFactory;
 import com.tvd12.ezyfoxserver.client.codec.EzySimpleCodecFactory;
 import com.tvd12.ezyfoxserver.client.config.EzyReconnectConfig;
 import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
-import com.tvd12.ezyfoxserver.client.constant.*;
-import com.tvd12.ezyfoxserver.client.event.*;
+import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
+import com.tvd12.ezyfoxserver.client.constant.EzyConnectionFailedReason;
+import com.tvd12.ezyfoxserver.client.constant.EzyConnectionType;
+import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
+import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
+import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
+import com.tvd12.ezyfoxserver.client.event.EzyConnectionFailureEvent;
+import com.tvd12.ezyfoxserver.client.event.EzyConnectionSuccessEvent;
+import com.tvd12.ezyfoxserver.client.event.EzyDisconnectionEvent;
+import com.tvd12.ezyfoxserver.client.event.EzyEvent;
+import com.tvd12.ezyfoxserver.client.event.EzyTryConnectEvent;
 import com.tvd12.ezyfoxserver.client.handler.EzyDataHandlers;
 import com.tvd12.ezyfoxserver.client.handler.EzyEventHandlers;
 import com.tvd12.ezyfoxserver.client.manager.EzyHandlerManager;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -21,29 +32,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.*;
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketConnectable;
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketDisconnectable;
+import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketReconnectable;
 
 public abstract class EzySocketClient
     extends EzyLoggable
     implements EzyISocketClient, EzySocketDelegate {
 
+    @Getter
     protected String host;
+    @Getter
     protected int port;
     protected int reconnectCount;
     protected long connectTime;
     protected int disconnectReason;
+    @Setter
     protected long sessionId;
+    @Setter
     protected String sessionToken;
     protected byte[] sessionKey;
+    @Setter
     protected EzyReconnectConfig reconnectConfig;
     protected EzyHandlerManager handlerManager;
+    @Setter
     protected Set<Object> ignoredLogCommands;
+    @Setter
     protected EzyPingManager pingManager;
     protected EzyPingSchedule pingSchedule;
     protected EzyEventHandlers eventHandlers;
     protected EzyDataHandlers dataHandlers;
     protected EzySocketReader socketReader;
     protected EzySocketWriter socketWriter;
+    @Setter
     protected EzyEventLoopGroup eventLoopGroup;
     protected EzyConnectionFailedReason connectionFailedReason;
     protected final EzyCodecFactory codecFactory;
@@ -107,7 +128,7 @@ public abstract class EzySocketClient
         int reconnectSleepTime = reconnectConfig.getReconnectPeriod();
         connect0(reconnectSleepTime);
         reconnectCount++;
-        logger.info("try reconnect to server: " + reconnectCount + ", waiting time: " + reconnectSleepTime);
+        logger.info("try reconnect to server: {}, waiting time: {}", reconnectCount, reconnectSleepTime);
         EzyEvent tryConnectEvent = new EzyTryConnectEvent(reconnectCount);
         socketEventQueue.addEvent(tryConnectEvent);
         return true;
@@ -135,9 +156,6 @@ public abstract class EzySocketClient
             if (dt < minSleepTimeBeforeReconnect) {
                 realSleepTime = minSleepTimeBeforeReconnect - dt;
             }
-        }
-        if (realSleepTime >= 0) {
-            sleepBeforeConnect(realSleepTime);
         }
         if (eventLoopGroup != null) {
             eventLoopGroup.addOneTimeEvent(
@@ -182,14 +200,6 @@ public abstract class EzySocketClient
 
     protected int minSleepTimeBeforeReconnect() {
         return 2000;
-    }
-
-    protected void sleepBeforeConnect(long sleepTime) {
-        try {
-            Thread.sleep(sleepTime);
-        } catch (Throwable e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     protected abstract boolean connectNow();
@@ -262,7 +272,7 @@ public abstract class EzySocketClient
         try {
             responseApi.response(pack);
         } catch (Throwable e) {
-            logger.info("send message: " + message + " error", e);
+            logger.info("send message: {} error", message, e);
         }
     }
 
@@ -322,7 +332,7 @@ public abstract class EzySocketClient
     protected void processReceivedMessages0() {
         popReadMessages();
         try {
-            if (localMessageQueue.size() > 0) {
+            if (!localMessageQueue.isEmpty()) {
                 pingManager.setLostPingCount(0);
             }
             for (EzyArray ezyArray : localMessageQueue) {
@@ -367,33 +377,13 @@ public abstract class EzySocketClient
 
     protected void printReceivedData(EzyCommand cmd, EzyArray data) {
         if (!ignoredLogCommands.contains(cmd)) {
-            logger.debug("received command: " + cmd + " and data: " + data);
+            logger.debug("received command: {} and data: {}", cmd, data);
         }
-    }
-
-    public String getHost() {
-        return this.host;
-    }
-
-    public int getPort() {
-        return this.port;
-    }
-
-    public void setSessionId(long sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public void setSessionToken(String sessionToken) {
-        this.sessionToken = sessionToken;
     }
 
     public void setSessionKey(byte[] sessionKey) {
         this.sessionKey = sessionKey;
         this.socketReader.setSessionKey(sessionKey);
-    }
-
-    public void setPingManager(EzyPingManager pingManager) {
-        this.pingManager = pingManager;
     }
 
     public void setPingSchedule(EzyPingSchedule pingSchedule) {
@@ -405,17 +395,5 @@ public abstract class EzySocketClient
         this.handlerManager = handlerManager;
         this.dataHandlers = handlerManager.getDataHandlers();
         this.eventHandlers = handlerManager.getEventHandlers();
-    }
-
-    public void setEventLoopGroup(EzyEventLoopGroup eventLoopGroup) {
-        this.eventLoopGroup = eventLoopGroup;
-    }
-
-    public void setReconnectConfig(EzyReconnectConfig reconnectConfig) {
-        this.reconnectConfig = reconnectConfig;
-    }
-
-    public void setIgnoredLogCommands(Set<Object> ignoredLogCommands) {
-        this.ignoredLogCommands = ignoredLogCommands;
     }
 }

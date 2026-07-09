@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client.testing;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopEvent;
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfoxserver.client.EzyClient;
 import com.tvd12.ezyfoxserver.client.EzyClients;
 import com.tvd12.ezyfoxserver.client.EzyTcpClient;
@@ -8,12 +10,16 @@ import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyTransportType;
 import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.base.BaseTest;
+import com.tvd12.test.reflect.FieldUtil;
 import com.tvd12.test.util.RandomUtil;
+import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 public class EzyClientsTest extends BaseTest {
 
@@ -176,11 +182,66 @@ public class EzyClientsTest extends BaseTest {
         clients.addClient(client);
 
         // when
-        clients.startProcessEvents();
+        clients.startProcessEventsWithScheduledExecutor();
         Thread.sleep(100);
-        clients.startProcessEvents();
+        clients.startProcessEventsWithScheduledExecutor();
 
         // then
         clients.stopProcessEvents();
+    }
+
+    @Test
+    public void processEventsWithEventLoopGroupTest() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        String clientName = RandomUtil.randomShortAlphabetString();
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName(clientName)
+            .build();
+        EzyClient client = clients.newClient(config);
+        clients.addClient(client);
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        ArgumentCaptor<EzyEventLoopEvent> eventCaptor =
+            ArgumentCaptor.forClass(EzyEventLoopEvent.class);
+
+        // when
+        clients.startProcessEvents(eventLoopGroup);
+        // calling again while already started must be a no-op
+        clients.startProcessEvents(eventLoopGroup);
+
+        // then
+        verify(eventLoopGroup, times(1))
+            .addScheduleEvent(eventCaptor.capture(), anyLong(), anyLong());
+
+        // the shared event loop thread would call this repeatedly
+        EzyEventLoopEvent event = eventCaptor.getValue();
+        assert event.call();
+
+        clients.stopProcessEvents();
+        verify(eventLoopGroup, times(1)).removeEvent(event);
+    }
+
+    @Test
+    public void startProcessEventsIgnoredWhenEventLoopGroupAlreadyStarted() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+
+        // when
+        clients.startProcessEvents(eventLoopGroup);
+        clients.startProcessEventsWithScheduledExecutor(3);
+
+        // then
+        assert !isProcessEventsScheduledExecutorServiceRunning(clients);
+        clients.stopProcessEvents();
+    }
+
+    private boolean isProcessEventsScheduledExecutorServiceRunning(
+        EzyClients clients
+    ) {
+        return FieldUtil.getFieldValue(
+            clients,
+            "processEventsScheduledExecutorService"
+        ) != null;
     }
 }
