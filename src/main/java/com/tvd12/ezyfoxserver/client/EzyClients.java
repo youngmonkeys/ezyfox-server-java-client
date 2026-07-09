@@ -1,5 +1,7 @@
 package com.tvd12.ezyfoxserver.client;
 
+import com.tvd12.ezyfox.concurrent.EzyEventLoopEvent;
+import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.concurrent.EzyExecutors;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
@@ -20,6 +22,8 @@ public final class EzyClients extends EzyLoggable {
     private String defaultClientName;
     private final Map<String, EzyClient> clients;
     private ScheduledExecutorService processEventsScheduledExecutorService;
+    private EzyEventLoopGroup processEventsEventLoopGroup;
+    private EzyEventLoopEvent processEventsLoopEvent;
 
     private static final EzyClients INSTANCE = new EzyClients();
 
@@ -149,7 +153,8 @@ public final class EzyClients extends EzyLoggable {
 
     public void startProcessEvents(int sleepTime) {
         synchronized (this) {
-            if (processEventsScheduledExecutorService != null) {
+            if (processEventsScheduledExecutorService != null
+                || processEventsEventLoopGroup != null) {
                 return;
             }
             processEventsScheduledExecutorService = EzyExecutors
@@ -183,11 +188,47 @@ public final class EzyClients extends EzyLoggable {
         );
     }
 
+    public void startProcessEvents(EzyEventLoopGroup eventLoopGroup) {
+        startProcessEvents(eventLoopGroup, PROCESS_EVENTS_PERIOD);
+    }
+
+    public void startProcessEvents(
+        EzyEventLoopGroup eventLoopGroup,
+        int sleepTime
+    ) {
+        synchronized (this) {
+            if (processEventsScheduledExecutorService != null
+                || processEventsEventLoopGroup != null) {
+                return;
+            }
+            List<EzyClient> cachedClients = new ArrayList<>();
+            EzyEventLoopEvent event = () -> {
+                try {
+                    getClients(cachedClients);
+                    for (EzyClient one : cachedClients) {
+                        one.processEvents();
+                    }
+                } catch (Throwable e) {
+                    logger.info("process events error", e);
+                }
+                return true;
+            };
+            eventLoopGroup.addScheduleEvent(event, sleepTime, sleepTime);
+            this.processEventsEventLoopGroup = eventLoopGroup;
+            this.processEventsLoopEvent = event;
+        }
+    }
+
     public void stopProcessEvents() {
         synchronized (this) {
             if (processEventsScheduledExecutorService != null) {
                 processEventsScheduledExecutorService.shutdown();
                 processEventsScheduledExecutorService = null;
+            }
+            if (processEventsEventLoopGroup != null) {
+                processEventsEventLoopGroup.removeEvent(processEventsLoopEvent);
+                processEventsEventLoopGroup = null;
+                processEventsLoopEvent = null;
             }
         }
     }
