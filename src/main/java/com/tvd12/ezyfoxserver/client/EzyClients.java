@@ -158,8 +158,14 @@ public final class EzyClients extends EzyLoggable {
     }
 
     public void startProcessEventsWithEventLoop() {
+        startProcessEventsWithEventLoop(ONE_THREAD);
+    }
+
+    public void startProcessEventsWithEventLoop(
+        int numberOfThreads
+    ) {
         startProcessEventsWithEventLoop(
-            ONE_THREAD,
+            numberOfThreads,
             PROCESS_EVENTS_PERIOD
         );
     }
