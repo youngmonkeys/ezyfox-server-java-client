@@ -55,9 +55,15 @@ public final class EzyClients extends EzyLoggable {
         EzyClient client = clients.get(clientName);
         if (client == null) {
             if (transportType == EzyTransportType.TCP) {
-                client = new EzyTcpClient(config);
+                client = new EzyTcpClient(
+                    config,
+                    processEventsEventLoopGroup
+                );
             } else {
-                client = new EzyUTClient(config);
+                client = new EzyUTClient(
+                    config,
+                    processEventsEventLoopGroup
+                );
             }
             doAddClient(client);
         }
@@ -99,7 +105,9 @@ public final class EzyClients extends EzyLoggable {
 
     private EzyClient doGetClient(String name) {
         if (name == null) {
-            throw new NullPointerException("can not get client with name: null");
+            throw new NullPointerException(
+                "can not get client with name: null"
+            );
         }
         return clients.get(name);
     }
@@ -158,7 +166,9 @@ public final class EzyClients extends EzyLoggable {
                 return;
             }
             processEventsScheduledExecutorService = EzyExecutors
-                .newSingleThreadScheduledExecutor("process-events");
+                .newSingleThreadScheduledExecutor(
+                    "process-events"
+                );
             startProcessEvents(
                 processEventsScheduledExecutorService,
                 sleepTime
@@ -188,7 +198,9 @@ public final class EzyClients extends EzyLoggable {
         );
     }
 
-    public void startProcessEvents(EzyEventLoopGroup eventLoopGroup) {
+    public void startProcessEvents(
+        EzyEventLoopGroup eventLoopGroup
+    ) {
         startProcessEvents(eventLoopGroup, PROCESS_EVENTS_PERIOD);
     }
 
