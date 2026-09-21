@@ -9,6 +9,7 @@ import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.event.EzyLostPingEvent;
 import com.tvd12.ezyfoxserver.client.manager.EzyPingManager;
 import com.tvd12.ezyfoxserver.client.request.EzyPingRequest;
+import lombok.Setter;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,6 +24,7 @@ public class EzyPingSchedule
     protected final EzyEventLoopGroup eventLoopGroup;
     protected final ScheduledExecutorService scheduledExecutor;
     protected ScheduledFuture<?> scheduledFuture;
+    @Setter
     protected EzySocketEventQueue socketEventQueue;
 
     public EzyPingSchedule(
@@ -32,14 +34,20 @@ public class EzyPingSchedule
         this.client = client;
         this.eventLoopGroup = eventLoopGroup;
         this.pingManager = client.getPingManager();
-        this.scheduledExecutor = eventLoopGroup != null ? null : newScheduledExecutor();
+        this.scheduledExecutor = eventLoopGroup != null
+            ? null
+            : newScheduledExecutor();
 
     }
 
     protected ScheduledExecutorService newScheduledExecutor() {
         final ScheduledExecutorService answer = EzyExecutors
-            .newSingleThreadScheduledExecutor("ping-schedule");
-        Runtime.getRuntime().addShutdownHook(new Thread(answer::shutdown));
+            .newSingleThreadScheduledExecutor(
+                "ping-schedule"
+            );
+        Runtime.getRuntime().addShutdownHook(
+            new Thread(answer::shutdown)
+        );
         return answer;
     }
 
@@ -87,7 +95,9 @@ public class EzyPingSchedule
     }
 
     public void shutdown() {
-        this.scheduledExecutor.shutdown();
+        if (scheduledExecutor != null) {
+            this.scheduledExecutor.shutdown();
+        }
     }
 
     private void sendPingRequest() {
@@ -99,13 +109,9 @@ public class EzyPingSchedule
             client.send(EzyPingRequest.getInstance());
         }
         if (lostPingCount > 1) {
-            logger.info("lost ping count: " + lostPingCount);
+            logger.info("lost ping count: {}", lostPingCount);
             EzyLostPingEvent event = new EzyLostPingEvent(lostPingCount);
             socketEventQueue.addEvent(event);
         }
-    }
-
-    public void setSocketEventQueue(EzySocketEventQueue socketEventQueue) {
-        this.socketEventQueue = socketEventQueue;
     }
 }
