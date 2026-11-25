@@ -16,7 +16,7 @@
     <url>https://youngmonkeys.org/</url>
 
     <properties>
-        <ezy.version>1.3.2</ezy.version>
+        <ezy.version>1.3.3</ezy.version>
     </properties>
 
     <dependencies>
