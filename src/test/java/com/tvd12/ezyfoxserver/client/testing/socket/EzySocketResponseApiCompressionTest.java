@@ -106,6 +106,66 @@ public class EzySocketResponseApiCompressionTest {
         Asserts.assertFalse(smallMessage.getHeader().isCompressed());
     }
 
+    @Test
+    public void compressedNotSmallerTest() throws Exception {
+        // given
+        EzyPacketQueue packetQueue = new EzyBlockingPacketQueue();
+        MsgPackCodecCreator codecCreator = new MsgPackCodecCreator(false);
+        EzySocketResponseApi sut = new EzySocketResponseApi(
+            new EzySimpleSocketDataEncoder(codecCreator.newEncoder()),
+            packetQueue,
+            1
+        );
+        sut.setCompressionEnable(true);
+        EzyArray data = EzyEntityArrays.newArray(1, "a");
+
+        // when
+        sut.response(new EzySimplePackage(data, false, null, EzyTransportType.TCP));
+
+        // then
+        EzyMessage message = EzyMessageReaders.bytesToMessage(
+            (byte[]) packetQueue.take().getData()
+        );
+        Asserts.assertFalse(message.getHeader().isCompressed());
+        EzyByteToObjectDecoder decoder = codecCreator.newDecoder(Integer.MAX_VALUE);
+        EzyArray decoded = (EzyArray) decoder.decode(message, null);
+        Asserts.assertEquals(decoded.get(1, String.class), "a");
+    }
+
+    @Test
+    public void compressWithDefaultThresholdTest() throws Exception {
+        // given
+        EzyPacketQueue packetQueue = new EzyBlockingPacketQueue();
+        MsgPackCodecCreator codecCreator = new MsgPackCodecCreator(false);
+        EzySocketResponseApi sut = new EzySocketResponseApi(
+            new EzySimpleSocketDataEncoder(codecCreator.newEncoder()),
+            packetQueue
+        );
+        sut.setCompressionEnable(true);
+
+        // when
+        sut.response(new EzySimplePackage(newLongData(), false, null, EzyTransportType.TCP));
+        sut.response(
+            new EzySimplePackage(
+                EzyEntityArrays.newArray(1, "hello"),
+                false,
+                null,
+                EzyTransportType.TCP
+            )
+        );
+
+        // then
+        EzyMessage longMessage = EzyMessageReaders.bytesToMessage(
+            (byte[]) packetQueue.take().getData()
+        );
+        EzyMessage smallMessage = EzyMessageReaders.bytesToMessage(
+            (byte[]) packetQueue.take().getData()
+        );
+        Asserts.assertTrue(sut.isCompressionEnable());
+        Asserts.assertTrue(longMessage.getHeader().isCompressed());
+        Asserts.assertFalse(smallMessage.getHeader().isCompressed());
+    }
+
     private static EzyArray newLongData() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 200; ++i) {

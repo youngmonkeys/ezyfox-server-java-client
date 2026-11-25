@@ -6,10 +6,14 @@ import com.tvd12.ezyfox.codec.EzyMessageHeader;
 import com.tvd12.ezyfoxserver.client.socket.EzySimpleSocketDataDecoder;
 import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.base.BaseTest;
+import com.tvd12.test.reflect.FieldUtil;
 import com.tvd12.test.util.RandomUtil;
 import org.testng.annotations.Test;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Queue;
 
 import static org.mockito.Matchers.any;
@@ -100,5 +104,77 @@ public class EzySimpleSocketDataDecoderTest extends BaseTest {
         // when
         // then
         sut.decode(bytes, data -> {});
+    }
+
+    @Test
+    public void decodeWithRemainingBytes() throws Exception {
+        // given
+        TwoBytesMessageDecoder decoder = new TwoBytesMessageDecoder();
+        EzySimpleSocketDataDecoder sut = new EzySimpleSocketDataDecoder(decoder);
+        List<EzyMessage> receivedMessages = new ArrayList<>();
+
+        // when
+        sut.decode(new byte[]{1, 2, 3, 4, 5}, receivedMessages::add);
+        ByteBuffer remainBuffer = FieldUtil.getFieldValue(sut, "buffer");
+        int remainBytes = remainBuffer.remaining();
+        sut.decode(new byte[]{6}, receivedMessages::add);
+
+        // then
+        Asserts.assertEquals(receivedMessages.size(), 3);
+        Asserts.assertEquals(remainBytes, 1);
+        Asserts.assertNull(FieldUtil.getFieldValue(sut, "buffer"));
+        Asserts.assertEquals(decoder.decodedBytes.size(), 3);
+        Asserts.assertEquals(
+            Arrays.toString(decoder.decodedBytes.get(0)),
+            Arrays.toString(new byte[]{1, 2})
+        );
+        Asserts.assertEquals(
+            Arrays.toString(decoder.decodedBytes.get(1)),
+            Arrays.toString(new byte[]{3, 4})
+        );
+        Asserts.assertEquals(
+            Arrays.toString(decoder.decodedBytes.get(2)),
+            Arrays.toString(new byte[]{5, 6})
+        );
+    }
+
+    @Test
+    public void decodeWhenInactive() throws Exception {
+        // given
+        TwoBytesMessageDecoder decoder = new TwoBytesMessageDecoder();
+        EzySimpleSocketDataDecoder sut = new EzySimpleSocketDataDecoder(decoder);
+        FieldUtil.setFieldValue(sut, "active", false);
+        List<EzyMessage> receivedMessages = new ArrayList<>();
+
+        // when
+        sut.decode(new byte[]{1, 2}, receivedMessages::add);
+
+        // then
+        Asserts.assertTrue(receivedMessages.isEmpty());
+        Asserts.assertEquals(decoder.decodedBytes.size(), 1);
+    }
+
+    private static class TwoBytesMessageDecoder implements EzyByteToObjectDecoder {
+
+        private final List<byte[]> decodedBytes = new ArrayList<>();
+
+        @Override
+        public Object decode(EzyMessage message) {
+            return null;
+        }
+
+        @Override
+        public void decode(ByteBuffer bytes, Queue<EzyMessage> queue) {
+            if (bytes.remaining() < 2) {
+                return;
+            }
+            byte[] messageBytes = new byte[2];
+            bytes.get(messageBytes);
+            decodedBytes.add(messageBytes);
+            queue.offer(mock(EzyMessage.class));
+        }
+
+        @Override
+        public void reset() {}
     }
 }

@@ -10,9 +10,11 @@ import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import com.tvd12.ezyfoxserver.client.entity.EzyApp;
+import com.tvd12.ezyfoxserver.client.entity.EzyPlugin;
 import com.tvd12.ezyfoxserver.client.entity.EzyUser;
 import com.tvd12.ezyfoxserver.client.entity.EzyZone;
 import com.tvd12.ezyfoxserver.client.manager.EzyAppManager;
+import com.tvd12.ezyfoxserver.client.manager.EzyPluginManager;
 import com.tvd12.ezyfoxserver.client.request.EzyAppAccessRequest;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
@@ -341,6 +343,33 @@ public class EzyTcpClientTest extends BaseTest {
         // then
         assert sut.getApp() == null;
         assert sut.getAppById(0) == null;
+        assert sut.getPluginById(0) == null;
+    }
+
+    @Test
+    public void getPluginByIdTest() {
+        // given
+        EzyClientConfig config = EzyClientConfig.builder()
+            .clientName("testClientName")
+            .build();
+        EzyTcpClient sut = new EzyTcpClient(config);
+
+        EzyZone zone = mock(EzyZone.class);
+        sut.setZone(zone);
+
+        EzyPluginManager pluginManager = mock(EzyPluginManager.class);
+        when(zone.getPluginManager()).thenReturn(pluginManager);
+
+        int pluginId = new Random().nextInt();
+        EzyPlugin plugin = mock(EzyPlugin.class);
+        when(pluginManager.getPluginById(pluginId)).thenReturn(plugin);
+
+        // when
+        EzyPlugin actual = sut.getPluginById(pluginId);
+
+        // then
+        Asserts.assertEquals(actual, plugin);
+        verify(pluginManager, times(1)).getPluginById(pluginId);
     }
 
     @Test

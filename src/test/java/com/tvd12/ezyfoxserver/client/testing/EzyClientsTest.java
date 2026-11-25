@@ -13,11 +13,14 @@ import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.FieldUtil;
 import com.tvd12.test.util.RandomUtil;
 import org.mockito.ArgumentCaptor;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.*;
 
@@ -25,6 +28,12 @@ public class EzyClientsTest extends BaseTest {
 
     @BeforeMethod
     public void before() {
+        EzyClients.getInstance().clear();
+    }
+
+    @AfterMethod
+    public void after() {
+        EzyClients.getInstance().stopProcessEvents();
         EzyClients.getInstance().clear();
     }
 
@@ -234,6 +243,129 @@ public class EzyClientsTest extends BaseTest {
         // then
         assert !isProcessEventsScheduledExecutorServiceRunning(clients);
         clients.stopProcessEvents();
+    }
+
+    @Test
+    public void startProcessEventsWithOwnEventLoopTest() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+
+        // when
+        clients.startProcessEventsWithEventLoop();
+        EzyEventLoopGroup eventLoopGroup = FieldUtil.getFieldValue(
+            clients,
+            "processEventsEventLoopGroup"
+        );
+        clients.startProcessEventsWithEventLoop(2, 5);
+
+        // then
+        Asserts.assertNotNull(eventLoopGroup);
+        Asserts.assertEquals(
+            FieldUtil.getFieldValue(clients, "processEventsEventLoopGroup"),
+            eventLoopGroup
+        );
+        Asserts.assertTrue(FieldUtil.getFieldValue(clients, "ownsProcessEventsEventLoopGroup"));
+        clients.stopProcessEvents();
+        Asserts.assertNull(FieldUtil.getFieldValue(clients, "processEventsEventLoopGroup"));
+        Asserts.assertNull(FieldUtil.getFieldValue(clients, "processEventsLoopEvent"));
+        Asserts.assertFalse(FieldUtil.getFieldValue(clients, "ownsProcessEventsEventLoopGroup"));
+    }
+
+    @Test
+    public void startProcessEventsWithOwnEventLoopAndNumberOfThreadsTest() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+
+        // when
+        clients.startProcessEventsWithEventLoop(1);
+
+        // then
+        Asserts.assertNotNull(FieldUtil.getFieldValue(clients, "processEventsEventLoopGroup"));
+        clients.stopProcessEvents();
+    }
+
+    @Test
+    public void startProcessEventsWithOwnEventLoopIgnoredWhenScheduledExecutorStarted() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        clients.startProcessEventsWithScheduledExecutor();
+
+        // when
+        clients.startProcessEventsWithEventLoop();
+
+        // then
+        Asserts.assertNull(FieldUtil.getFieldValue(clients, "processEventsEventLoopGroup"));
+        assert isProcessEventsScheduledExecutorServiceRunning(clients);
+        clients.stopProcessEvents();
+        assert !isProcessEventsScheduledExecutorServiceRunning(clients);
+    }
+
+    @Test
+    public void stopProcessEventsNotShutdownExternalEventLoopGroup() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        clients.startProcessEvents(eventLoopGroup);
+
+        // when
+        clients.stopProcessEvents();
+
+        // then
+        verify(eventLoopGroup, times(1)).removeEvent(any(EzyEventLoopEvent.class));
+        verify(eventLoopGroup, times(0)).shutdown();
+    }
+
+    @Test
+    public void processEventsWithEventLoopGroupClientErrorTest() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        EzyClient errorClient = mock(EzyClient.class);
+        when(errorClient.getName()).thenReturn("errorClient");
+        doThrow(new IllegalStateException("test")).when(errorClient).processEvents();
+        EzyClient okClient = mock(EzyClient.class);
+        when(okClient.getName()).thenReturn("okClient");
+        clients.addClient(errorClient);
+        clients.addClient(okClient);
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        ArgumentCaptor<EzyEventLoopEvent> eventCaptor =
+            ArgumentCaptor.forClass(EzyEventLoopEvent.class);
+        clients.startProcessEvents(eventLoopGroup, 5);
+        verify(eventLoopGroup, times(1))
+            .addScheduleEvent(eventCaptor.capture(), eq(5L), eq(5L));
+
+        // when
+        boolean actual = eventCaptor.getValue().call();
+
+        // then
+        Asserts.assertTrue(actual);
+        verify(errorClient, times(1)).processEvents();
+        verify(okClient, times(1)).processEvents();
+        clients.stopProcessEvents();
+    }
+
+    @Test
+    public void processEventsWithScheduledExecutorClientErrorTest() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        EzyClient errorClient = mock(EzyClient.class);
+        when(errorClient.getName()).thenReturn("errorClient");
+        doThrow(new IllegalStateException("test")).when(errorClient).processEvents();
+        clients.addClient(errorClient);
+        ScheduledExecutorService executorService = mock(ScheduledExecutorService.class);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+
+        // when
+        clients.startProcessEvents(executorService, 5);
+        verify(executorService, times(1)).scheduleAtFixedRate(
+            runnableCaptor.capture(),
+            eq(5L),
+            eq(5L),
+            eq(TimeUnit.MILLISECONDS)
+        );
+        runnableCaptor.getValue().run();
+
+        // then
+        verify(errorClient, times(1)).processEvents();
     }
 
     private boolean isProcessEventsScheduledExecutorServiceRunning(

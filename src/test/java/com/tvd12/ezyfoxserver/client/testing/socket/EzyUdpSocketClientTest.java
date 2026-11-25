@@ -5,13 +5,18 @@ import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.codec.EzySimpleCodecFactory;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
+import com.tvd12.ezyfoxserver.client.socket.EzyPackage;
+import com.tvd12.ezyfoxserver.client.socket.EzyResponseApi;
+import com.tvd12.ezyfoxserver.client.socket.EzySocketResponseApi;
 import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketReader;
+import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.FieldUtil;
 import com.tvd12.test.util.RandomUtil;
 import org.testng.annotations.Test;
 
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -19,6 +24,7 @@ import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -132,6 +138,163 @@ public class EzyUdpSocketClientTest extends BaseTest {
         // then
         List<EzyArray> buffer = new ArrayList<>();
         sut.popReadMessages(buffer);
+    }
+
+    @Test
+    public void popReadMessagesWhenConnecting() {
+        // given
+        EzyUdpSocketReader mockSocketReader = mock(EzyUdpSocketReader.class);
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false));
+        FieldUtil.setFieldValue(sut, "socketReader", mockSocketReader);
+        sut.setStatus(EzySocketStatus.CONNECTING);
+        List<EzyArray> buffer = new ArrayList<>();
+
+        // when
+        sut.popReadMessages(buffer);
+
+        // then
+        verify(mockSocketReader, times(1)).popMessages(buffer);
+    }
+
+    @Test
+    public void popReadMessagesWhenNotConnected() {
+        // given
+        EzyUdpSocketReader mockSocketReader = mock(EzyUdpSocketReader.class);
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false));
+        FieldUtil.setFieldValue(sut, "socketReader", mockSocketReader);
+        sut.setStatus(EzySocketStatus.DISCONNECTED);
+        List<EzyArray> buffer = new ArrayList<>();
+
+        // when
+        sut.popReadMessages(buffer);
+
+        // then
+        verify(mockSocketReader, times(0)).popMessages(buffer);
+    }
+
+    @Test
+    public void connectToWhenConnecting() {
+        // given
+        AtomicInteger connectCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void connect0() {
+                connectCount.incrementAndGet();
+            }
+        };
+        sut.setStatus(EzySocketStatus.CONNECTING);
+
+        // when
+        sut.connectTo("localhost", 2611);
+
+        // then
+        Asserts.assertEquals(connectCount.get(), 0);
+    }
+
+    @Test
+    public void reconnectWhenNotConnectFailed() {
+        // given
+        AtomicInteger connectCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void connect0() {
+                connectCount.incrementAndGet();
+            }
+        };
+        sut.setStatus(EzySocketStatus.CONNECTED);
+
+        // when
+        boolean actual = sut.reconnect();
+
+        // then
+        Asserts.assertFalse(actual);
+        Asserts.assertEquals(connectCount.get(), 0);
+    }
+
+    @Test
+    public void reconnectWhenConnectFailed() {
+        // given
+        AtomicInteger connectCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void connect0() {
+                connectCount.incrementAndGet();
+            }
+        };
+        sut.setStatus(EzySocketStatus.CONNECT_FAILED);
+
+        // when
+        boolean actual = sut.reconnect();
+
+        // then
+        Asserts.assertTrue(actual);
+        Asserts.assertEquals(connectCount.get(), 1);
+    }
+
+    @Test
+    public void connectRetryWhenBindException() {
+        // given
+        AtomicInteger connectCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void connect1() throws BindException {
+                if (connectCount.incrementAndGet() < 3) {
+                    throw new BindException("test");
+                }
+            }
+        };
+
+        // when
+        sut.connectTo("localhost", 2611);
+
+        // then
+        Asserts.assertEquals(connectCount.get(), 3);
+    }
+
+    @Test
+    public void connectToUnresolvedHost() {
+        // given
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false));
+        sut.setSessionToken("testSessionToken");
+
+        // when
+        Throwable e = Asserts.assertThrows(() ->
+            sut.connectTo("unknown.host.invalid", 2611)
+        );
+
+        // then
+        Asserts.assertEqualsType(e, IllegalStateException.class);
+        sut.close();
+    }
+
+    @Test
+    public void sendMessageError() throws Exception {
+        // given
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false));
+        EzyResponseApi responseApi = mock(EzyResponseApi.class);
+        doThrow(new IllegalStateException("test"))
+            .when(responseApi).response(any(EzyPackage.class));
+        FieldUtil.setFieldValue(sut, "responseApi", responseApi);
+
+        // when
+        sut.sendMessage(EzyEntityArrays.newArray("test"), false);
+
+        // then
+        verify(responseApi, times(1)).response(any(EzyPackage.class));
+    }
+
+    @Test
+    public void setCompressionEnableTest() {
+        // given
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false), 128);
+
+        // when
+        sut.setCompressionEnable(true);
+
+        // then
+        EzySocketResponseApi responseApi = FieldUtil.getFieldValue(sut, "responseApi");
+        Asserts.assertTrue(responseApi.isCompressionEnable());
+        Asserts.assertEquals(FieldUtil.getFieldValue(responseApi, "compressionThreshold"), 128);
     }
 
     private DatagramChannel startUdpServer(int port) throws Exception {

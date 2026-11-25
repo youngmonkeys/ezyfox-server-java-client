@@ -21,6 +21,7 @@ import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
 import java.security.KeyPair;
+import java.util.Arrays;
 import java.util.Random;
 
 import static org.mockito.Mockito.*;
@@ -316,6 +317,78 @@ public class EzyHandshakeHandlerTest {
         // then
         verify(context.client, times(1)).send(context.loginRequest, true);
         verify(context.client, times(1)).setSessionKey(context.sessionKey);
+    }
+
+    @Test
+    public void handleWhenVerifySslHandshakeTwiceReuseVerifier() throws Exception {
+        // given
+        HandshakeContext context = new HandshakeContext(true, "localhost");
+        byte[] proof = context.signer.sign(context.publicKey, context.encryptedSessionKey);
+
+        // when
+        context.sut.handle(context.newData(proof));
+        Object verifier = FieldUtil.getFieldValue(context.sut, "sslHandshakeVerifier");
+        context.sut.handle(context.newData(proof));
+
+        // then
+        Asserts.assertNotNull(verifier);
+        Asserts.assertEquals(
+            FieldUtil.getFieldValue(context.sut, "sslHandshakeVerifier"),
+            verifier
+        );
+        verify(context.client, times(2)).send(context.loginRequest, true);
+    }
+
+    @Test
+    public void handleWhenSocketClientNull() {
+        // given
+        EzyClient client = mock(EzyClient.class);
+        when(client.getSocket()).thenReturn(null);
+        EzyRequest loginRequest = mock(EzyRequest.class);
+        EzyHandshakeHandler sut = new EzyHandshakeHandler() {
+            protected EzyRequest getLoginRequest() {
+                return loginRequest;
+            }
+        };
+        sut.setClient(client);
+        sut.setPingSchedule(mock(EzyPingSchedule.class));
+        EzyArray data = EzyEntityArrays.newArray("", "testSessionToken", 1L, null, true);
+
+        // when
+        sut.handle(data);
+
+        // then
+        verify(client, times(1)).setSessionToken("testSessionToken");
+        verify(client, times(1)).setSessionId(1L);
+        verify(client, times(1)).send(loginRequest, false);
+    }
+
+    @Test
+    public void readSslHandshakeProofTest() {
+        // given
+        ProofReader sut = new ProofReader();
+        byte[] proof = new byte[]{1, 2, 3};
+
+        // when
+        // then
+        Asserts.assertNull(sut.read(EzyEntityArrays.newArray()));
+        Asserts.assertNull(sut.read(EzyEntityArrays.newArray("proof")));
+        Asserts.assertEquals(
+            Arrays.toString(sut.read(EzyEntityArrays.newArray(proof))),
+            Arrays.toString(proof)
+        );
+    }
+
+    private static class ProofReader extends EzyHandshakeHandler {
+
+        private byte[] read(EzyArray data) {
+            return readSslHandshakeProof(data);
+        }
+
+        @Override
+        protected EzyRequest getLoginRequest() {
+            return null;
+        }
     }
 
     private static class HandshakeContext {
