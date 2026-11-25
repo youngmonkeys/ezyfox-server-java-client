@@ -4,6 +4,7 @@ import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfoxserver.client.socket.EzyTcpSslSocketReader;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import static org.mockito.Matchers.any;
@@ -29,6 +30,49 @@ public class EzyTcpSslSocketReaderTest {
 
         // then
         verify(inputStream, times(1)).read(any(byte[].class));
+        instance.stop();
+    }
+
+    @Test
+    public void readSocketDataThrowException() throws Exception {
+        // given
+        EzyTcpSslSocketReader instance = new EzyTcpSslSocketReader();
+
+        InputStream inputStream = mock(InputStream.class);
+        when(inputStream.read(any(byte[].class))).thenThrow(new IOException("test"));
+        instance.setInputStream(inputStream);
+
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        instance.setEventLoopGroup(eventLoopGroup);
+
+        // when
+        instance.start();
+        boolean actual = instance.call();
+
+        // then
+        assert !actual;
+        verify(inputStream, times(1)).read(any(byte[].class));
+        instance.stop();
+    }
+
+    @Test
+    public void readSocketDataSuccess() throws Exception {
+        // given
+        EzyTcpSslSocketReader instance = new EzyTcpSslSocketReader();
+
+        InputStream inputStream = mock(InputStream.class);
+        when(inputStream.read(any(byte[].class))).thenReturn(0);
+        instance.setInputStream(inputStream);
+
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        instance.setEventLoopGroup(eventLoopGroup);
+
+        // when
+        instance.start();
+        boolean actual = instance.call();
+
+        // then
+        assert actual;
         instance.stop();
     }
 }

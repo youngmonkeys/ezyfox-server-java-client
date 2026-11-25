@@ -86,17 +86,21 @@ public abstract class EzySocketClient
         );
         this.packetQueue = new EzyBlockingPacketQueue();
         this.socketEventQueue = new EzySocketEventQueue();
-        this.responseApi = newResponseApi();
+        this.responseApi = newResponseApi(config.getCompressionThreshold());
         this.localEventQueue = new ArrayList<>();
         this.localMessageQueue = new ArrayList<>();
         this.localSocketStatuses = new ArrayList<>();
         this.socketStatuses = new EzyValueStack<>(EzySocketStatus.NOT_CONNECT);
     }
 
-    private EzyResponseApi newResponseApi() {
+    private EzyResponseApi newResponseApi(int compressionThreshold) {
         Object encoder = codecFactory.newEncoder(EzyConnectionType.SOCKET);
         EzySocketDataEncoder socketDataEncoder = new EzySimpleSocketDataEncoder(encoder);
-        return new EzySocketResponseApi(socketDataEncoder, packetQueue);
+        return new EzySocketResponseApi(
+            socketDataEncoder,
+            packetQueue,
+            compressionThreshold
+        );
     }
 
     @Override
@@ -353,7 +357,9 @@ public abstract class EzySocketClient
         EzyCommand cmd = EzyCommand.valueOf(cmdId);
         printReceivedData(cmd, data);
         if (cmd == EzyCommand.DISCONNECT) {
-            disconnectReason = data.get(0, int.class);
+            disconnectReason = data != null
+                ? data.get(0, int.class, EzyDisconnectReason.UNKNOWN.getId())
+                : EzyDisconnectReason.UNKNOWN.getId();
             socketStatuses.push(EzySocketStatus.DISCONNECTING);
         } else {
             dataHandlers.handle(cmd, data);
@@ -384,6 +390,12 @@ public abstract class EzySocketClient
     public void setSessionKey(byte[] sessionKey) {
         this.sessionKey = sessionKey;
         this.socketReader.setSessionKey(sessionKey);
+    }
+
+    public void setCompressionEnable(boolean compressionEnable) {
+        ((EzySocketResponseApi) responseApi).setCompressionEnable(
+            compressionEnable
+        );
     }
 
     public void setPingSchedule(EzyPingSchedule pingSchedule) {

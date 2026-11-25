@@ -122,8 +122,48 @@ public class EzyClientConfigTest {
         assert config.getSslType() == EzySslType.CUSTOMIZATION;
         assert !config.isEnableEncryption();
         assert !config.isEnableCertificationSSL();
+        assert !config.isEnableCompression();
+        assert config.getCompressionThreshold()
+            == EzySocketClientConfig.DEFAULT_COMPRESSION_THRESHOLD;
     }
 
+    @Test
+    public void verifySslHandshakeAndCompressionTest() {
+        // given
+        int compressionThreshold = 1024;
+
+        // when
+        EzyClientConfig config = EzyClientConfig.builder()
+            .verifySslHandshake()
+            .sslHandshakeHostName("localhost")
+            .enableCompression()
+            .compressionThreshold(compressionThreshold)
+            .build();
+
+        // then
+        Asserts.assertTrue(config.isVerifySslHandshake());
+        Asserts.assertEquals(config.getSslHandshakeHostName(), "localhost");
+        Asserts.assertTrue(config.isEnableCompression());
+        Asserts.assertEquals(config.getCompressionThreshold(), compressionThreshold);
+    }
+
+    @Test
+    public void defaultVerifySslHandshakeAndCompressionTest() {
+        // given
+        // when
+        EzyClientConfig config = EzyClientConfig.builder()
+            .enableCompression(false)
+            .verifySslHandshake(false)
+            .build();
+
+        // then
+        Asserts.assertFalse(config.isVerifySslHandshake());
+        Asserts.assertFalse(config.isEnableCompression());
+        Asserts.assertEquals(
+            config.getCompressionThreshold(),
+            EzySocketClientConfig.DEFAULT_COMPRESSION_THRESHOLD
+        );
+    }
 
     public static class TestClientConfig implements EzySocketClientConfig {}
 }

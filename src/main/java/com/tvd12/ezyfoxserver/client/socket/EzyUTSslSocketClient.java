@@ -12,7 +12,16 @@ public class EzyUTSslSocketClient
 
     public EzyUTSslSocketClient(EzySocketClientConfig config) {
         super(config);
-        this.udpClient = new EzyUdpSocketClient(codecFactory);
+        this.udpClient = new EzyUdpSocketClient(
+            codecFactory,
+            config.getCompressionThreshold()
+        );
+    }
+
+    @Override
+    public void setCompressionEnable(boolean compressionEnable) {
+        super.setCompressionEnable(compressionEnable);
+        this.udpClient.setCompressionEnable(compressionEnable);
     }
 
     @Override

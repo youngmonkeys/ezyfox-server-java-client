@@ -47,4 +47,51 @@ public class EzyBlockingPacketQueueTest extends BaseTest {
         EzyPacket actual = sut.take();
         assert actual == packet;
     }
+
+    @Test
+    public void peekNowWhenEmpty() {
+        // given
+        EzyBlockingPacketQueue sut = new EzyBlockingPacketQueue();
+
+        // when
+        EzyPacket actual = sut.peekNow();
+
+        // then
+        assert actual == null;
+    }
+
+    @Test
+    public void peekNowWhenProcessing() {
+        // given
+        EzyBlockingPacketQueue sut = new EzyBlockingPacketQueue();
+        EzyPacket packet = mock(EzyPacket.class);
+        sut.add(packet);
+        assert sut.peekNow() == packet;
+
+        // when
+        EzyPacket actual = sut.peekNow();
+
+        // then
+        assert actual == null;
+        sut.again();
+        assert sut.peekNow() == packet;
+        assert sut.take() == packet;
+        assert sut.peekNow() == null;
+    }
+
+    @Test
+    public void wakeupThenClear() throws Exception {
+        // given
+        EzyBlockingPacketQueue sut = new EzyBlockingPacketQueue();
+
+        // when
+        sut.wakeup();
+
+        // then
+        assert sut.peek() == null;
+        assert sut.size() == 1;
+        sut.clear();
+        assert sut.isEmpty();
+        assert sut.peekNow() == null;
+    }
 }

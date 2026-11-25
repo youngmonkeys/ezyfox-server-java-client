@@ -4,6 +4,8 @@ import com.tvd12.ezyfox.builder.EzyBuilder;
 import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 import lombok.Getter;
 
+import javax.net.ssl.X509TrustManager;
+
 @Getter
 public class EzyClientConfig implements EzySocketClientConfig {
 
@@ -13,6 +15,11 @@ public class EzyClientConfig implements EzySocketClientConfig {
     private final boolean enableSSL;
     private final EzySslType sslType;
     private final boolean enableDebug;
+    private final boolean verifySslHandshake;
+    private final String sslHandshakeHostName;
+    private final X509TrustManager sslHandshakeTrustManager;
+    private final boolean enableCompression;
+    private final int compressionThreshold;
     private final EzyReconnectConfig reconnect;
 
     protected EzyClientConfig(Builder builder) {
@@ -21,6 +28,11 @@ public class EzyClientConfig implements EzySocketClientConfig {
         this.enableSSL = builder.enableSSL;
         this.sslType = builder.sslType;
         this.enableDebug = builder.enableDebug;
+        this.verifySslHandshake = builder.verifySslHandshake;
+        this.sslHandshakeHostName = builder.sslHandshakeHostName;
+        this.sslHandshakeTrustManager = builder.sslHandshakeTrustManager;
+        this.enableCompression = builder.enableCompression;
+        this.compressionThreshold = builder.compressionThreshold;
         this.ping = builder.pingConfigBuilder.build();
         this.reconnect = builder.reconnectConfigBuilder.build();
     }
@@ -45,9 +57,15 @@ public class EzyClientConfig implements EzySocketClientConfig {
         private boolean enableSSL;
         private EzySslType sslType;
         private boolean enableDebug;
+        private boolean verifySslHandshake;
+        private String sslHandshakeHostName;
+        private X509TrustManager sslHandshakeTrustManager;
+        private boolean enableCompression;
+        private int compressionThreshold;
 
         public Builder() {
             this.sslType = EzySslType.CUSTOMIZATION;
+            this.compressionThreshold = DEFAULT_COMPRESSION_THRESHOLD;
             this.pingConfigBuilder = new EzyPingConfig.Builder(this);
             this.reconnectConfigBuilder = new EzyReconnectConfig.Builder(this);
         }
@@ -82,6 +100,39 @@ public class EzyClientConfig implements EzySocketClientConfig {
 
         public Builder enableDebug(boolean enableDebug) {
             this.enableDebug = enableDebug;
+            return this;
+        }
+
+        public Builder verifySslHandshake() {
+            return verifySslHandshake(true);
+        }
+
+        public Builder verifySslHandshake(boolean verifySslHandshake) {
+            this.verifySslHandshake = verifySslHandshake;
+            return this;
+        }
+
+        public Builder sslHandshakeHostName(String sslHandshakeHostName) {
+            this.sslHandshakeHostName = sslHandshakeHostName;
+            return this;
+        }
+
+        public Builder sslHandshakeTrustManager(X509TrustManager sslHandshakeTrustManager) {
+            this.sslHandshakeTrustManager = sslHandshakeTrustManager;
+            return this;
+        }
+
+        public Builder enableCompression() {
+            return enableCompression(true);
+        }
+
+        public Builder enableCompression(boolean enableCompression) {
+            this.enableCompression = enableCompression;
+            return this;
+        }
+
+        public Builder compressionThreshold(int compressionThreshold) {
+            this.compressionThreshold = compressionThreshold;
             return this;
         }
 

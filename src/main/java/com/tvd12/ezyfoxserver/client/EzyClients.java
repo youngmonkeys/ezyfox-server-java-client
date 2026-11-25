@@ -145,6 +145,7 @@ public final class EzyClients extends EzyLoggable {
         synchronized (clients) {
             removedClients = new HashMap<>(clients);
             this.clients.clear();
+            this.defaultClientName = null;
         }
         return removedClients;
     }

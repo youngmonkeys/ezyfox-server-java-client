@@ -1,5 +1,6 @@
 package com.tvd12.ezyfoxserver.client.testing.request;
 
+import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.entity.EzyData;
 import com.tvd12.ezyfox.util.EzyEntityArrays;
 import com.tvd12.ezyfoxserver.client.constant.EzyCommand;
@@ -36,9 +37,33 @@ public class EzyHandshakeRequestTest {
             clientType,
             clientVersion,
             enableEncryption,
-            token
+            token,
+            null,
+            false
         );
         assert actual.equals(expected);
         assert request.getCommand() == EzyCommand.HANDSHAKE;
+    }
+
+    @Test
+    public void serializeWithCompressionTest() {
+        // given
+        EzyHandshakeRequest request = new EzyHandshakeRequest(
+            "testClientId",
+            new byte[0],
+            "testClientType",
+            "testClientVersion",
+            false,
+            "testToken",
+            true
+        );
+
+        // when
+        EzyArray actual = (EzyArray) request.serialize();
+
+        // then
+        assert actual.size() == 8;
+        assert actual.get(6) == null;
+        assert actual.get(7, boolean.class);
     }
 }

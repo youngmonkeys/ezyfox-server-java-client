@@ -4,6 +4,8 @@ import com.tvd12.ezyfoxserver.client.constant.EzySslType;
 
 public interface EzySocketClientConfig {
 
+    int DEFAULT_COMPRESSION_THRESHOLD = 512;
+
     EzySocketClientConfig DEFAULT = new EzySocketClientConfig() {};
 
     default boolean isEnableSSL() {
@@ -20,5 +22,13 @@ public interface EzySocketClientConfig {
 
     default boolean isEnableCertificationSSL() {
         return isEnableSSL() && getSslType() == EzySslType.CERTIFICATION;
+    }
+
+    default boolean isEnableCompression() {
+        return false;
+    }
+
+    default int getCompressionThreshold() {
+        return DEFAULT_COMPRESSION_THRESHOLD;
     }
 }

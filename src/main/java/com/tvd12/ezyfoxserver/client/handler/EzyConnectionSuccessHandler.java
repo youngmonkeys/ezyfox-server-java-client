@@ -1,6 +1,8 @@
 package com.tvd12.ezyfoxserver.client.handler;
 
 import com.tvd12.ezyfox.security.EzyKeysGenerator;
+import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
+import com.tvd12.ezyfoxserver.client.constant.EzyClientConstants;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.event.EzyEvent;
 import com.tvd12.ezyfoxserver.client.request.EzyHandshakeRequest;
@@ -30,11 +32,17 @@ public class EzyConnectionSuccessHandler extends EzyAbstractEventHandler {
         return new EzyHandshakeRequest(
             getClientId(),
             generateClientKey(),
-            "JAVA",
-            "1.2.6",
+            EzyClientConstants.CLIENT_TYPE,
+            EzyClientConstants.CLIENT_VERSION,
             client.isEnableEncryption(),
-            getStoredToken()
+            getStoredToken(),
+            isEnableCompression()
         );
+    }
+
+    protected boolean isEnableCompression() {
+        EzyClientConfig config = client.getConfig();
+        return config != null && config.isEnableCompression();
     }
 
     protected String getClientId() {
