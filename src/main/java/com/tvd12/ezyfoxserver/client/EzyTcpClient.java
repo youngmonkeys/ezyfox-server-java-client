@@ -171,6 +171,7 @@ public class EzyTcpClient
         this.publicKey = null;
         this.privateKey = null;
         this.sessionKey = null;
+        this.socketClient.setCompressionEnable(false);
     }
 
     @Override

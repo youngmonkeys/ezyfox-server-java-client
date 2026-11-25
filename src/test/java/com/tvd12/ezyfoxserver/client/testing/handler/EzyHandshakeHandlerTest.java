@@ -11,10 +11,13 @@ import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.handler.EzyHandshakeHandler;
 import com.tvd12.ezyfoxserver.client.request.EzyRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
+import com.tvd12.ezyfoxserver.client.socket.EzySocketResponseApi;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSocketClient;
+import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketClient;
 import com.tvd12.ezyfoxserver.client.ssl.EzySslHandshakeVerificationException;
 import com.tvd12.ezyfoxserver.client.testing.ssl.EzySslHandshakeTestSigner;
 import com.tvd12.test.assertion.Asserts;
+import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
 import java.security.KeyPair;
@@ -365,5 +368,40 @@ public class EzyHandshakeHandlerTest {
                 encryptedSessionKey
             );
         }
+    }
+
+    @Test
+    public void handleCompressionEnable() {
+        // given
+        EzySocketClientConfig config = mock(EzySocketClientConfig.class);
+        EzyUTSocketClient socketClient = new EzyUTSocketClient(config);
+        EzyArray data = EzyEntityArrays.newArray(
+            "",
+            "testSessionToken",
+            1L,
+            null,
+            true
+        );
+        EzyClient client = mock(EzyClient.class);
+        when(client.getSocket()).thenReturn(socketClient);
+        EzyPingSchedule pingSchedule = mock(EzyPingSchedule.class);
+        EzyRequest loginRequest = mock(EzyRequest.class);
+        EzyHandshakeHandler sut = new EzyHandshakeHandler() {
+            protected EzyRequest getLoginRequest() {
+                return loginRequest;
+            }
+        };
+        sut.setClient(client);
+        sut.setPingSchedule(pingSchedule);
+
+        // when
+        sut.handle(data);
+
+        // then
+        EzySocketResponseApi responseApi = FieldUtil.getFieldValue(socketClient, "responseApi");
+        EzyUdpSocketClient udpClient = FieldUtil.getFieldValue(socketClient, "udpClient");
+        EzySocketResponseApi udpResponseApi = FieldUtil.getFieldValue(udpClient, "responseApi");
+        Asserts.assertTrue(responseApi.isCompressionEnable());
+        Asserts.assertTrue(udpResponseApi.isCompressionEnable());
     }
 }

@@ -35,6 +35,12 @@ public abstract class EzyHandshakeHandler
             verifySslHandshake(data, encryptedSessionKey);
             this.client.setSessionKey(decryptSessionKey(encryptedSessionKey));
         }
+        EzySocketClient socketClient = client.getSocket();
+        if (socketClient != null) {
+            socketClient.setCompressionEnable(
+                data.get(4, boolean.class, false)
+            );
+        }
     }
 
     protected void verifySslHandshake(EzyArray data, byte[] encryptedSessionKey) {

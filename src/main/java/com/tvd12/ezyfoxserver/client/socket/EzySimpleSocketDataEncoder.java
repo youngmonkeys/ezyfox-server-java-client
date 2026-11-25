@@ -20,4 +20,26 @@ public class EzySimpleSocketDataEncoder implements EzySocketDataEncoder {
         byte[] messageContent = encoder.toMessageContent(data);
         return encoder.encryptMessageContent(messageContent, encryptionKey);
     }
+
+    @Override
+    public byte[] encode(
+        Object data,
+        byte[] encryptionKey,
+        int compressionThreshold
+    ) throws Exception {
+        byte[] messageContent = encoder.toMessageContent(data);
+        if (messageContent.length >= compressionThreshold) {
+            byte[] compressedMessageContent = encoder.compressMessageContent(
+                messageContent
+            );
+            if (compressedMessageContent.length < messageContent.length) {
+                return encoder.encryptMessageContent(
+                    compressedMessageContent,
+                    encryptionKey,
+                    true
+                );
+            }
+        }
+        return encoder.encryptMessageContent(messageContent, encryptionKey);
+    }
 }

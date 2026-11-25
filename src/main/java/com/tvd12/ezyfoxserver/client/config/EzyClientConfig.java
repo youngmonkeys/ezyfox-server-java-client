@@ -18,6 +18,8 @@ public class EzyClientConfig implements EzySocketClientConfig {
     private final boolean verifySslHandshake;
     private final String sslHandshakeHostName;
     private final X509TrustManager sslHandshakeTrustManager;
+    private final boolean enableCompression;
+    private final int compressionThreshold;
     private final EzyReconnectConfig reconnect;
 
     protected EzyClientConfig(Builder builder) {
@@ -29,6 +31,8 @@ public class EzyClientConfig implements EzySocketClientConfig {
         this.verifySslHandshake = builder.verifySslHandshake;
         this.sslHandshakeHostName = builder.sslHandshakeHostName;
         this.sslHandshakeTrustManager = builder.sslHandshakeTrustManager;
+        this.enableCompression = builder.enableCompression;
+        this.compressionThreshold = builder.compressionThreshold;
         this.ping = builder.pingConfigBuilder.build();
         this.reconnect = builder.reconnectConfigBuilder.build();
     }
@@ -56,9 +60,12 @@ public class EzyClientConfig implements EzySocketClientConfig {
         private boolean verifySslHandshake;
         private String sslHandshakeHostName;
         private X509TrustManager sslHandshakeTrustManager;
+        private boolean enableCompression;
+        private int compressionThreshold;
 
         public Builder() {
             this.sslType = EzySslType.CUSTOMIZATION;
+            this.compressionThreshold = DEFAULT_COMPRESSION_THRESHOLD;
             this.pingConfigBuilder = new EzyPingConfig.Builder(this);
             this.reconnectConfigBuilder = new EzyReconnectConfig.Builder(this);
         }
@@ -112,6 +119,20 @@ public class EzyClientConfig implements EzySocketClientConfig {
 
         public Builder sslHandshakeTrustManager(X509TrustManager sslHandshakeTrustManager) {
             this.sslHandshakeTrustManager = sslHandshakeTrustManager;
+            return this;
+        }
+
+        public Builder enableCompression() {
+            return enableCompression(true);
+        }
+
+        public Builder enableCompression(boolean enableCompression) {
+            this.enableCompression = enableCompression;
+            return this;
+        }
+
+        public Builder compressionThreshold(int compressionThreshold) {
+            this.compressionThreshold = compressionThreshold;
             return this;
         }
 

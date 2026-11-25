@@ -13,6 +13,7 @@ public class EzyHandshakeRequest implements EzyRequest {
     protected final String clientVersion;
     protected final boolean enableEncryption;
     protected final String token;
+    protected final boolean enableCompression;
 
     public EzyHandshakeRequest(
         String clientId,
@@ -22,12 +23,33 @@ public class EzyHandshakeRequest implements EzyRequest {
         boolean enableEncryption,
         String token
     ) {
+        this(
+            clientId,
+            clientKey,
+            clientType,
+            clientVersion,
+            enableEncryption,
+            token,
+            false
+        );
+    }
+
+    public EzyHandshakeRequest(
+        String clientId,
+        byte[] clientKey,
+        String clientType,
+        String clientVersion,
+        boolean enableEncryption,
+        String token,
+        boolean enableCompression
+    ) {
         this.clientId = clientId;
         this.clientKey = clientKey;
         this.clientType = clientType;
         this.clientVersion = clientVersion;
         this.token = token;
         this.enableEncryption = enableEncryption;
+        this.enableCompression = enableCompression;
     }
 
     @Override
@@ -43,6 +65,9 @@ public class EzyHandshakeRequest implements EzyRequest {
             .append(clientType)
             .append(clientVersion)
             .append(enableEncryption)
-            .append(token).build();
+            .append(token)
+            .append((Object) null)
+            .append(enableCompression)
+            .build();
     }
 }

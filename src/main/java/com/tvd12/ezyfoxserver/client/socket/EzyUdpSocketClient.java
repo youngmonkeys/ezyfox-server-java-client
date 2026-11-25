@@ -4,6 +4,7 @@ import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfox.util.EzyLoggable;
 import com.tvd12.ezyfoxserver.client.codec.EzyCodecFactory;
+import com.tvd12.ezyfoxserver.client.config.EzySocketClientConfig;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionType;
 import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
@@ -39,16 +40,33 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     protected final EzyValueStack<EzySocketStatus> socketStatuses;
 
     public EzyUdpSocketClient(EzyCodecFactory codecFactory) {
+        this(codecFactory, EzySocketClientConfig.DEFAULT_COMPRESSION_THRESHOLD);
+    }
+
+    public EzyUdpSocketClient(
+        EzyCodecFactory codecFactory,
+        int compressionThreshold
+    ) {
         this.codecFactory = codecFactory;
         this.packetQueue = new EzyBlockingPacketQueue();
-        this.responseApi = newResponseApi();
+        this.responseApi = newResponseApi(compressionThreshold);
         this.socketStatuses = new EzyValueStack<>(EzySocketStatus.NOT_CONNECT);
     }
 
-    private EzyResponseApi newResponseApi() {
+    private EzyResponseApi newResponseApi(int compressionThreshold) {
         Object encoder = codecFactory.newEncoder(EzyConnectionType.SOCKET);
         EzySocketDataEncoder socketDataEncoder = new EzySimpleSocketDataEncoder(encoder);
-        return new EzySocketResponseApi(socketDataEncoder, packetQueue);
+        return new EzySocketResponseApi(
+            socketDataEncoder,
+            packetQueue,
+            compressionThreshold
+        );
+    }
+
+    public void setCompressionEnable(boolean compressionEnable) {
+        ((EzySocketResponseApi) responseApi).setCompressionEnable(
+            compressionEnable
+        );
     }
 
     @Override
