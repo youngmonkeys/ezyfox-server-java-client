@@ -7,9 +7,13 @@ import com.tvd12.ezyfoxserver.client.request.EzyPingRequest;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketEventQueue;
+import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.base.BaseTest;
+import com.tvd12.test.reflect.FieldUtil;
 import com.tvd12.test.util.RandomUtil;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.ScheduledExecutorService;
 
 import static org.mockito.Mockito.*;
 
@@ -129,6 +133,38 @@ public class EzyPingScheduleTest extends BaseTest {
         Thread.sleep(pingPeriod * 5);
         sut.stop();
         sut.stop();
+    }
+
+    @Test
+    public void shutdownWithScheduledExecutor() {
+        // given
+        EzyClient client = mock(EzyClient.class);
+        when(client.getPingManager()).thenReturn(mock(EzyPingManager.class));
+        EzyPingSchedule sut = new EzyPingSchedule(client, null);
+
+        // when
+        sut.shutdown();
+
+        // then
+        ScheduledExecutorService scheduledExecutor =
+            FieldUtil.getFieldValue(sut, "scheduledExecutor");
+        Asserts.assertTrue(scheduledExecutor.isShutdown());
+    }
+
+    @Test
+    public void shutdownWithEventLoopGroup() {
+        // given
+        EzyClient client = mock(EzyClient.class);
+        when(client.getPingManager()).thenReturn(mock(EzyPingManager.class));
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+        EzyPingSchedule sut = new EzyPingSchedule(client, eventLoopGroup);
+
+        // when
+        sut.shutdown();
+
+        // then
+        Asserts.assertNull(FieldUtil.getFieldValue(sut, "scheduledExecutor"));
+        verifyNoMoreInteractions(eventLoopGroup);
     }
 
     @Test

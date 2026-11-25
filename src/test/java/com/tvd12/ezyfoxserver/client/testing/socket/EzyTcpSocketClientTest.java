@@ -86,6 +86,44 @@ public class EzyTcpSocketClientTest {
     }
 
     @Test
+    public void connectNowWithoutEventLoopGroupUseBlockingSocket() throws Exception {
+        // given
+        ServerSocketChannel server = ServerSocketChannel.open();
+        server.bind(new InetSocketAddress("127.0.0.1", 0));
+        int port = ((InetSocketAddress) server.getLocalAddress()).getPort();
+        TestEzyTcpSocketClient sut = new TestEzyTcpSocketClient();
+        FieldUtil.setFieldValue(sut, "host", "127.0.0.1");
+        FieldUtil.setFieldValue(sut, "port", port);
+
+        try {
+            // when
+            boolean connected = sut.connect();
+
+            // then
+            Asserts.assertTrue(connected);
+            SocketChannel socket = FieldUtil.getFieldValue(sut, "socket");
+            Asserts.assertTrue(socket.isConnected());
+            Asserts.assertTrue(socket.isBlocking());
+            sut.close0();
+            Asserts.assertFalse(socket.isOpen());
+        } finally {
+            server.close();
+        }
+    }
+
+    @Test
+    public void closeSocketError() {
+        // given
+        SocketChannel socket = mock(SocketChannel.class);
+        TestEzyTcpSocketClient sut = new TestEzyTcpSocketClient();
+        FieldUtil.setFieldValue(sut, "socket", socket);
+
+        // when
+        // then
+        sut.close0();
+    }
+
+    @Test
     public void closeSocketWhenSocketNull() {
         // given
         TestEzyTcpSocketClient sut = new TestEzyTcpSocketClient();

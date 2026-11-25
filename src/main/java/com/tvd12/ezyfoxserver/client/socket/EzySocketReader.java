@@ -87,9 +87,7 @@ public abstract class EzySocketReader extends EzySocketAdapter {
 
     @Override
     protected void clear() {
-        if (dataQueue != null) {
-            dataQueue.clear();
-        }
+        dataQueue.clear();
     }
 
     public void popMessages(List<EzyArray> buffer) {

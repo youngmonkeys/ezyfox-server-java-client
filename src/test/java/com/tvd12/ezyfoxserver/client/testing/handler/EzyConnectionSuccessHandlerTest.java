@@ -85,6 +85,22 @@ public class EzyConnectionSuccessHandlerTest {
     }
 
     @Test
+    public void handleWhenDisableCompression() {
+        // given
+        EzyClientForTest client = mock(EzyClientForTest.class);
+        EzyClientConfig config = EzyClientConfig.builder().build();
+        when(client.getConfig()).thenReturn(config);
+        EzyConnectionSuccessHandler sut = new EzyConnectionSuccessHandler();
+        sut.setClient(client);
+
+        // when
+        sut.handle(mock(EzyEvent.class));
+
+        // then
+        Asserts.assertFalse(captureEnableCompression(client));
+    }
+
+    @Test
     public void handleSendClientTypeAndVersion() {
         // given
         EzyClientForTest client = mock(EzyClientForTest.class);

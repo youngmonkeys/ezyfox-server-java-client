@@ -266,6 +266,24 @@ public class EzyClientsTest extends BaseTest {
     }
 
     @Test
+    public void startProcessEventsIgnoredWhenScheduledExecutorAlreadyStarted() {
+        // given
+        EzyClients clients = EzyClients.getInstance();
+        EzyEventLoopGroup eventLoopGroup = mock(EzyEventLoopGroup.class);
+
+        // when
+        clients.startProcessEventsWithScheduledExecutor(3);
+        clients.startProcessEvents(eventLoopGroup);
+
+        // then
+        assert isProcessEventsScheduledExecutorServiceRunning(clients);
+        Asserts.assertNull(FieldUtil.getFieldValue(clients, "processEventsEventLoopGroup"));
+        verify(eventLoopGroup, never())
+            .addScheduleEvent(any(EzyEventLoopEvent.class), anyLong(), anyLong());
+        clients.stopProcessEvents();
+    }
+
+    @Test
     public void startProcessEventsWithOwnEventLoopTest() {
         // given
         EzyClients clients = EzyClients.getInstance();

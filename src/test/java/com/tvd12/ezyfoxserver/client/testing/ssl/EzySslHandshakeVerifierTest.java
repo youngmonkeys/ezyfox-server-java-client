@@ -7,9 +7,15 @@ import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
+import javax.net.ssl.ManagerFactoryParameters;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactorySpi;
 import javax.net.ssl.X509TrustManager;
 import java.io.ByteArrayOutputStream;
+import java.security.KeyStore;
+import java.security.Provider;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -25,6 +31,9 @@ import static com.tvd12.ezyfoxserver.client.testing.ssl.EzySslHandshakeTestSigne
 import static com.tvd12.ezyfoxserver.client.testing.ssl.EzySslHandshakeTestSigner.RSA_KEYSTORE;
 
 public class EzySslHandshakeVerifierTest {
+
+    private static final String TRUST_MANAGER_ALGORITHM_PROPERTY =
+        "ssl.TrustManagerFactory.algorithm";
 
     private final byte[] clientKey = EzyKeysGenerator.builder()
         .build()
@@ -261,6 +270,75 @@ public class EzySslHandshakeVerifierTest {
         Asserts.assertFalse(DnsNameMatcher.matches("example.com", "*.example.com"));
         Asserts.assertFalse(DnsNameMatcher.matches("a.b.example.com", "*.example.com"));
         Asserts.assertFalse(DnsNameMatcher.matches("evilexample.com", "*.example.com"));
+        Asserts.assertFalse(DnsNameMatcher.matches(".example.com", "*.example.com"));
+        Asserts.assertTrue(DnsNameMatcher.matches("example.com", "[example.com]"));
+        Asserts.assertFalse(DnsNameMatcher.matches("example.com", "[example.com"));
+    }
+
+    @Test
+    public void verifyOtherEmptyKeysTest() throws Exception {
+        // given
+        EzySslHandshakeTestSigner signer = new EzySslHandshakeTestSigner(RSA_KEYSTORE);
+        EzySslHandshakeVerifier sut = new EzySslHandshakeVerifier(signer.trustManager());
+        byte[] proof = signer.sign(clientKey, encryptedSessionKey);
+
+        // when
+        Throwable emptyClientKey = Asserts.assertThrows(() ->
+            sut.verify(proof, new byte[0], encryptedSessionKey, HOST_NAME)
+        );
+        Throwable nullSessionKey = Asserts.assertThrows(() ->
+            sut.verify(proof, clientKey, null, HOST_NAME)
+        );
+
+        // then
+        Asserts.assertEquals(emptyClientKey.getMessage(), "client key is empty");
+        Asserts.assertEquals(nullSessionKey.getMessage(), "session key is empty");
+    }
+
+    @Test
+    public void defaultTrustManagerWhenAlgorithmNotFoundTest() {
+        // given
+        String originalAlgorithm = Security.getProperty(TRUST_MANAGER_ALGORITHM_PROPERTY);
+        Security.setProperty(TRUST_MANAGER_ALGORITHM_PROPERTY, "EzyUnknownAlgorithm");
+
+        try {
+            // when
+            Throwable e = Asserts.assertThrows(() -> new EzySslHandshakeVerifier(null));
+
+            // then
+            Asserts.assertEqualsType(e, IllegalStateException.class);
+            Asserts.assertEquals(e.getMessage(), "can not load default trust manager");
+        } finally {
+            restoreTrustManagerAlgorithm(originalAlgorithm);
+        }
+    }
+
+    @Test
+    public void defaultTrustManagerWhenNoX509TrustManagerTest() {
+        // given
+        String originalAlgorithm = Security.getProperty(TRUST_MANAGER_ALGORITHM_PROPERTY);
+        Provider provider = new NoX509TrustManagerProvider();
+        Security.addProvider(provider);
+        Security.setProperty(TRUST_MANAGER_ALGORITHM_PROPERTY, NoX509TrustManagerProvider.ALGORITHM);
+
+        try {
+            // when
+            Throwable e = Asserts.assertThrows(() -> new EzySslHandshakeVerifier(null));
+
+            // then
+            Asserts.assertEqualsType(e, IllegalStateException.class);
+            Asserts.assertEquals(e.getMessage(), "there is no default x509 trust manager");
+        } finally {
+            restoreTrustManagerAlgorithm(originalAlgorithm);
+            Security.removeProvider(provider.getName());
+        }
+    }
+
+    private static void restoreTrustManagerAlgorithm(String algorithm) {
+        Security.setProperty(
+            TRUST_MANAGER_ALGORITHM_PROPERTY,
+            algorithm != null ? algorithm : "PKIX"
+        );
     }
 
     @Test
@@ -423,6 +501,33 @@ public class EzySslHandshakeVerifierTest {
 
         private boolean matchesHostName0(X509Certificate certificate, String hostName) {
             return matchesHostName(certificate, hostName);
+        }
+    }
+
+    public static class NoX509TrustManagerProvider extends Provider {
+        private static final long serialVersionUID = 1L;
+        private static final String ALGORITHM = "EzyNoX509";
+
+        public NoX509TrustManagerProvider() {
+            super("EzyNoX509TrustManagerProvider", 1.0, "test provider");
+            put(
+                "TrustManagerFactory." + ALGORITHM,
+                NoX509TrustManagerFactorySpi.class.getName()
+            );
+        }
+    }
+
+    public static class NoX509TrustManagerFactorySpi extends TrustManagerFactorySpi {
+
+        @Override
+        protected void engineInit(KeyStore keyStore) {}
+
+        @Override
+        protected void engineInit(ManagerFactoryParameters parameters) {}
+
+        @Override
+        protected TrustManager[] engineGetTrustManagers() {
+            return new TrustManager[] {new TrustManager() {}};
         }
     }
 

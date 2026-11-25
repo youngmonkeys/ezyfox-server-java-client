@@ -499,6 +499,53 @@ public class EzySocketClientTest extends BaseTest {
         );
     }
 
+    @Test
+    public void processReceivedDisconnectCommandWithIgnoredLogCommand() {
+        // given
+        int reason = EzyDisconnectReason.ADMIN_KICK.getId();
+        DisconnectContext context = new DisconnectContext(reason);
+        context.sut.setIgnoredLogCommands(Collections.singleton(EzyCommand.DISCONNECT));
+
+        // when
+        context.sut.processEventMessages();
+
+        // then
+        Asserts.assertEquals(FieldUtil.getFieldValue(context.sut, "disconnectReason"), reason);
+    }
+
+    @Test
+    public void processReceivedMessagesWhenNoMessage() {
+        // given
+        EzyHandlerManager handlerManager = mock(EzyHandlerManager.class);
+        EzyDataHandlers dataHandlers = mock(EzyDataHandlers.class);
+        when(handlerManager.getEventHandlers()).thenReturn(mock(EzyEventHandlers.class));
+        when(handlerManager.getDataHandlers()).thenReturn(dataHandlers);
+        EzyPingManager pingManager = mock(EzyPingManager.class);
+
+        TestEzySocketClient sut = new TestEzySocketClient();
+        sut.setHandlerManager(handlerManager);
+        sut.setPingManager(pingManager);
+        sut.setPingSchedule(mock(EzyPingSchedule.class));
+
+        EzySocketReader socketReader = mock(EzySocketReader.class);
+        when(socketReader.isActive()).thenReturn(true);
+        FieldUtil.setFieldValue(sut, "socketReader", socketReader);
+        FieldUtil.setFieldValue(sut, "socketWriter", mock(EzySocketWriter.class));
+
+        EzyValueStack<EzySocketStatus> socketStatuses =
+            FieldUtil.getFieldValue(sut, "socketStatuses");
+        socketStatuses.push(EzySocketStatus.CONNECTED);
+
+        // when
+        sut.processEventMessages();
+
+        // then
+        verify(socketReader, times(1)).popMessages(any());
+        verify(pingManager, never()).setLostPingCount(anyInt());
+        verify(dataHandlers, never()).handle(any(EzyCommand.class), any(EzyArray.class));
+        Asserts.assertEquals(socketStatuses.last(), EzySocketStatus.CONNECTED);
+    }
+
     private static class DisconnectContext {
         private final TestEzySocketClient sut;
         private final EzySocketReader socketReader;

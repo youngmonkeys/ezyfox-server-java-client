@@ -10,6 +10,7 @@ import com.tvd12.ezyfoxserver.client.socket.EzyResponseApi;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketResponseApi;
 import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketReader;
+import com.tvd12.ezyfoxserver.client.util.EzyValueStack;
 import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.base.BaseTest;
 import com.tvd12.test.reflect.FieldUtil;
@@ -27,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -354,6 +357,63 @@ public class EzyUdpSocketClientTest extends BaseTest {
         buffer.get(actualTokenBytes);
         Asserts.assertEquals(new String(actualTokenBytes, StandardCharsets.UTF_8), sessionToken);
         verify(datagramChannel, times(1)).send(buffer, serverAddress);
+    }
+
+    @Test
+    public void connectRethrowBindExceptionFromHandshake() {
+        // given
+        AtomicInteger handshakeCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void sendHandshakeRequest() throws Exception {
+                handshakeCount.incrementAndGet();
+                throw new BindException("test");
+            }
+
+            @Override
+            protected int maxBindRetryCount() {
+                return 0;
+            }
+        };
+
+        // when
+        Throwable e = Asserts.assertThrows(() -> sut.connectTo("localhost", 2611));
+
+        // then
+        Asserts.assertEqualsType(e, IllegalStateException.class);
+        Asserts.assertEqualsType(e.getCause(), BindException.class);
+        Asserts.assertEquals(handshakeCount.get(), 1);
+        sut.close();
+    }
+
+    @Test
+    public void reconnectThreadInterrupted() throws Exception {
+        // given
+        AtomicReference<Thread> reconnectThread = new AtomicReference<>();
+        CountDownLatch reconnectThreadStarted = new CountDownLatch(1);
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected int sleepTimeBeforeReconnect() {
+                reconnectThread.set(Thread.currentThread());
+                reconnectThreadStarted.countDown();
+                return 60000;
+            }
+        };
+        sut.setSessionToken("testSessionToken");
+        sut.connectTo("localhost", 2611);
+        Asserts.assertTrue(reconnectThreadStarted.await(3, TimeUnit.SECONDS));
+
+        // when
+        reconnectThread.get().interrupt();
+        reconnectThread.get().join(3000);
+
+        // then
+        Asserts.assertFalse(reconnectThread.get().isAlive());
+        Asserts.assertEquals(
+            FieldUtil.<EzyValueStack<EzySocketStatus>>getFieldValue(sut, "socketStatuses").last(),
+            EzySocketStatus.CONNECTING
+        );
+        sut.close();
     }
 
     @Test
