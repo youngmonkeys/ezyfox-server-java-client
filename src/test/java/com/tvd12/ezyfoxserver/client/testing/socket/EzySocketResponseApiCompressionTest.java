@@ -166,6 +166,31 @@ public class EzySocketResponseApiCompressionTest {
         Asserts.assertFalse(smallMessage.getHeader().isCompressed());
     }
 
+    @Test
+    public void responseWhenPacketQueueFullTest() throws Exception {
+        // given
+        EzyPacketQueue packetQueue = new EzyBlockingPacketQueue(1);
+        MsgPackCodecCreator codecCreator = new MsgPackCodecCreator(false);
+        EzySocketResponseApi sut = new EzySocketResponseApi(
+            new EzySimpleSocketDataEncoder(codecCreator.newEncoder()),
+            packetQueue
+        );
+        EzySimplePackage pack = new EzySimplePackage(
+            EzyEntityArrays.newArray(1, "hello"),
+            false,
+            null,
+            EzyTransportType.TCP
+        );
+        sut.response(pack);
+
+        // when
+        Throwable e = Asserts.assertThrows(() -> sut.response(pack));
+
+        // then
+        Asserts.assertEqualsType(e, IllegalStateException.class);
+        Asserts.assertEquals(packetQueue.size(), 1);
+    }
+
     private static EzyArray newLongData() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < 200; ++i) {

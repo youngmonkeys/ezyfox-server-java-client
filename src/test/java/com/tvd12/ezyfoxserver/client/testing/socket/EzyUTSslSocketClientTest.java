@@ -7,8 +7,10 @@ import com.tvd12.ezyfoxserver.client.constant.EzyDisconnectReason;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketStatus;
 import com.tvd12.ezyfoxserver.client.socket.EzyPingSchedule;
 import com.tvd12.ezyfoxserver.client.socket.EzySocketReader;
+import com.tvd12.ezyfoxserver.client.socket.EzySocketResponseApi;
 import com.tvd12.ezyfoxserver.client.socket.EzyUTSslSocketClient;
 import com.tvd12.ezyfoxserver.client.socket.EzyUdpSocketClient;
+import com.tvd12.test.assertion.Asserts;
 import com.tvd12.test.reflect.FieldUtil;
 import org.testng.annotations.Test;
 
@@ -17,6 +19,38 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 
 public class EzyUTSslSocketClientTest {
+
+    @Test
+    public void setCompressionEnableTest() {
+        // given
+        TestEzyUTSslSocketClient sut = new TestEzyUTSslSocketClient();
+
+        // when
+        sut.setCompressionEnable(true);
+
+        // then
+        verify(sut.udpClient(), times(1)).setCompressionEnable(true);
+    }
+
+    @Test
+    public void udpClientUseCompressionThresholdTest() {
+        // given
+        int compressionThreshold = 1024;
+        EzyClientConfig config = EzyClientConfig.builder()
+            .compressionThreshold(compressionThreshold)
+            .build();
+
+        // when
+        EzyUTSslSocketClient sut = new EzyUTSslSocketClient(config);
+
+        // then
+        EzyUdpSocketClient udpClient = FieldUtil.getFieldValue(sut, "udpClient");
+        EzySocketResponseApi responseApi = FieldUtil.getFieldValue(udpClient, "responseApi");
+        Asserts.assertEquals(
+            FieldUtil.getFieldValue(responseApi, "compressionThreshold"),
+            compressionThreshold
+        );
+    }
 
     @Test
     public void udpConnectWithPortTest() {

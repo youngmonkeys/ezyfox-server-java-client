@@ -357,7 +357,9 @@ public abstract class EzySocketClient
         EzyCommand cmd = EzyCommand.valueOf(cmdId);
         printReceivedData(cmd, data);
         if (cmd == EzyCommand.DISCONNECT) {
-            disconnectReason = data.get(0, int.class);
+            disconnectReason = data != null
+                ? data.get(0, int.class, EzyDisconnectReason.UNKNOWN.getId())
+                : EzyDisconnectReason.UNKNOWN.getId();
             socketStatuses.push(EzySocketStatus.DISCONNECTING);
         } else {
             dataHandlers.handle(cmd, data);

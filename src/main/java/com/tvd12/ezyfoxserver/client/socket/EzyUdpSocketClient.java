@@ -16,6 +16,7 @@ import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.tvd12.ezyfoxserver.client.constant.EzySocketStatuses.isSocketConnectable;
@@ -97,14 +98,39 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     }
 
     protected void connect0() {
-        while (true) {
+        int maxRetryCount = maxBindRetryCount();
+        for (int retryCount = 0; ; ++retryCount) {
             try {
                 connect1();
-                break;
+                return;
             } catch (BindException e) {
+                if (retryCount >= maxRetryCount) {
+                    throw new IllegalStateException(
+                        "udp can't open port to connect to: " + serverAddress,
+                        e
+                    );
+                }
                 logger.warn("fail to open udp port, re-try again");
+                sleepBeforeRetryBind();
             }
         }
+    }
+
+    private void sleepBeforeRetryBind() {
+        try {
+            Thread.sleep(sleepTimeBeforeRetryBind());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("udp connect interrupted", e);
+        }
+    }
+
+    protected int maxBindRetryCount() {
+        return 10;
+    }
+
+    protected int sleepTimeBeforeRetryBind() {
+        return 100;
     }
 
     protected void connect1() throws BindException {
@@ -240,7 +266,8 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
     }
 
     protected void sendHandshakeRequest() throws Exception {
-        int tokenSize = sessionToken.length();
+        byte[] tokenBytes = sessionToken.getBytes(StandardCharsets.UTF_8);
+        int tokenSize = tokenBytes.length;
         int messageSize = 0;
         messageSize += 8; // sessionIdSize
         messageSize += 2; // tokenLengthSize
@@ -252,7 +279,7 @@ public class EzyUdpSocketClient extends EzyLoggable implements EzyISocketClient 
         buffer.putShort((short) messageSize);
         buffer.putLong(sessionId);
         buffer.putShort((short) tokenSize);
-        buffer.put(sessionToken.getBytes());
+        buffer.put(tokenBytes);
         buffer.flip();
         datagramChannel.send(buffer, serverAddress);
     }

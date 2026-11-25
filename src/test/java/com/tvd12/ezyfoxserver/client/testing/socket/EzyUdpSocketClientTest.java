@@ -18,13 +18,17 @@ import org.testng.annotations.Test;
 
 import java.net.BindException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -242,6 +246,11 @@ public class EzyUdpSocketClientTest extends BaseTest {
                     throw new BindException("test");
                 }
             }
+
+            @Override
+            protected int sleepTimeBeforeRetryBind() {
+                return 1;
+            }
         };
 
         // when
@@ -249,6 +258,102 @@ public class EzyUdpSocketClientTest extends BaseTest {
 
         // then
         Asserts.assertEquals(connectCount.get(), 3);
+    }
+
+    @Test
+    public void connectFailedWhenBindExceptionReachMaxRetryCount() {
+        // given
+        AtomicInteger connectCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void connect1() throws BindException {
+                connectCount.incrementAndGet();
+                throw new BindException("test");
+            }
+
+            @Override
+            protected int maxBindRetryCount() {
+                return 2;
+            }
+
+            @Override
+            protected int sleepTimeBeforeRetryBind() {
+                return 1;
+            }
+        };
+
+        // when
+        Throwable e = Asserts.assertThrows(() ->
+            sut.connectTo("localhost", 2611)
+        );
+
+        // then
+        Asserts.assertEqualsType(e, IllegalStateException.class);
+        Asserts.assertEqualsType(e.getCause(), BindException.class);
+        Asserts.assertEquals(connectCount.get(), 3);
+    }
+
+    @Test
+    public void connectRetryBindInterrupted() {
+        // given
+        AtomicInteger connectCount = new AtomicInteger();
+        EzyUdpSocketClient sut = new EzyUdpSocketClient(new EzySimpleCodecFactory(false)) {
+            @Override
+            protected void connect1() throws BindException {
+                connectCount.incrementAndGet();
+                throw new BindException("test");
+            }
+        };
+        Thread.currentThread().interrupt();
+
+        // when
+        Throwable e = Asserts.assertThrows(() ->
+            sut.connectTo("localhost", 2611)
+        );
+
+        // then
+        boolean interrupted = Thread.interrupted();
+        Asserts.assertTrue(interrupted);
+        Asserts.assertEqualsType(e, IllegalStateException.class);
+        Asserts.assertEqualsType(e.getCause(), InterruptedException.class);
+        Asserts.assertEquals(connectCount.get(), 1);
+    }
+
+    @Test
+    public void sendHandshakeRequestWithNonAsciiToken() throws Exception {
+        // given
+        String sessionToken = "t\u00f4ken-\u1e9e-\u65e5\u672c";
+        byte[] tokenBytes = sessionToken.getBytes(StandardCharsets.UTF_8);
+        long sessionId = 123L;
+        InetSocketAddress serverAddress = new InetSocketAddress("localhost", 2611);
+        DatagramChannel datagramChannel = mock(DatagramChannel.class);
+        AtomicReference<ByteBuffer> sentBuffer = new AtomicReference<>();
+        when(datagramChannel.send(any(ByteBuffer.class), any(SocketAddress.class)))
+            .thenAnswer(invocation -> {
+                ByteBuffer buffer = invocation.getArgumentAt(0, ByteBuffer.class);
+                sentBuffer.set(buffer);
+                return buffer.remaining();
+            });
+        HandshakeEzyUdpSocketClient sut = new HandshakeEzyUdpSocketClient();
+        sut.setSessionId(sessionId);
+        sut.setSessionToken(sessionToken);
+        FieldUtil.setFieldValue(sut, "datagramChannel", datagramChannel);
+        FieldUtil.setFieldValue(sut, "serverAddress", serverAddress);
+
+        // when
+        sut.handshake();
+
+        // then
+        ByteBuffer buffer = sentBuffer.get();
+        Asserts.assertEquals(buffer.remaining(), 1 + 2 + 8 + 2 + tokenBytes.length);
+        Asserts.assertEquals(buffer.get(), (byte) (1 << 5));
+        Asserts.assertEquals((int) buffer.getShort(), 8 + 2 + tokenBytes.length);
+        Asserts.assertEquals(buffer.getLong(), sessionId);
+        Asserts.assertEquals((int) buffer.getShort(), tokenBytes.length);
+        byte[] actualTokenBytes = new byte[buffer.remaining()];
+        buffer.get(actualTokenBytes);
+        Asserts.assertEquals(new String(actualTokenBytes, StandardCharsets.UTF_8), sessionToken);
+        verify(datagramChannel, times(1)).send(buffer, serverAddress);
     }
 
     @Test
@@ -305,5 +410,16 @@ public class EzyUdpSocketClientTest extends BaseTest {
         Selector udpSelector = Selector.open();
         datagramChannel.register(udpSelector, SelectionKey.OP_READ);
         return datagramChannel;
+    }
+
+    private static class HandshakeEzyUdpSocketClient extends EzyUdpSocketClient {
+
+        private HandshakeEzyUdpSocketClient() {
+            super(new EzySimpleCodecFactory(false));
+        }
+
+        private void handshake() throws Exception {
+            sendHandshakeRequest();
+        }
     }
 }

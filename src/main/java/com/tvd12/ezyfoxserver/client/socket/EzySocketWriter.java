@@ -17,11 +17,12 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
     @Override
     protected void update() {
         while (true) {
+            EzyPacket packet = null;
             try {
                 if (!active) {
                     return;
                 }
-                EzyPacket packet = packetQueue.peek();
+                packet = packetQueue.peek();
                 if (packet == null) {
                     return;
                 }
@@ -39,6 +40,10 @@ public abstract class EzySocketWriter extends EzySocketAdapter {
                 return;
             } catch (Throwable e) {
                 logger.info("problems in socket-writer main loop, thread", e);
+                if (packet != null) {
+                    packet.release();
+                    packetQueue.take();
+                }
             }
         }
     }

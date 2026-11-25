@@ -463,6 +463,42 @@ public class EzySocketClientTest extends BaseTest {
         verify(context.dataHandlers, times(0)).handle(any(EzyCommand.class), any(EzyArray.class));
     }
 
+    @Test
+    public void processReceivedDisconnectCommandWithoutData() {
+        // given
+        DisconnectContext context = new DisconnectContext(null);
+
+        // when
+        context.sut.processEventMessages();
+
+        // then
+        EzyValueStack<EzySocketStatus> socketStatuses =
+            FieldUtil.getFieldValue(context.sut, "socketStatuses");
+        Asserts.assertEquals(socketStatuses.last(), EzySocketStatus.DISCONNECTING);
+        Asserts.assertEquals(
+            FieldUtil.getFieldValue(context.sut, "disconnectReason"),
+            EzyDisconnectReason.UNKNOWN.getId()
+        );
+    }
+
+    @Test
+    public void processReceivedDisconnectCommandWithEmptyData() {
+        // given
+        DisconnectContext context = new DisconnectContext(EzyEntityArrays.newArray());
+
+        // when
+        context.sut.processEventMessages();
+
+        // then
+        EzyValueStack<EzySocketStatus> socketStatuses =
+            FieldUtil.getFieldValue(context.sut, "socketStatuses");
+        Asserts.assertEquals(socketStatuses.last(), EzySocketStatus.DISCONNECTING);
+        Asserts.assertEquals(
+            FieldUtil.getFieldValue(context.sut, "disconnectReason"),
+            EzyDisconnectReason.UNKNOWN.getId()
+        );
+    }
+
     private static class DisconnectContext {
         private final TestEzySocketClient sut;
         private final EzySocketReader socketReader;
@@ -471,8 +507,12 @@ public class EzySocketClientTest extends BaseTest {
         private final EzyEventHandlers eventHandlers;
         private final EzyDataHandlers dataHandlers;
 
-        @SuppressWarnings({"rawtypes", "unchecked"})
         private DisconnectContext(int reason) {
+            this(EzyEntityArrays.newArray(reason));
+        }
+
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        private DisconnectContext(EzyArray data) {
             EzyHandlerManager handlerManager = mock(EzyHandlerManager.class);
             eventHandlers = mock(EzyEventHandlers.class);
             dataHandlers = mock(EzyDataHandlers.class);
@@ -490,8 +530,9 @@ public class EzySocketClientTest extends BaseTest {
             when(socketReader.isActive()).thenReturn(true);
             doAnswer(invocation -> {
                 List localMessageQueue = invocation.getArgumentAt(0, List.class);
-                EzyArray data = EzyEntityArrays.newArray(reason);
-                EzyArray message = EzyEntityArrays.newArray(EzyCommand.DISCONNECT.getId(), data);
+                EzyArray message = data != null
+                    ? EzyEntityArrays.newArray(EzyCommand.DISCONNECT.getId(), data)
+                    : EzyEntityArrays.newArray(EzyCommand.DISCONNECT.getId());
                 localMessageQueue.add(message);
                 return null;
             })

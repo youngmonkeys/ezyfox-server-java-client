@@ -180,6 +180,26 @@ public class EzyClientsTest extends BaseTest {
     }
 
     @Test
+    public void clearResetDefaultClientTest() {
+        // given
+        EzyClients sut = EzyClients.getInstance();
+        EzyClient oldClient = mock(EzyClient.class);
+        when(oldClient.getName()).thenReturn("oldClient");
+        EzyClient newClient = mock(EzyClient.class);
+        when(newClient.getName()).thenReturn("newClient");
+        sut.addClient(oldClient);
+
+        // when
+        sut.clear();
+        EzyClient defaultClientAfterClear = sut.getDefaultClient();
+        sut.addClient(newClient);
+
+        // then
+        Asserts.assertNull(defaultClientAfterClear);
+        Asserts.assertEquals(sut.getDefaultClient(), newClient);
+    }
+
+    @Test
     public void processEventTest() throws InterruptedException {
         // given
         EzyClients clients = EzyClients.getInstance();

@@ -2,6 +2,7 @@ package com.tvd12.ezyfoxserver.client.testing.socket;
 
 import com.tvd12.ezyfox.concurrent.EzyEventLoopGroup;
 import com.tvd12.ezyfoxserver.client.constant.EzySocketConstants;
+import com.tvd12.ezyfoxserver.client.socket.EzyBlockingPacketQueue;
 import com.tvd12.ezyfoxserver.client.socket.EzyPacket;
 import com.tvd12.ezyfoxserver.client.socket.EzyPacketQueue;
 import com.tvd12.ezyfoxserver.client.socket.EzySimplePacket;
@@ -13,6 +14,7 @@ import org.testng.annotations.Test;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static org.mockito.Mockito.*;
@@ -136,6 +138,35 @@ public class EzySocketWriterTest extends BaseTest {
         // then
         waitStopped(sut);
         Asserts.assertEquals(peekCount.get(), 2);
+    }
+
+    @Test
+    public void loopWritePacketErrorThenWriteNextPacket() throws Exception {
+        // given
+        EzyBlockingPacketQueue packetQueue = new EzyBlockingPacketQueue();
+        EzySimplePacket errorPacket = new EzySimplePacket();
+        EzySimplePacket nextPacket = newPacket(new byte[]{1, 2, 3});
+        packetQueue.add(errorPacket);
+        packetQueue.add(nextPacket);
+        AtomicInteger writtenBytes = new AtomicInteger();
+        AtomicReference<TestEzySocketWriter> sutRef = new AtomicReference<>();
+        TestEzySocketWriter sut = new TestEzySocketWriter(buffer -> {
+            int bytes = buffer.remaining();
+            writtenBytes.addAndGet(bytes);
+            sutRef.get().stop();
+            return bytes;
+        });
+        sutRef.set(sut);
+        sut.setPacketQueue(packetQueue);
+
+        // when
+        sut.start();
+
+        // then
+        waitStopped(sut);
+        Asserts.assertEquals(writtenBytes.get(), 3);
+        Asserts.assertTrue(errorPacket.isReleased());
+        Asserts.assertTrue(nextPacket.isReleased());
     }
 
     @Test

@@ -17,7 +17,11 @@ public abstract class EzyAbstractResponseApi implements EzyResponseApi {
             ? encodeData(pack.getData(), pack.getEncryptionKey())
             : encodeData(pack.getData());
         EzyPacket packet = createPacket(pack.getTransportType(), bytes);
-        packetQueue.add(packet);
+        if (!packetQueue.add(packet)) {
+            throw new IllegalStateException(
+                "packet queue is full, packet: " + packet + " was dropped"
+            );
+        }
     }
 
     private EzyPacket createPacket(EzyConstant transportType, Object bytes) {

@@ -2,6 +2,7 @@ package com.tvd12.ezyfoxserver.client.testing.handler;
 
 import com.tvd12.ezyfox.entity.EzyArray;
 import com.tvd12.ezyfoxserver.client.config.EzyClientConfig;
+import com.tvd12.ezyfoxserver.client.constant.EzyClientConstants;
 import com.tvd12.ezyfoxserver.client.constant.EzyConnectionStatus;
 import com.tvd12.ezyfoxserver.client.event.EzyEvent;
 import com.tvd12.ezyfoxserver.client.handler.EzyConnectionSuccessHandler;
@@ -83,7 +84,27 @@ public class EzyConnectionSuccessHandlerTest {
         Asserts.assertTrue(captureEnableCompression(client));
     }
 
+    @Test
+    public void handleSendClientTypeAndVersion() {
+        // given
+        EzyClientForTest client = mock(EzyClientForTest.class);
+        EzyConnectionSuccessHandler sut = new EzyConnectionSuccessHandler();
+        sut.setClient(client);
+
+        // when
+        sut.handle(mock(EzyEvent.class));
+
+        // then
+        EzyArray data = captureHandshakeData(client);
+        Asserts.assertEquals(data.get(2, String.class), EzyClientConstants.CLIENT_TYPE);
+        Asserts.assertEquals(data.get(3, String.class), EzyClientConstants.CLIENT_VERSION);
+    }
+
     private static boolean captureEnableCompression(EzyClientForTest client) {
+        return captureHandshakeData(client).get(7, boolean.class);
+    }
+
+    private static EzyArray captureHandshakeData(EzyClientForTest client) {
         EzyRequest request = null;
         for (Invocation invocation : mockingDetails(client).getInvocations()) {
             if (invocation.getMethod().getName().equals("send")
@@ -92,7 +113,6 @@ public class EzyConnectionSuccessHandlerTest {
             }
         }
         Asserts.assertEqualsType(request, EzyHandshakeRequest.class);
-        EzyArray data = (EzyArray) request.serialize();
-        return data.get(7, boolean.class);
+        return (EzyArray) request.serialize();
     }
 }
